@@ -120,22 +120,20 @@ jobs:
           TRUSTCERT: ${{ github.event.client_payload.trustcert || inputs.trustcert }}
         run: |
           set -e
-          ARGS=""
-          
-          # str
-          if [ -n "$SERVER" ]; then ARGS="$ARGS --server \"$SERVER\""; fi
-          if [ -n "$SDKURL" ]; then ARGS="$ARGS --sdkurl \"$SDKURL\""; fi
-          if [ -n "$GAMEMAINCONFIG" ]; then ARGS="$ARGS --gamemainconfig \"$GAMEMAINCONFIG\""; fi
-          if [ -n "$MODIFYGT4" ]; then ARGS="$ARGS --modifygt4 \"$MODIFYGT4\""; fi
-          if [ -n "$REPO" ]; then ARGS="$ARGS --repo \"$REPO\""; fi
-          
-          # bool
-          if [ "$MODIFYLOGIN" == "true" ]; then ARGS="$ARGS --modifylogin"; fi
-          if [ "$REPLACE" == "true" ]; then ARGS="$ARGS --replace"; fi
-          if [ "$MODIFYBUNDLE" == "true" ]; then ARGS="$ARGS --modifybundle"; fi
-          if [ "$TRUSTCERT" == "true" ]; then ARGS="$ARGS --trustcert"; fi
-          
-          python -m update.update_apk $ARGS
+          CMD="python -m update.update_apk"
+
+          if [ -n "$SERVER" ]; then CMD="$CMD --server '$SERVER'"; fi
+          if [ -n "$SDKURL" ]; then CMD="$CMD --sdkurl '$SDKURL'"; fi
+          if [ -n "$GAMEMAINCONFIG" ]; then CMD="$CMD --gamemainconfig '$GAMEMAINCONFIG'"; fi
+          if [ -n "$MODIFYGT4" ]; then CMD="$CMD --modifygt4 '$MODIFYGT4'"; fi
+          if [ -n "$REPO" ]; then CMD="$CMD --repo '$REPO'"; fi
+
+          if [ "$MODIFYLOGIN" = "true" ]; then CMD="$CMD --modifylogin"; fi
+          if [ "$REPLACE" = "true" ]; then CMD="$CMD --replace"; fi
+          if [ "$MODIFYBUNDLE" = "true" ]; then CMD="$CMD --modifybundle"; fi
+          if [ "$TRUSTCERT" = "true" ]; then CMD="$CMD --trustcert"; fi
+
+          eval "$CMD"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
