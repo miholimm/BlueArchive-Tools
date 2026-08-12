@@ -1,0 +1,189 @@
+name: Repack
+
+on:
+  repository_dispatch:
+    types: [RepackTable, RepackMedia, RepackBundle, RepackWindows]
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          SERVER="${{ github.event.client_payload.server }}"
+          ACTION="${{ github.event.action }}"
+          
+          if [ "$SERVER" == "JP" ]; then
+            if [ "$ACTION" == "Media" ]; then
+              JSON="['Android', 'Windows']"
+            elif [ "$ACTION" == "Bundle" ]; then
+              JSON="['Android', 'iOS', 'Windows']"
+            else
+              JSON="['Android']"
+            fi
+          else
+            JSON="['Android']"
+          fi
+          
+          echo "matrix=$JSON" >> $GITHUB_OUTPUT
+
+  process:
+    needs: prepare
+    runs-on: ubuntu-latest
+    outputs:
+      should_restart: ${{ steps.check_reason.outputs.should_restart }}
+    strategy:
+      matrix:
+        platform: ${{ fromJson(needs.prepare.outputs.matrix) }}
+      fail-fast: false
+    env:
+      PYTHONUTF8: 1
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unnecessary
+          if_key_exists: replace
+
+      - name: Login
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+          sudo apt-get install -y sqlcipher libsqlcipher-dev
+          pip install pysqlcipher3
+
+      - name: Get Catalog
+        id: update
+        run: |
+          start_time=$(date +%s)
+          timeout_limit=$((5 * 60 * 60))
+          
+          while true; do
+            current_time=$(date +%s)
+            elapsed=$((current_time - start_time))
+            if [ $elapsed -ge $timeout_limit ]; then
+              echo "timeout=true" >> $GITHUB_OUTPUT
+              break
+            fi
+
+            action_clean=$(echo ${{ github.event.action }} | sed 's/^Repack//')
+            python -m get.get_catalog ${{ github.event.client_payload.server }} $action_clean ${{ matrix.platform }}
+
+            if [ -f "CATALOG_FOUND" ]; then
+              echo "detected=true" >> $GITHUB_OUTPUT
+              break
+            fi
+            sleep 60
+          done
+
+      - name: Execute Table Logic
+        if: github.event.action == 'RepackTable' && steps.update.outputs.detected == 'true'
+        run: |
+          git clone --depth 1 git@github.com:beichen23333/BA-Text.git BA-Text
+          git clone --depth 1 -b GL git@github.com:beichen23333/BA-TableBundles.git BA-TableBundles
+ 
+          python -m get.get_files ${{ github.event.client_payload.server }} Table ${{ matrix.platform }} -f ExcelDB.db Excel.zip
+          python -m get.get_catalog JP Media ${{ matrix.platform }}
+
+          SERVER="${{ github.event.client_payload.server }}"
+          if [ "$SERVER" = "CN" ]; then
+            DB_KEY=""
+          elif [ "$SERVER" = "JP" ]; then
+            DB_KEY=$(sed -n '1p' BA-Text/key.txt)
+          elif [ "$SERVER" = "GL" ]; then
+            DB_KEY=$(sed -n '2p' BA-Text/key.txt)
+          fi
+
+          git clone --depth 1 -b ${{ github.event.client_payload.server }} git@github.com:beichen23333/BA-FlatData.git FlatData
+
+          EXTRA_ARGS="--catalog --replace --repack_dir BA-Text --debug_json BA-Text/debug.json"
+          
+          if [ "${{ github.event.inputs.modify_name || github.event.client_payload.modify_name }}" = "true" ]; then
+            EXTRA_ARGS="$EXTRA_ARGS --name"
+          fi
+          
+          if [ "${{ github.event.inputs.debug || github.event.client_payload.debug }}" = "true" ]; then
+            EXTRA_ARGS="$EXTRA_ARGS --debug"
+          fi
+          
+          VOICE_LANG="${{ github.event.inputs.voice_lang || github.event.client_payload.voice_lang }}"
+          if [ -n "$VOICE_LANG" ]; then
+            EXTRA_ARGS="$EXTRA_ARGS --voice_lang $VOICE_LANG"
+          fi
+
+          python process_excel.py Download_Temp output ${{ github.event.client_payload.server }} Repack $EXTRA_ARGS --db_key "$DB_KEY"
+
+      - name: Prepare Artifacts
+        run: |
+          mkdir -p upload
+          mkdir -p Catalog
+
+          mv Catalog/ upload/
+          mv Download_Temp/* upload/
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Repack-TableBundles
+          path: upload/
+          if-no-files-found: warn
+
+      - name: Terminate and Trigger Restart
+        id: check_reason
+        if: steps.update.outputs.timeout == 'true'
+        run: |
+          echo "should_restart=true" >> $GITHUB_OUTPUT
+          gh run cancel ${{ github.run_id }}
+
+  restart:
+    needs: process
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restart Workflow
+        if: needs.process.outputs.should_restart == 'true'
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: token ${{ secrets.UPDATE_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/dispatches \
+          -d "{\"event_type\": \"${{ github.event.action }}\", \"client_payload\": {\"server\": \"${{ github.event.client_payload.server }}\"}}"
+
+      - name: Send email on Restart
+        if: needs.process.outputs.should_restart == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: ⚠️ 警告 - Repack流程终止
+          body: |
+            检测到Repack流程因服务器维护被终止，您可以点击下方链接查看详情。
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: ${{ secrets.TARGET_EMAIL }}
+          from: 北辰汉化组 <${{ secrets.EMAIL_USERNAME }}>

@@ -1,0 +1,590 @@
+{
+    "JP": {
+        "ExcelDB": {
+            "CharacterDialogBattlePassExcel.json": {
+                "Index": [
+                    "CostumeUniqueId",
+                    "DisplayOrder"
+                ],
+                "Repack": [
+                    "LocalizeJP"
+                ],
+                "Keep": []
+            },
+            "AcademyMessangerExcel.json": {
+                "Index": [
+                    "MessageGroupId",
+                    "Id"
+                ],
+                "Repack": [
+                    "MessageJP"
+                ],
+                "Keep": []
+            },
+            "CharacterDialogEmojiExcel.json": {
+                "Index": [
+                    "GroupId"
+                ],
+                "Repack": [
+                    "LocalizeJP"
+                ],
+                "Keep": []
+            },
+            "CharacterDialogEventExcel.json": {
+                "Index": [
+                    "EventID",
+                    "DisplayOrder"
+                ],
+                "Repack": [
+                    "LocalizeJP"
+                ],
+                "Keep": []
+            },
+            "CharacterDialogExcel.json": {
+                "Index": [
+                    "CharacterId",
+                    "DisplayOrder"
+                ],
+                "Repack": [
+                    "LocalizeJP"
+                ],
+                "Keep": []
+            },
+            "LocalizeErrorExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "Jp"
+                ],
+                "Keep": []
+            },
+            "LocalizeEtcExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "NameJp",
+                    "DescriptionJp"
+                ],
+                "Keep": []
+            },
+            "LocalizeExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "Jp"
+                ],
+                "Keep": []
+            },
+            "LocalizeSkillExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "NameJp",
+                    "DescriptionJp"
+                ],
+                "Keep": []
+            },
+            "ScenarioCharacterNameExcel.json": {
+                "Index": [
+                    "CharacterName"
+                ],
+                "Repack": [
+                    "NameJP",
+                    "NicknameJP"
+                ],
+                "Keep": []
+            },
+            "ScenarioScriptExcel.json": {
+                "Index": [
+                    "GroupId"
+                ],
+                "Repack": [
+                    "TextJp"
+                ],
+                "Keep": [
+                    "ScriptKr",
+                    "VoiceId"
+                ]
+            },
+            "TutorialCharacterDialogExcel.json": {
+                "Index": [
+                    "TalkId"
+                ],
+                "Repack": [
+                    "LocalizeJP"
+                ],
+                "Keep": []
+            },
+            "CharacterVoiceSubtitleExcel.json": {
+                "Index": [
+                    "LocalizeCVGroup",
+                    "CharacterVoiceGroupId"
+                ],
+                "Repack": [
+                    "LocalizeJP"
+                ],
+                "Keep": []
+            },
+            "CharacterDialogSubtitleExcel.json": {
+                "Index": [
+                    "LocalizeCVGroup",
+                    "CharacterId"
+                ],
+                "Repack": [
+                    "LocalizeJP"
+                ],
+                "Keep": []
+            },
+            "LocalizeGachaShopExcel.json": {
+                "Index": [
+                    "GachaShopId"
+                ],
+                "Repack": [
+                    "TabNameJp",
+                    "TitleNameJp",
+                    "SubTitleJp",
+                    "GachaDescriptionJp"
+                ],
+                "Keep": []
+            },
+            "LocalizeCharProfileExcel.json": {
+                "Index": [
+                    "CharacterId"
+                ],
+                "Repack": [
+                    "StatusMessageJp",
+                    "FullNameJp",
+                    "FamilyNameJp",
+                    "PersonalNameJp",
+                    "SchoolYearJp",
+                    "CharacterAgeJp",
+                    "BirthdayJp",
+                    "CharHeightJp",
+                    "DesignerNameJp",
+                    "IllustratorNameJp",
+                    "CharacterVoiceJp",
+                    "HobbyJp",
+                    "WeaponNameJp",
+                    "WeaponDescJp",
+                    "ProfileIntroductionJp",
+                    "CharacterSSRNewJp"
+                ],
+                "Keep": []
+            }
+        },
+        "Excel": {
+            "CharacterDialogFieldExcelTable.json": {
+                "Index": [
+                    "GroupId",
+                    "TargetIndex"
+                ],
+                "Repack": [
+                    "LocalizeJP"
+                ],
+                "Keep": []
+            },
+            "LocalizeSNSExcelTable.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "Jp"
+                ],
+                "Keep": []
+            }
+        }
+    },
+    "CN": {
+        "ExcelDB": {
+            "CharacterDialogEmojiExcel.json": {
+                "Index": [
+                    "GroupId"
+                ],
+                "Repack": [
+                    "LocalizeKR"
+                ],
+                "Keep": [],
+                "Overflow": [
+                    "GroupId"
+                ]
+            },
+            "CharacterDialogEventExcel.json": {
+                "Index": [
+                    "EventID",
+                    "DisplayOrder"
+                ],
+                "Repack": [
+                    "LocalizeKR"
+                ],
+                "Keep": []
+            },
+            "CharacterDialogExcel.json": {
+                "Index": [
+                    "CharacterId",
+                    "DisplayOrder"
+                ],
+                "Repack": [
+                    "LocalizeKR"
+                ],
+                "Keep": []
+            },
+            "LocalizeErrorExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "Kr"
+                ],
+                "Keep": []
+            },
+            "LocalizeEtcExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "NameKr",
+                    "DescriptionKr"
+                ],
+                "Keep": []
+            },
+            "LocalizeExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "Kr"
+                ],
+                "Keep": []
+            },
+            "LocalizeSkillExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "NameKr",
+                    "DescriptionKr"
+                ],
+                "Keep": []
+            },
+            "ScenarioCharacterNameExcel.json": {
+                "Index": [
+                    "CharacterName"
+                ],
+                "Repack": [
+                    "NameKR",
+                    "NicknameKR"
+                ],
+                "Keep": []
+            },
+            "ScenarioScriptExcel.json": {
+                "Index": [
+                    "GroupId"
+                ],
+                "Repack": [
+                    "TextJp"
+                ],
+                "Keep": [
+                    "ScriptKr",
+                    "VoiceId"
+                ]
+            },
+            "TutorialCharacterDialogExcel.json": {
+                "Index": [
+                    "TalkId"
+                ],
+                "Repack": [
+                    "LocalizeKR"
+                ],
+                "Keep": []
+            },
+            "CharacterVoiceSubtitleExcel.json": {
+                "Index": [
+                    "LocalizeCVGroup",
+                    "CharacterVoiceGroupId"
+                ],
+                "Repack": [
+                    "LocalizeKR"
+                ],
+                "Keep": []
+            },
+            "CharacterDialogSubtitleExcel.json": {
+                "Index": [
+                    "LocalizeCVGroup",
+                    "CharacterId"
+                ],
+                "Repack": [
+                    "LocalizeKR"
+                ],
+                "Keep": []
+            }
+        },
+        "Excel": {
+            "CharacterDialogFieldExcelTable.json": {
+                "Index": [
+                    "GroupId",
+                    "TargetIndex"
+                ],
+                "Repack": [
+                    "LocalizeKR"
+                ],
+                "Keep": [],
+                "Overflow": [
+                    "GroupId"
+                ]
+            },
+            "AcademyMessanger1ExcelTable.json": {
+                "Index": [
+                    "MessageGroupId",
+                    "Id"
+                ],
+                "Repack": [
+                    "MessageKR"
+                ],
+                "Keep": [],
+                "Redirect": "ExcelDB/AcademyMessangerExcel.json"
+            },
+            "AcademyMessanger2ExcelTable.json": {
+                "Index": [
+                    "MessageGroupId",
+                    "Id"
+                ],
+                "Repack": [
+                    "MessageKR"
+                ],
+                "Keep": [],
+                "Redirect": "ExcelDB/AcademyMessangerExcel.json"
+            },
+            "LocalizeCharProfileExcelTable.json": {
+                "Index": [
+                    "CharacterId"
+                ],
+                "Repack": [
+                    "StatusMessageKr",
+                    "FullNameKr",
+                    "FamilyNameKr",
+                    "PersonalNameKr",
+                    "SchoolYearKr",
+                    "CharacterAgeKr",
+                    "BirthdayKr",
+                    "CharHeightKr",
+                    "DesignerNameKr",
+                    "IllustratorNameKr",
+                    "CharacterVoiceKr",
+                    "HobbyKr",
+                    "WeaponNameKr",
+                    "WeaponDescKr",
+                    "ProfileIntroductionKr",
+                    "CharacterSSRNewKr"
+                ],
+                "Keep": [],
+                "Redirect": "ExcelDB/LocalizeCharProfileExcel.json"
+            },
+            "LocalizeGachaShopExcelTable.json": {
+                "Index": [
+                    "GachaShopId"
+                ],
+                "Repack": [
+                    "TabNameKr",
+                    "TitleNameKr",
+                    "SubTitleKr",
+                    "GachaDescriptionKr"
+                ],
+                "Keep": []
+            }
+        }
+    },
+    "GL": {
+        "ExcelDB": {
+            "CharacterDialogBattlePassExcel.json": {
+                "Index": [
+                    "CostumeUniqueId",
+                    "DisplayOrder"
+                ],
+                "Repack": [
+                    "LocalizeTW"
+                ],
+                "Keep": []
+            },
+            "AcademyMessangerExcel.json": {
+                "Index": [
+                    "MessageGroupId",
+                    "Id"
+                ],
+                "Repack": [
+                    "MessageTW"
+                ],
+                "Keep": []
+            },
+            "CharacterDialogEmojiExcel.json": {
+                "Index": [
+                    "GroupId"
+                ],
+                "Repack": [
+                    "LocalizeTW"
+                ],
+                "Keep": []
+            },
+            "CharacterDialogEventExcel.json": {
+                "Index": [
+                    "EventID",
+                    "DisplayOrder"
+                ],
+                "Repack": [
+                    "LocalizeTW"
+                ],
+                "Keep": []
+            },
+            "CharacterDialogExcel.json": {
+                "Index": [
+                    "CharacterId",
+                    "DisplayOrder"
+                ],
+                "Repack": [
+                    "LocalizeTW"
+                ],
+                "Keep": []
+            },
+            "LocalizeErrorExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "Tw"
+                ],
+                "Keep": []
+            },
+            "LocalizeEtcExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "NameTw",
+                    "DescriptionTw"
+                ],
+                "Keep": []
+            },
+            "LocalizeExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "Tw"
+                ],
+                "Keep": []
+            },
+            "LocalizeSkillExcel.json": {
+                "Index": [
+                    "Key"
+                ],
+                "Repack": [
+                    "NameTw",
+                    "DescriptionTw"
+                ],
+                "Keep": []
+            },
+            "ScenarioCharacterNameExcel.json": {
+                "Index": [
+                    "CharacterName"
+                ],
+                "Repack": [
+                    "NameTW",
+                    "NicknameTW"
+                ],
+                "Keep": []
+            },
+            "ScenarioScriptExcel.json": {
+                "Index": [
+                    "GroupId"
+                ],
+                "Repack": [
+                    "TextTw"
+                ],
+                "Keep": [
+                    "ScriptKr",
+                    "VoiceId"
+                ]
+            },
+            "TutorialCharacterDialogExcel.json": {
+                "Index": [
+                    "TalkId"
+                ],
+                "Repack": [
+                    "LocalizeTW"
+                ],
+                "Keep": []
+            },
+            "LocalizeGachaShopExcel.json": {
+                "Index": [
+                    "GachaShopId"
+                ],
+                "Repack": [
+                    "TabNameTw",
+                    "TitleNameTw",
+                    "SubTitleTw",
+                    "GachaDescriptionTw"
+                ],
+                "Keep": []
+            },
+            "CharacterVoiceSubtitleExcel.json": {
+                "Index": [
+                    "LocalizeCVGroup",
+                    "CharacterVoiceGroupId"
+                ],
+                "Repack": [
+                    "LocalizeTW"
+                ],
+                "Keep": []
+            },
+            "CharacterDialogSubtitleExcel.json": {
+                "Index": [
+                    "LocalizeCVGroup",
+                    "CharacterId"
+                ],
+                "Repack": [
+                    "LocalizeTW"
+                ],
+                "Keep": []
+            },
+            "LocalizeCharProfileExcel.json": {
+                "Index": [
+                    "CharacterId"
+                ],
+                "Repack": [
+                    "StatusMessageTw",
+                    "FullNameTw",
+                    "FamilyNameTw",
+                    "PersonalNameTw",
+                    "SchoolYearTw",
+                    "CharacterAgeTw",
+                    "BirthdayTw",
+                    "CharHeightTw",
+                    "DesignerNameTw",
+                    "IllustratorNameTw",
+                    "CharacterVoiceTw",
+                    "HobbyTw",
+                    "WeaponNameTw",
+                    "WeaponDescTw",
+                    "ProfileIntroductionTw",
+                    "CharacterSSRNewTw"
+                ],
+                "Keep": []
+            }
+        },
+        "Excel": {
+            "CharacterDialogFieldExcelTable.json": {
+                "Index": [
+                    "GroupId",
+                    "TargetIndex"
+                ],
+                "Repack": [
+                    "LocalizeTW"
+                ],
+                "Keep": []
+            }
+        }
+    }
+}

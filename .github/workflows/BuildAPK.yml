@@ -1,0 +1,144 @@
+name: Build APK
+
+on:
+  repository_dispatch:
+    types: [BuildAPK]
+  workflow_dispatch:
+    inputs:
+      server:
+        description: '选择服务器'
+        required: true
+        default: 'JP'
+        type: choice
+        options:
+          - JP
+          - GL
+      sdkurl:
+        description: '修改SDKURL（留空则不修改）（日服限定）'
+        required: false
+        type: string
+        default: 'https://jp-sdk-api.bluearchive.help/'
+      gamemainconfig:
+        description: '修改GameMainConfig（留空则不修改）（日服限定）'
+        required: false
+        type: string
+        default: '{"ServerInfoDataUrl": "", "SkipTutorial": "True"}'
+      modifylogin:
+        description: '修改登录界面语言（日服限定）'
+        required: false
+        type: boolean
+        default: true
+      modifygt4:
+        description: '修改登录校验语言（留空则不修改）（日服限定）'
+        required: false
+        type: string
+        default: 'zho'
+      replace:
+        description: '是否替换assets资源'
+        required: false
+        type: boolean
+        default: true
+      modifybundle:
+        description: '是否修改bundle资源'
+        required: false
+        type: boolean
+        default: true
+      repo_url:
+        description: '资源仓库地址'
+        required: true
+        type: string
+        default: 'https://github.com/BlueArchive-Translation/BA-APKSRC.git'
+      repo:
+        description: '资源文件夹路径'
+        required: false
+        type: string
+        default: 'BA-APKSRC'
+      trustcert:
+        description: '是否信任CA证书（reqable）'
+        required: false
+        type: boolean
+        default: true
+
+concurrency:
+  group: build-apk-${{ github.event.client_payload.server || inputs.server }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PYTHONUTF8: 1
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unnecessary
+          if_key_exists: replace
+
+      - name: Login
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Install Python requirements
+        env:
+          REPO_URL: ${{ github.event.client_payload.repo_url || inputs.repo_url }}
+          REPO: ${{ github.event.client_payload.repo || inputs.repo }}
+        run: |
+          pip install -r requirements.txt
+          sudo apt install -y android-sdk-build-tools
+          git clone "$REPO_URL" "$REPO"
+
+      - name: Run update_apk
+        env:
+          SERVER: ${{ github.event.client_payload.server || inputs.server }}
+          SDKURL: ${{ github.event.client_payload.sdkurl || inputs.sdkurl }}
+          GAMEMAINCONFIG: ${{ github.event.client_payload.gamemainconfig || inputs.gamemainconfig }}
+          MODIFYLOGIN: ${{ github.event.client_payload.modifylogin || inputs.modifylogin }}
+          MODIFYGT4: ${{ github.event.client_payload.modifygt4 || inputs.modifygt4 }}
+          REPLACE: ${{ github.event.client_payload.replace || inputs.replace }}
+          MODIFYBUNDLE: ${{ github.event.client_payload.modifybundle || inputs.modifybundle }}
+          REPO: ${{ github.event.client_payload.repo || inputs.repo }}
+          TRUSTCERT: ${{ github.event.client_payload.trustcert || inputs.trustcert }}
+        run: |
+          set -e
+          ARGS=""
+          
+          # str
+          if [ -n "$SERVER" ]; then ARGS="$ARGS --server \"$SERVER\""; fi
+          if [ -n "$SDKURL" ]; then ARGS="$ARGS --sdkurl \"$SDKURL\""; fi
+          if [ -n "$GAMEMAINCONFIG" ]; then ARGS="$ARGS --gamemainconfig \"$GAMEMAINCONFIG\""; fi
+          if [ -n "$MODIFYGT4" ]; then ARGS="$ARGS --modifygt4 \"$MODIFYGT4\""; fi
+          if [ -n "$REPO" ]; then ARGS="$ARGS --repo \"$REPO\""; fi
+          
+          # bool
+          if [ "$MODIFYLOGIN" == "true" ]; then ARGS="$ARGS --modifylogin"; fi
+          if [ "$REPLACE" == "true" ]; then ARGS="$ARGS --replace"; fi
+          if [ "$MODIFYBUNDLE" == "true" ]; then ARGS="$ARGS --modifybundle"; fi
+          if [ "$TRUSTCERT" == "true" ]; then ARGS="$ARGS --trustcert"; fi
+          
+          python -m update.update_apk $ARGS
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-APK-Result
+          path: '*.apk'
