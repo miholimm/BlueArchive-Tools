@@ -1,6 +1,53 @@
 name: Repack
 
 on:
+  # 手动触发：可在 input 中自由选择服务器 / 资源类型 / 平台 / 处理选项
+  workflow_dispatch:
+    inputs:
+      server:
+        description: '选择服务器'
+        required: true
+        default: 'CN'
+        type: choice
+        options:
+          - CN
+          - GL
+          - JP
+      action:
+        description: '选择资源类型'
+        required: true
+        default: 'Table'
+        type: choice
+        options:
+          - Table
+          - Media
+          - Bundle
+          - Windows
+      platform:
+        description: '选择客户端平台（auto 表示按服务器/类型自动推断）'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - Android
+          - iOS
+          - Windows
+      modify_name:
+        description: '是否修改文件名（启用 --name）'
+        required: false
+        default: 'false'
+        type: boolean
+      debug:
+        description: '是否开启调试（启用 --debug）'
+        required: false
+        default: 'false'
+        type: boolean
+      voice_lang:
+        description: '语音语言（启用 --voice_lang，例如 CN/KR/Default）'
+        required: false
+        type: string
+  # 自动触发：由上游 Update 流程通过 repository_dispatch 调用
   repository_dispatch:
     types: [RepackTable, RepackMedia, RepackBundle, RepackWindows]
 
@@ -9,25 +56,64 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+      server: ${{ steps.resolve.outputs.server }}
+      action: ${{ steps.resolve.outputs.action }}
+      dispatch_action: ${{ steps.resolve.outputs.dispatch_action }}
     steps:
-      - id: set-matrix
+      - name: Resolve Inputs
+        id: resolve
+        shell: bash
         run: |
-          SERVER="${{ github.event.client_payload.server }}"
-          ACTION="${{ github.event.action }}"
-          
-          if [ "$SERVER" == "JP" ]; then
-            if [ "$ACTION" == "Media" ]; then
-              JSON="['Android', 'Windows']"
-            elif [ "$ACTION" == "Bundle" ]; then
-              JSON="['Android', 'iOS', 'Windows']"
-            else
-              JSON="['Android']"
-            fi
+          SERVER="${{ github.event.inputs.server || github.event.client_payload.server }}"
+          PLATFORM="${{ github.event.inputs.platform }}"
+          MANUAL_ACTION="${{ github.event.inputs.action }}"
+
+          if [ -z "$SERVER" ]; then SERVER="CN"; fi
+          if [ -z "$PLATFORM" ]; then PLATFORM="auto"; fi
+
+          if [ -n "$MANUAL_ACTION" ]; then
+            # workflow_dispatch：action 为干净类型，构造带前缀的 dispatch 事件名
+            ACTION="$MANUAL_ACTION"
+            DISPATCH_ACTION="Repack${MANUAL_ACTION}"
           else
-            JSON="['Android']"
+            # repository_dispatch：event.action 形如 RepackTable，需去掉前缀得到干净类型
+            RAW_ACTION="${{ github.event.action }}"
+            ACTION=$(echo "$RAW_ACTION" | sed 's/^Repack//')
+            DISPATCH_ACTION="$RAW_ACTION"
           fi
-          
-          echo "matrix=$JSON" >> $GITHUB_OUTPUT
+
+          echo "server=$SERVER" >> "$GITHUB_OUTPUT"
+          echo "action=$ACTION" >> "$GITHUB_OUTPUT"
+          echo "platform=$PLATFORM" >> "$GITHUB_OUTPUT"
+          echo "dispatch_action=$DISPATCH_ACTION" >> "$GITHUB_OUTPUT"
+
+      - name: Set Matrix
+        id: set-matrix
+        shell: bash
+        env:
+          SERVER: ${{ steps.resolve.outputs.server }}
+          ACTION: ${{ steps.resolve.outputs.action }}
+          PLATFORM: ${{ steps.resolve.outputs.platform }}
+        run: |
+          # 手动选择了具体平台时，直接使用该平台
+          if [ "$PLATFORM" != "auto" ]; then
+            matrix="[\"$PLATFORM\"]"
+          else
+            case "$SERVER:$ACTION" in
+              JP:Media)
+                JSON="['Android', 'Windows']"
+                ;;
+              JP:Bundle)
+                JSON="['Android', 'iOS', 'Windows']"
+                ;;
+              *)
+                JSON="['Android']"
+                ;;
+            esac
+            matrix="$JSON"
+          fi
+
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
   process:
     needs: prepare
@@ -41,6 +127,9 @@ jobs:
     env:
       PYTHONUTF8: 1
       PYTHONUNBUFFERED: "1"
+      SERVER: ${{ needs.prepare.outputs.server }}
+      ACTION: ${{ needs.prepare.outputs.action }}
+      PLATFORM: ${{ matrix.platform }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -80,7 +169,7 @@ jobs:
         run: |
           start_time=$(date +%s)
           timeout_limit=$((5 * 60 * 60))
-          
+
           while true; do
             current_time=$(date +%s)
             elapsed=$((current_time - start_time))
@@ -89,8 +178,7 @@ jobs:
               break
             fi
 
-            action_clean=$(echo ${{ github.event.action }} | sed 's/^Repack//')
-            python -m get.get_catalog ${{ github.event.client_payload.server }} $action_clean ${{ matrix.platform }}
+            python -m get.get_catalog "$SERVER" "$ACTION" "$PLATFORM"
 
             if [ -f "CATALOG_FOUND" ]; then
               echo "detected=true" >> $GITHUB_OUTPUT
@@ -100,15 +188,14 @@ jobs:
           done
 
       - name: Execute Table Logic
-        if: github.event.action == 'RepackTable' && steps.update.outputs.detected == 'true'
+        if: needs.prepare.outputs.action == 'Table' && steps.update.outputs.detected == 'true'
         run: |
           git clone --depth 1 git@github.com:beichen23333/BA-Text.git BA-Text
           git clone --depth 1 -b GL git@github.com:beichen23333/BA-TableBundles.git BA-TableBundles
- 
-          python -m get.get_files ${{ github.event.client_payload.server }} Table ${{ matrix.platform }} -f ExcelDB.db Excel.zip
-          python -m get.get_catalog JP Media ${{ matrix.platform }}
 
-          SERVER="${{ github.event.client_payload.server }}"
+          python -m get.get_files "$SERVER" Table "$PLATFORM" -f ExcelDB.db Excel.zip
+          python -m get.get_catalog JP Media "$PLATFORM"
+
           if [ "$SERVER" = "CN" ]; then
             DB_KEY=""
           elif [ "$SERVER" = "JP" ]; then
@@ -117,24 +204,24 @@ jobs:
             DB_KEY=$(sed -n '2p' BA-Text/key.txt)
           fi
 
-          git clone --depth 1 -b ${{ github.event.client_payload.server }} git@github.com:beichen23333/BA-FlatData.git FlatData
+          git clone --depth 1 -b "$SERVER" git@github.com:beichen23333/BA-FlatData.git FlatData
 
           EXTRA_ARGS="--catalog --replace --repack_dir BA-Text --debug_json BA-Text/debug.json"
-          
+
           if [ "${{ github.event.inputs.modify_name || github.event.client_payload.modify_name }}" = "true" ]; then
             EXTRA_ARGS="$EXTRA_ARGS --name"
           fi
-          
+
           if [ "${{ github.event.inputs.debug || github.event.client_payload.debug }}" = "true" ]; then
             EXTRA_ARGS="$EXTRA_ARGS --debug"
           fi
-          
+
           VOICE_LANG="${{ github.event.inputs.voice_lang || github.event.client_payload.voice_lang }}"
           if [ -n "$VOICE_LANG" ]; then
             EXTRA_ARGS="$EXTRA_ARGS --voice_lang $VOICE_LANG"
           fi
 
-          python process_excel.py Download_Temp output ${{ github.event.client_payload.server }} Repack $EXTRA_ARGS --db_key "$DB_KEY"
+          python process_excel.py Download_Temp output "$SERVER" Repack $EXTRA_ARGS --db_key "$DB_KEY"
 
       - name: Prepare Artifacts
         run: |
@@ -155,13 +242,16 @@ jobs:
         id: check_reason
         if: steps.update.outputs.timeout == 'true'
         run: |
-          echo "should_restart=true" >> $GITHUB_OUTPUT
+          echo "should_restart=true" >> "$GITHUB_OUTPUT"
           gh run cancel ${{ github.run_id }}
 
   restart:
-    needs: process
+    needs: [prepare, process]
     if: always()
     runs-on: ubuntu-latest
+    env:
+      SERVER: ${{ needs.prepare.outputs.server }}
+      DISPATCH_ACTION: ${{ needs.prepare.outputs.dispatch_action }}
     steps:
       - name: Restart Workflow
         if: needs.process.outputs.should_restart == 'true'
@@ -171,7 +261,7 @@ jobs:
             -H "Authorization: token ${{ secrets.UPDATE_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/${{ github.repository }}/dispatches \
-          -d "{\"event_type\": \"${{ github.event.action }}\", \"client_payload\": {\"server\": \"${{ github.event.client_payload.server }}\"}}"
+          -d "{\"event_type\": \"$DISPATCH_ACTION\", \"client_payload\": {\"server\": \"$SERVER\"}}"
 
       - name: Send email on Restart
         if: needs.process.outputs.should_restart == 'true'

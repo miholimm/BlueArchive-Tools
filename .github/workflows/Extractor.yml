@@ -1,6 +1,38 @@
 name: Extractor
 
 on:
+  # 手动触发：可在 input 中自由选择服务器 / 资源类型 / 平台
+  workflow_dispatch:
+    inputs:
+      server:
+        description: '选择服务器'
+        required: true
+        default: 'CN'
+        type: choice
+        options:
+          - CN
+          - GL
+          - JP
+      action:
+        description: '选择资源类型'
+        required: true
+        default: 'Table'
+        type: choice
+        options:
+          - Table
+          - Media
+          - Bundle
+      platform:
+        description: '选择客户端平台（auto 表示按服务器/类型自动推断多平台）'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - Android
+          - iOS
+          - Windows
+  # 自动触发：由上游 Update 流程通过 repository_dispatch 调用
   repository_dispatch:
     types:
       - Table
@@ -18,25 +50,50 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+      server: ${{ steps.resolve.outputs.server }}
+      action: ${{ steps.resolve.outputs.action }}
     steps:
+      # 统一解析参数：workflow_dispatch 用 inputs，repository_dispatch 用 client_payload / event
+      - name: Resolve Inputs
+        id: resolve
+        shell: bash
+        run: |
+          SERVER="${{ github.event.inputs.server || github.event.client_payload.server }}"
+          ACTION="${{ github.event.inputs.action || github.event.action }}"
+          PLATFORM="${{ github.event.inputs.platform }}"
+
+          if [ -z "$SERVER" ]; then SERVER="CN"; fi
+          if [ -z "$ACTION" ]; then ACTION="Table"; fi
+          if [ -z "$PLATFORM" ]; then PLATFORM="auto"; fi
+
+          echo "server=$SERVER" >> "$GITHUB_OUTPUT"
+          echo "action=$ACTION" >> "$GITHUB_OUTPUT"
+          echo "platform=$PLATFORM" >> "$GITHUB_OUTPUT"
+
       - name: Set Matrix
         id: set-matrix
         shell: bash
         env:
-          SERVER: ${{ github.event.client_payload.server }}
-          ACTION: ${{ github.event.action }}
+          SERVER: ${{ steps.resolve.outputs.server }}
+          ACTION: ${{ steps.resolve.outputs.action }}
+          PLATFORM: ${{ steps.resolve.outputs.platform }}
         run: |
-          case "$SERVER:$ACTION" in
-            JP:Media)
-              matrix='["Android","Windows"]'
-              ;;
-            JP:Bundle)
-              matrix='["Android","iOS","Windows"]'
-              ;;
-            *)
-              matrix='["Android"]'
-              ;;
-          esac
+          # 手动选择了具体平台时，直接使用该平台
+          if [ "$PLATFORM" != "auto" ]; then
+            matrix="[\"$PLATFORM\"]"
+          else
+            case "$SERVER:$ACTION" in
+              JP:Media)
+                matrix='["Android","Windows"]'
+                ;;
+              JP:Bundle)
+                matrix='["Android","iOS","Windows"]'
+                ;;
+              *)
+                matrix='["Android"]'
+                ;;
+            esac
+          fi
 
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
@@ -51,8 +108,8 @@ jobs:
       should_restart: ${{ steps.check_reason.outputs.should_restart }}
 
     env:
-      SERVER: ${{ github.event.client_payload.server }}
-      ACTION: ${{ github.event.action }}
+      SERVER: ${{ needs.prepare.outputs.server }}
+      ACTION: ${{ needs.prepare.outputs.action }}
       PLATFORM: ${{ matrix.platform }}
 
     steps:
@@ -138,7 +195,7 @@ jobs:
           echo "full_version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Execute Table Logic
-        if: github.event.action == 'Table' && steps.update.outputs.detected == 'true'
+        if: needs.prepare.outputs.action == 'Table' && steps.update.outputs.detected == 'true'
         shell: bash
         env:
           DB_KEY: ${{ secrets.DB_KEY }}
@@ -205,13 +262,13 @@ jobs:
           echo "should_restart=true" >> "$GITHUB_OUTPUT"
 
   restart:
-    needs: process
+    needs: [prepare, process]
     if: always() && needs.process.outputs.should_restart == 'true'
     runs-on: ubuntu-latest
 
     env:
-      SERVER: ${{ github.event.client_payload.server }}
-      ACTION: ${{ github.event.action }}
+      SERVER: ${{ needs.prepare.outputs.server }}
+      ACTION: ${{ needs.prepare.outputs.action }}
 
     steps:
       - name: Restart Workflow
