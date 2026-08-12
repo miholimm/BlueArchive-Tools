@@ -13,9 +13,10 @@ from os import path
 from typing import Any, Literal, List, Optional, Union
 
 from PIL import Image
-from lib.console import ProgressBar
-from lib.downloader import FileDownloader
-from utils.util import ZipUtils, ToolManager
+from batools.console import ProgressBar
+from batools.downloader import FileDownloader
+from batools.archive import ZipUtils
+from batools.tool import ToolManager
 
 class BundleExtractor(ToolManager):
     MAIN_EXTRACT_TYPES = [
@@ -540,16 +541,16 @@ class BundleExtractor(ToolManager):
         去除 UABEA 导出后缀：保留第一个点号前的名字，或者截断 -CAB- 后缀。
         """
         name_part, _, ext = filename.rpartition(".")
-        
+
         # 1. 优先处理 -CAB- 分割，取最左侧部分
         if "-CAB-" in name_part:
             return name_part.split("-CAB-")[0] + "." + ext
-        
+
         # 2. 如果没有 CAB，尝试移除常见的 -xxx-xxx 后缀
         parts = name_part.rsplit("-", 2)
         if len(parts) >= 2 and len(parts[-1]) > 8: # 简单校验：PathID通常较长
             return parts[0] + "." + ext
-            
+
         return filename
 
     def extract_bundle(self, res_path: str, extract_types: Optional[List[str]] = None) -> None:
@@ -563,7 +564,7 @@ class BundleExtractor(ToolManager):
 
         for obj_type in types_to_extract:
             fmt = self._EXPORT_FORMAT.get(obj_type, "raw")
-            
+
             with tempfile.TemporaryDirectory() as tmp_dir:
                 export_args = [
                     "export", path_flag, res_path,
@@ -575,7 +576,7 @@ class BundleExtractor(ToolManager):
                     export_args.append("--recursive")
 
                 result = self._run_uabea(export_args)
-                
+
                 # 检查临时目录中是否确实导出了文件
                 exported_files = [f for f in os.listdir(tmp_dir) if path.isfile(path.join(tmp_dir, f))]
                 if result.returncode != 0 or not exported_files:

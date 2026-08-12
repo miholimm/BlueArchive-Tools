@@ -1,6 +1,9 @@
 """Dump il2cpp file to csharp file."""
-from utils.util import CommandUtils, ToolManager
-from lib.compiler import CompileToPython, CSParser
+
+from batools.command import CommandUtils
+from batools.tool import ToolManager
+from batools.compiler import CompileToPython, CSParser
+
 
 def compile_python(dump_cs_path, extract_dir) -> None:
     """Compile python callable module from dump file"""
@@ -8,7 +11,7 @@ def compile_python(dump_cs_path, extract_dir) -> None:
     parser = CSParser(dump_cs_path)
     enums = parser.parse_enum()
     structs = parser.parse_struct()
-    
+
     print("Generating flatbuffer python dump files...")
     compiler = CompileToPython(enums, structs, extract_dir)
     compiler.create_enum_files()
@@ -16,6 +19,7 @@ def compile_python(dump_cs_path, extract_dir) -> None:
     compiler.create_module_file()
     compiler.create_dump_dict_file()
     compiler.create_repack_dict_file()
+
 
 class IL2CppDumper(ToolManager):
     def dump_il2cpp(self, server: str, il2cpp_path: str, metadata_path: str, output_path: str) -> None:
@@ -26,4 +30,3 @@ class IL2CppDumper(ToolManager):
         )
         if not success:
             raise RuntimeError(f"IL2CPP dump failed: {err}")
-

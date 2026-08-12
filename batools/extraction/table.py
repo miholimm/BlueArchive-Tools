@@ -8,12 +8,12 @@ from typing import Any, Union
 from zipfile import ZipFile, ZIP_DEFLATED
 import flatbuffers
 
-from lib.console import notice
-from lib.encryption import xor_with_key, zip_password
-from lib.structure import DBTable, SQLiteDataType
-from utils.database import TableDatabase
-from utils.config import Config
-from utils.util import ZipUtils
+from batools.console import notice
+from batools.encryption import xor_with_key, zip_password
+from batools.structure import DBTable, SQLiteDataType
+from batools.database import TableDatabase
+from batools.config import Config
+from batools.archive import ZipUtils
 
 class TableProcess:
     def __init__(
@@ -133,7 +133,7 @@ class TableProcess:
             # 与解压同流程加密
             if not (file_name.endswith(".bytes") and Config.server == "CN") and xor_encrypt:
                 bytes_output = xor_with_key(class_name, bytes_output)
-            
+
             return bytes_output, f"{base_name}.bytes"
         except:
             return b"", ""
@@ -306,9 +306,9 @@ class TableProcess:
                     if file.endswith(".json"):
                         with open(path.join(root, file), 'r', encoding='utf8') as f:
                             json_data = json.load(f)
-                        
+
                         item_data, new_name = self._repack_bytes_file(file, json_data, False)
-                        
+
                         if new_name:
                             # 将修改后的数据写回临时目录以备重新打包
                             target_file_path = path.join("Temp", new_name) # 命中单个文件
@@ -337,13 +337,13 @@ class TableProcess:
         try:
             db_name = file_name.removesuffix(".db")
             db_extract_folder = path.join(self.extract_folder, db_name)
-            
+
             db_path = path.join(self.table_file_folder, file_name)
 
             with TableDatabase(db_path) as db:
                 json_files = [f for f in os.listdir(db_extract_folder) if f.endswith(".json")]
                 total_files = len(json_files)
-                
+
                 for index, file in enumerate(json_files):
                     table_name = file.removesuffix(".json").replace("Excel", "DBSchema")
                     print(f"[{index + 1}/{total_files}] 正在转换数据表: {table_name} ...", end="\r")
@@ -371,7 +371,7 @@ class TableProcess:
 
                 print("正在优化数据库文件大小...")
                 db.execute("VACUUM")
-                
+
                 notice(f"Successfully repacked {file_name}")
         except Exception as e:
             notice(f"Error when repack {file_name}: {e}", "error")

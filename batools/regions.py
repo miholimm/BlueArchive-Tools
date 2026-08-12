@@ -3,12 +3,15 @@ import shutil
 import base64
 import json
 import re
-from lib.encryption import create_key, convert_string
-from lib.downloader import FileDownloader
-from lib.console import notice
-from utils.config import Config
-from utils.util import ZipUtils, FileUtils, AsarUtils, CommandUtils
-from xtractor.bundle import BundleExtractor
+from batools.encryption import create_key, convert_string
+from batools.downloader import FileDownloader
+from batools.console import notice
+from batools.config import Config
+from batools.archive import ZipUtils
+from batools.filesystem import FileUtils
+from batools.asar import AsarUtils
+from batools.command import CommandUtils
+from batools.extraction.bundle import BundleExtractor
 
 class Server:
     def main(self, apk_url, version):
@@ -25,7 +28,7 @@ class Server:
             else:
                 ZipUtils.extract_zip(zip_path=downloader_name, dest_dir=Temp_name)
                 apk_files = FileUtils.find_files(Temp_name, [r".*\.apk$"], sequential_match=False)
-                print(f"找到的文件: {apk_files}") 
+                print(f"找到的文件: {apk_files}")
 
                 for apk in apk_files:
                     ZipUtils.extract_zip(zip_path=apk, dest_dir="Temp")
@@ -53,7 +56,7 @@ class Server:
             response = FileDownloader(url=url).get_response()
 
             downinfo = response.json().get("result", {}).get("data", {}).get("downinfo", {})
-            
+
             apk_url = downinfo.get("apkurl")
             version = downinfo.get("version")
         else:
@@ -78,14 +81,14 @@ class Server:
             os.path.join(files_path, "assets"),
             files_path,
         ]
-        
+
         url_objs = []
         for search_path in possible_paths:
             if os.path.exists(search_path):
                 url_objs = extractor.search_unity_pack(
-                    search_path, 
-                    data_type=["TextAsset"], 
-                    data_name=["GameMainConfig"], 
+                    search_path,
+                    data_type=["TextAsset"],
+                    data_name=["GameMainConfig"],
                     condition_connect=True
                 )
                 if url_objs:
@@ -113,7 +116,7 @@ class Server:
             b64_data = base64.b64encode(raw_script).decode("utf-8")
             json_str = convert_string(b64_data, create_key("GameMainConfig"))
             raw_json_obj = json.loads(json_str)
-                
+
             for key, cipher_key in ciphers.items():
                 if cipher_key in raw_json_obj:
                     encrypted_value = raw_json_obj[cipher_key]
@@ -124,17 +127,17 @@ class Server:
         if Config.server == "JP" or Config.server == "JPPC":
             config_data = self.get_game_main_config("Temp")
             server_url = config_data.get("ServerInfoDataUrl")
-            
+
             # 如果从新 APK 中解析不到，尝试使用本地缓存的地址
             if not server_url:
                 cached = os.getenv("ServerInfoDataUrl")
                 if cached:
                     notice(f"[WARN] 未从新版 APK 中解析到 ServerInfoDataUrl，尝试使用缓存: {cached}")
                     server_url = cached
-            return server_url, None, None
+            return server_url, None, None, None, None
 
         elif Config.server == "GL":
-            build_number = version.split(".")[-1]    
+            build_number = version.split(".")[-1]
             body = {
                 "market_game_id": "com.nexon.bluearchive",
                 "market_code": "playstore",
@@ -142,17 +145,17 @@ class Server:
                 "curr_build_number": build_number
             }
             print(f"[*] 正在向服务器请求版本: {version} (Build: {build_number})")
-            downloader = FileDownloader("https://api-pub.nexon.com/patch/v1.1/version-check", request_method="post", json=body)        
+            downloader = FileDownloader("https://api-pub.nexon.com/patch/v1.1/version-check", request_method="post", json=body)
             resp = downloader.get_response()
 
             if resp and resp.status_code == 200:
                 data = resp.json()
                 resource_path = data.get("patch", {}).get("resource_path")
                 notice("获取成功。")
-                return resource_path, None, None
+                return resource_path, None, None, None, None
             else:
                 notice("请求失败。")
-                return None, None, None
+                return None, None, None, None, None
 
         elif Config.server == "CN":
             config_data = self.get_game_main_config("Temp")
@@ -196,7 +199,7 @@ class Server:
             table_version = data.get("TableVersion")
             media_version = data.get("MediaVersion")
             patch_version = data.get("PatchVersion")
-            
+
             return latest_catalog_url, resource_version, table_version, media_version, patch_version
 
     def get_game_launcher_config(self, version):
@@ -212,7 +215,7 @@ class Server:
         }
         url = "https://api-launcher-jp.yo-star.com/api/launcher/game/config"
         response = FileDownloader(url=url, headers=api_headers).get_response()
-        
+
         if response and response.status_code == 200:
             data = response.json().get("data", {})
             game_latest_version = data.get("game_latest_version")
@@ -239,13 +242,13 @@ class Server:
             "file_path": file_path
         }
         url = "https://api-launcher-jp.yo-star.com/api/launcher/game/config/json"
-        
+
         response = FileDownloader(
-            url=url, 
-            headers=api_headers, 
+            url=url,
+            headers=api_headers,
             params=params
         ).get_response()
-        
+
         if response and response.status_code == 200:
             return response.json().get("data", {}).get("url")
         return None
@@ -253,7 +256,7 @@ class Server:
     def download_launcher_assets(self, res_version, zip_config_url, targets, dest_dir):
         """
         下载指定的游戏资源文件。
-        
+
         :param res_version: 资源版本字符串 (如 BlueArchive_JP-1.68.421271-game)
         :param zip_config_url: 配置 JSON 的下载地址
         :param targets: 需要下载的文件名列表 (如 ["resources.assets", "resources.assets.resS"])
@@ -263,21 +266,21 @@ class Server:
 
         local_json_name = zip_config_url.split("/")[-1]
         downloader = FileDownloader(url=zip_config_url)
-        
+
         if downloader.save_file(local_json_name):
             with open(local_json_name, 'r', encoding='utf-8') as f:
                 config_content = json.load(f)
-            
+
             base_download_url = "https://launcher-pkg-ba-jp.yo-star.com"
-            
+
             for file_info in config_content.get("file", []):
                 file_path = file_info.get("path", "")
                 file_name = os.path.basename(file_path)
-                
+
                 if file_name in targets:
                     full_url = f"{base_download_url}/{res_version}{file_path}"
                     local_save_path = os.path.join(dest_dir, file_name)
-                    
+
                     notice(f"正在从 Launcher 下载资源: {file_name}")
                     dl = FileDownloader(url=full_url, enable_progress=True)
                     dl.save_file(local_save_path)

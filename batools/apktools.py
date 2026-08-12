@@ -6,13 +6,15 @@ import zipfile
 import base64
 from pathlib import Path
 from lxml import etree
-from utils.util import CommandUtils, ZipUtils, FileUtils
-from utils.config import Config
-from utils.regions import Server
-from lib.downloader import FileDownloader
+from batools.command import CommandUtils
+from batools.archive import ZipUtils
+from batools.filesystem import FileUtils
+from batools.config import Config
+from batools.regions import Server
+from batools.downloader import FileDownloader
 from distutils.dir_util import copy_tree
-from xtractor.bundle import BundleExtractor
-from lib.encryption import create_key, convert_string, encrypt_string, xor
+from batools.extraction.bundle import BundleExtractor
+from batools.encryption import create_key, convert_string, encrypt_string, xor
 
 class ApkTools:
     def __init__(self, repo="BA-APKSRC"):
@@ -254,4 +256,3 @@ class ApkTools:
 
         shutil.rmtree(dex_backup_path)
         shutil.rmtree(main_output_path)
-

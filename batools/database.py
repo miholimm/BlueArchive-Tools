@@ -1,7 +1,7 @@
 import pysqlcipher3.dbapi2 as sqlite3
 
-from lib.structure import DBColumn, DBTable
-from utils.config import Config
+from batools.structure import DBColumn, DBTable
+from batools.config import Config
 
 class TableDatabase:
     def __init__(self, database: str) -> None:
@@ -77,19 +77,19 @@ class TableDatabase:
         cursor = self.connection.cursor()
         try:
             cursor.execute("PRAGMA synchronous = OFF;")
-            cursor.execute("PRAGMA journal_mode = MEMORY;") 
-            
+            cursor.execute("PRAGMA journal_mode = MEMORY;")
+
             cursor.execute("BEGIN TRANSACTION;")
-            
+
             print(f"正在清空旧表 {table}...")
             cursor.execute(f"DELETE FROM {table};")
-            
+
             placeholders = ", ".join(["?"] * len(column))
             sql = f"INSERT INTO {table} ({', '.join(column)}) VALUES ({placeholders});"
-            
+
             print(f"正在批量插入 {len(data)} 行数据...")
             cursor.executemany(sql, data)
-            
+
             self.connection.commit()
             print(f"表 {table} 更新成功！")
         except Exception as e:

@@ -4,9 +4,9 @@ import os
 import re
 from enum import Enum
 
-from lib.structure import EnumMember, EnumType, Property, StructTable
-from lib.console import notice
-from utils.util import TemplateString, Utils
+from batools.structure import EnumMember, EnumType, Property, StructTable
+from batools.console import notice
+from batools.concurrency import TemplateString, Utils
 
 
 class DataSize(Enum):
@@ -66,7 +66,7 @@ class String:
     """Basic function structure.\n\nArgs: func_name, args, annotaion"""
 
     WRAPPER_BASE = """from enum import IntEnum
-from lib.encryption import convert_short, convert_ushort, convert_int, convert_long, convert_float, convert_double, convert_string, convert_uint, convert_ulong, create_key
+from batools.encryption import convert_short, convert_ushort, convert_int, convert_long, convert_float, convert_double, convert_string, convert_uint, convert_ulong, create_key
 import inspect\n
 def dump_table(table_instance) -> list:
     excel_name = table_instance.__class__.__name__.removesuffix("Table")
@@ -367,25 +367,25 @@ class CSParser:
 
             content = match.group(2)
             members = []
-            
+
             counter = 0
             for m_match in Re.enum_member.finditer(content):
                 m_name = m_match.group(1)
-                
+
                 if m_name == "value__":
                     continue
-                
+
                 m_value_str = m_match.group(2)
-                
+
                 if m_value_str is not None and m_value_str != "":
                     m_value = int(m_value_str)
                     counter = m_value + 1
                 else:
                     m_value = counter
                     counter += 1
-                
+
                 members.append(EnumMember(m_name, m_value))
-            
+
             enums.append(EnumType(name, "int", members))
         return enums
 
@@ -569,7 +569,7 @@ class CompileToPython:
             ), String.FB_LIST_AND_NON_SCALAR_PROPERTY_FUNCTION(
                 p_name, p_name, index, p_name, p_name, t_size, t_size
             )
-        
+
         return String.FB_STRUCT_PROPERTY_CLASS_METHODS(
             p_name,
             f_offset,
@@ -831,14 +831,14 @@ class CompileToPython:
 
     def create_repack_dict_file(self) -> None:
         WRAPPER_PACK_BASE = """import flatbuffers
-from lib.encryption import xor, create_key, convert_short, convert_ushort, convert_int, convert_uint, convert_long, convert_ulong, encrypt_float, encrypt_double, encrypt_string
+from batools.encryption import xor, create_key, convert_short, convert_ushort, convert_int, convert_uint, convert_long, convert_ulong, encrypt_float, encrypt_double, encrypt_string
 from . import *
     """
         self.enums_by_name = {enum.name: enum for enum in self.enums}
         self.structs_by_name = {struct.name : struct for struct in self.structs}
         os.makedirs(self.extract_dir, exist_ok=True)
         repack_path = os.path.join(self.extract_dir, "repack_wrapper.py")
-        
+
         with open(repack_path, "wt", encoding="utf8") as file:
             file.write(WRAPPER_PACK_BASE)
             file.write("\n\n")
@@ -863,7 +863,7 @@ from . import *
                 file.write(f"def pack_{struct_name}(builder: flatbuffers.Builder, data: dict, encrypt=True) -> int:\n")
                 password_key = struct.name[:-5] if struct.name.endswith("Excel") else struct.name
                 file.write(f'    password = create_key("{password_key}") if encrypt else None\n')
-                
+
                 # Process all strings first
                 string_fields = [prop for prop in struct.properties if prop.data_type == "string" and not prop.is_list]
                 for prop in string_fields:
@@ -889,7 +889,7 @@ from . import *
                         file.write(f"        {struct_name}.Start{prop.name}Vector(builder, len({prop.name}_items))\n")
                         file.write(f"        for item in reversed({prop.name}_items):\n")
                         file.write(f"            builder.Prepend{DataFlag.__members__.get(data_type, DataFlag.int).value}({elem})\n")
-                    
+
                     file.write(f"        {prop.name}_vec = builder.EndVector(len({prop.name}_items))\n")
 
                 # Process scalar values

@@ -2,8 +2,10 @@ import io
 import struct
 import json
 import os
-from utils.util import CommandUtils, ZipUtils, ToolManager
-from lib.downloader import FileDownloader
+from batools.command import CommandUtils
+from batools.archive import ZipUtils
+from batools.tool import ToolManager
+from batools.downloader import FileDownloader
 
 class CNMXCatalog:
     def __init__(self, raw_data):
@@ -48,4 +50,3 @@ class CatalogMemoryPack(ToolManager):
             bin_path, "memorypack", mode.lower(), server.lower(), catalog_type.lower(), input_path, output_path,
         )
         return success, err
-

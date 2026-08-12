@@ -5,8 +5,8 @@ from typing import Literal
 import requests  # type: ignore
 from cloudscraper import create_scraper
 
-from lib.console import bar_increase, print, notice
-from utils.config import Config
+from batools.console import bar_increase, print, notice
+from batools.config import Config
 
 
 class FileDownloader:
@@ -56,20 +56,20 @@ class FileDownloader:
         """Handles the actual downloading logic, managing retries and progress bar updates."""
         counter = 0
         is_save = method == "save" and path != ""
-    
+
         if self.__retried > self.__max_retries:
             notice(
                 f"[ERROR] Max retries exceeded ({self.__max_retries}) for {os.path.split(self.url)[-1]}."
             )
             return False
-    
+
         try:
             if self.verbose:
                 notice(f"[INFO] Attempt #{self.__retried + 1} → {self.url}")
                 notice(f"[INFO] Using method: {self.request_method.upper()} | Stream: {is_save or use_stream}")
                 notice(f"[INFO] Headers: {self.headers}")
                 notice(f"[INFO] Proxy: {Config.proxy}")
-    
+
             response: requests.Response = getattr(
                 create_scraper() if self.use_cloud_scraper else requests,
                 self.request_method,
@@ -81,12 +81,12 @@ class FileDownloader:
                 timeout=60,
                 **self.__kwargs,
             )
-    
+
             if self.verbose:
                 notice(f"[DEBUG] Status Code: {response.status_code}")
                 notice(f"[DEBUG] Final URL: {response.url}")
                 notice(f"[DEBUG] Response Headers: {dict(response.headers)}")
-    
+
             # If saving file
             if is_save:
                 with open(path, "wb") as file:
@@ -101,22 +101,22 @@ class FileDownloader:
                         if counter < 4096 * (time() - start_time):
                             raise ConnectionError("Download too slow. Triggered fail-safe.")
                 return True
-    
+
             # If returning response object
             if method == "instance":
                 self.__result = response
                 if self.enable_progress:
                     bar_increase()
                 return True
-    
+
             return False
-    
+
         except KeyboardInterrupt as e:
             raise KeyboardInterrupt("Download task has been interrupted.") from e
-    
+
         except Exception as ex:
             import traceback
-    
+
             notice(f"[ERROR] Exception during download: {ex}")
             traceback.print_exc()
             self.__retried += 1
