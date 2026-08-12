@@ -76,7 +76,30 @@ extractor_voice.py  process_excel.py  voice_build.py
 
 ## 5. 已知遗留（非重构引入）
 
-- `apktools.py` 仍使用 `from distutils.dir_util import copy_tree`，而 `distutils` 在 **Python 3.12+ 已移除**。
-  此为原仓库既有问题（原 `utils/apktools.py` 同样使用），为严守“行为不变”约束**未改动**；
-  若 CI 后续升级到 3.12+，需将 `copy_tree` 替换为 `shutil.copytree(..., dirs_exist_ok=True)`。
+- ~~`apktools.py` 曾使用 `from distutils.dir_util import copy_tree`，而 `distutils` 在 Python 3.12+ 已移除~~ ——
+  **已修复**：两处 `copy_tree` 调用（合并 `lib`/`assets` 目录、覆盖 `Replace` 资源）已替换为标准库
+  `shutil.copytree(..., dirs_exist_ok=True)`，行为与 `distutils.dir_util.copy_tree`（合并写入已存在的目标目录）等价，
+  且兼容 Python 3.12+。
 - 运行前仍需 `pip install -r requirements.txt`（PyCriCodecs 等原生扩展需在 CI 环境构建）。
+
+## 6. 测试与 CI 守护（重构不退化）
+
+新增 `tests/` 单元测试（标准库 `unittest`，零第三方依赖即可运行）：
+
+- `test_config.py`：`Config` 默认值与可变类属性。
+- `test_filesystem.py`：`FileUtils.find_files` 的局部/完全/顺序/正则匹配。
+- `test_command.py`：`CommandUtils.run_command` 成功 / 失败 / 不存在命令 / cwd 行为。
+- `test_concurrency.py`：`TemplateString`、`Utils.convert_name_to_available`、`TaskManager` 基本行为。
+- `test_encryption.py`：`xor` / `create_key` / `encrypt_string` / `convert_string` / `zip_password` / `MersenneTwister` 的确定性与往返
+  （需 `pycryptodome` + `xxhash`，CI 已安装；本地缺依赖时自动 `skip`）。
+- `test_smoke.py`：导入图冒烟测试——`GUARANTEED` 模块（零依赖）**必须**可导入；`OPTIONAL` 模块（依赖第三方）缺依赖时优雅跳过，
+  CI 依赖齐全时全部导入，防重构破坏导入图。
+
+新增 `.github/workflows/Test.yml`：在 `push`（main / refactor 分支）与 `pull_request`（main）时，
+递归拉取子模块、用 `requirements-test.txt` 安装轻量测试依赖、运行
+`python -m unittest discover -s tests -t . -v`。
+
+`requirements-test.txt` 仅含可纯 wheel 安装的轻量依赖
+（`pycryptodome` / `xxhash` / `python-dotenv` / `lxml` / `requests` / `cloudscraper` / `flatbuffers` / `pillow` / `tqdm` / `click` / `pydub`），
+刻意排除 `pyminizip` / `unitypy` / `pysqlcipher3` 及 `PyCriCodecs` / `crcmanip` 子模块构建，避免 Test 任务依赖系统库；
+这些模块的导入由 `test_smoke.py` 在缺失时自动跳过。

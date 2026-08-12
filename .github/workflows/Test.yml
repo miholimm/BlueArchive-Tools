@@ -1,0 +1,32 @@
+name: Test
+
+on:
+  push:
+    branches: [main, refactor/batools-package]
+  pull_request:
+    branches: [main]
+
+# 保证重构不退化：在每次推送/PR 时运行单元测试与导入图冒烟测试。
+env:
+  PYTHONUTF8: "1"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Test Dependencies
+        run: pip install -r requirements-test.txt
+
+      - name: Run Tests
+        run: python -m unittest discover -s tests -t . -v

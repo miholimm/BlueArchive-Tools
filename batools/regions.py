@@ -1,3 +1,7 @@
+"""Server-specific endpoints and helpers (catalog / launcher / APK URLs)."""
+
+from __future__ import annotations
+
 import os
 import shutil
 import base64

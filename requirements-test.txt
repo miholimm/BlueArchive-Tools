@@ -1,0 +1,16 @@
+# Minimal dependency set for the test suite (tests/).
+# Kept small on purpose: these install as wheels without system libraries,
+# so the Test CI job stays fast and reliable. Modules that need heavier
+# optional deps (pyminizip, unitypy, pysqlcipher3, the PyCriCodecs/crcmanip
+# submodule builds) are simply skipped by tests/test_smoke.py when absent.
+pycryptodome
+xxhash
+python-dotenv
+lxml
+requests
+cloudscraper
+flatbuffers
+pillow
+tqdm
+click
+pydub

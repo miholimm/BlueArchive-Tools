@@ -12,7 +12,6 @@ from batools.filesystem import FileUtils
 from batools.config import Config
 from batools.regions import Server
 from batools.downloader import FileDownloader
-from distutils.dir_util import copy_tree
 from batools.extraction.bundle import BundleExtractor
 from batools.encryption import create_key, convert_string, encrypt_string, xor
 
@@ -188,7 +187,8 @@ class ApkTools:
         for folder in ["lib", "assets"]:
             src = temp_extract_path / folder
             if src.exists():
-                copy_tree(str(src), str(main_output_path / folder))
+                # distutils.dir_util.copy_tree 在 Python 3.12+ 已移除，改用标准库等价写法
+                shutil.copytree(str(src), str(main_output_path / folder), dirs_exist_ok=True)
 
         shutil.rmtree(decoded_path)
         shutil.rmtree(temp_extract_path)
@@ -211,7 +211,7 @@ class ApkTools:
 
         # 替换直接替换的资源文件
         if replace and (self.repo / "Replace").exists():
-            copy_tree(str(self.repo / "Replace"), str(main_output_path / "assets"))
+            shutil.copytree(str(self.repo / "Replace"), str(main_output_path / "assets"), dirs_exist_ok=True)
 
         # 修改sdk
         if sdkurl:
