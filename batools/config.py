@@ -8,6 +8,8 @@ third-party packages.
 
 from typing import ClassVar
 
+from batools.paths import OTHER_DIR
+
 
 class Config:
     threads: ClassVar[int] = 32
@@ -16,5 +18,5 @@ class Config:
     proxy: ClassVar[str | None] = None
     retries: ClassVar[int] = 5
     db_password: ClassVar[str] = ""
-    VOICE_JSON_PATH: ClassVar[str] = "other/voice.json"
-    ENV_FILE_PATH: ClassVar[str] = f"other/BA_{server}.env"
+    VOICE_JSON_PATH: ClassVar[str] = f"{OTHER_DIR}/voice.json"
+    ENV_FILE_PATH: ClassVar[str] = f"{OTHER_DIR}/BA_{server}.env"

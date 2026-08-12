@@ -14,6 +14,7 @@ from batools.encryption import calculate_crc
 from batools.extraction.catalog import CatalogMemoryPack
 from batools.console import notice
 from batools.voice.build import update_voice_excel_cn, update_voice_excel_kr, update_media_catalog
+from batools import paths
 
 # 模块级全局，供 debug_scenario 等函数引用（与原 process_excel.py 行为一致）
 args = None
@@ -22,7 +23,7 @@ def run_extraction(table_folder: Path, output_folder: Path):
     """提取ExcelDB.db和Excel.zip，用于Repack缺失原数据以及Extract模式。"""
     output_folder.mkdir(parents=True, exist_ok=True)
 
-    process = TableProcess(str(table_folder), str(output_folder), "FlatData")
+    process = TableProcess(str(table_folder), str(output_folder), paths.FLAT_DATA_MODULE)
 
     for file_name in ["ExcelDB.db", "Excel.zip"]:
         if (table_folder / file_name).exists():
@@ -34,7 +35,7 @@ def apply_replacements(base_dir: Path, base_replacement_dir: Path, output_dir: P
 
     ignore_files = set(ignore_files or [])
 
-    with open("other/repack_config.json", "r", encoding="utf8") as f:
+    with open(f"{paths.OTHER_DIR}/repack_config.json", "r", encoding="utf8") as f:
         config = json.load(f)
         
     for category in ["ExcelDB", "Excel"]:
@@ -89,7 +90,7 @@ def process_scenario(lang: str, source_scenario: Path, repl_scenario: Path, out_
     with open(source_scenario, "r", encoding="utf8") as f:
         data = json.load(f)
 
-    with open("other/repack_config.json", "r", encoding="utf8") as f:
+    with open(f"{paths.OTHER_DIR}/repack_config.json", "r", encoding="utf8") as f:
         config = json.load(f)
 
     file_cfg = config.get(Config.server, {}).get("ExcelDB", {}).get("ScenarioScriptExcel.json")
@@ -203,7 +204,7 @@ def build_lang_package(lang, args, catalog_data, base_db, source_dir):
         update_media_catalog("KR", args.server, temp_work)
 
     # 用临时文件打包成独立语种
-    process = TableProcess(str(temp_work), str(temp_db_dir), "FlatData")
+    process = TableProcess(str(temp_work), str(temp_db_dir), paths.FLAT_DATA_MODULE)
     process.process_table("ExcelDB.db", "Repack")
 
     # 如果是Default就直接生成到args.table_file_folder，否则args.table_file_folder/lang
@@ -234,7 +235,7 @@ def build_lang_package(lang, args, catalog_data, base_db, source_dir):
             catalog_bytes_dir = Path("Catalog") / lang if lang != "Default" else Path("Catalog")
             catalog_bytes_dir.mkdir(parents=True, exist_ok=True)
             
-            CatalogMemoryPack(install_dir="tools").run(
+            CatalogMemoryPack(install_dir=paths.TOOLS_DIR).run(
                 server=args.server, mode="serialize", catalog_type="table",
                 input_path=str(lang_catalog_json.absolute()),
                 output_path=str((catalog_bytes_dir / "TableCatalog.bytes").absolute())
@@ -295,12 +296,12 @@ def main():
             )
 
         # 确保TableCatalog存在
-        if args.catalog and os.path.exists("Download/TableCatalog.json"):
-            with open("Download/TableCatalog.json", "r", encoding="utf-8") as f:
+        if args.catalog and os.path.exists(f"{paths.DOWNLOAD_DIR}/TableCatalog.json"):
+            with open(f"{paths.DOWNLOAD_DIR}/TableCatalog.json", "r", encoding="utf-8") as f:
                 catalog_data = json.load(f)
 
         # 进行基础打包
-        process = TableProcess(str(args.table_file_folder), str(args.file_path), "FlatData")
+        process = TableProcess(str(args.table_file_folder), str(args.file_path), paths.FLAT_DATA_MODULE)
         for table_name in ["ExcelDB.db", "Excel.zip"]:
             table_path = args.table_file_folder / table_name
             process.process_table(table_name, "Repack")

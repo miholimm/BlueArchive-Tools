@@ -14,6 +14,7 @@ from batools.structure import DBTable, SQLiteDataType
 from batools.database import TableDatabase
 from batools.config import Config
 from batools.archive import ZipUtils
+from batools import paths
 
 class TableProcess:
     def __init__(
@@ -292,10 +293,10 @@ class TableProcess:
             password = zip_password(path.basename(file_name)) if Config.server != "CN" else None
 
             # 解压到临时目录，extract_zip_file不是我写的懒得改
-            os.makedirs("Temp", exist_ok=True)
+            os.makedirs(paths.TEMP_DIR, exist_ok=True)
             ZipUtils.extract_zip(
                 zip_path=zip_path,
-                dest_dir="Temp",
+                dest_dir=paths.TEMP_DIR,
                 password=password,
                 progress_bar=False
             )
@@ -311,15 +312,15 @@ class TableProcess:
 
                         if new_name:
                             # 将修改后的数据写回临时目录以备重新打包
-                            target_file_path = path.join("Temp", new_name) # 命中单个文件
+                            target_file_path = path.join(paths.TEMP_DIR, new_name) # 命中单个文件
                             with open(target_file_path, "wb") as f:
                                 f.write(item_data)
 
             # 重新打包
             success = ZipUtils.create_zip(
-                file_paths=os.listdir("Temp"),
+                file_paths=os.listdir(paths.TEMP_DIR),
                 dest_zip=zip_path,
-                base_dir="Temp",
+                base_dir=paths.TEMP_DIR,
                 password=password,
                 progress_bar=False
             )
@@ -327,7 +328,7 @@ class TableProcess:
             if success:
                 notice(f"Successfully repacked {file_name}")
 
-            shutil.rmtree("Temp", ignore_errors=True)
+            shutil.rmtree(paths.TEMP_DIR, ignore_errors=True)
 
         except Exception as e:
             notice(f"Error when repack {file_name}: {e}")

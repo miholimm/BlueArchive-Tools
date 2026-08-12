@@ -8,6 +8,7 @@ from batools.regions import Server
 from batools.config import Config
 from batools.filesystem import FileUtils
 from argparse import ArgumentParser
+from batools import paths
 
 def parse_args():
     p = ArgumentParser(description="维护更新")
@@ -18,7 +19,7 @@ def main():
     args = parse_args()
     Config.server = args.server
 
-    env_file = f"other/BA_{Config.server}.env"
+    env_file = f"{paths.OTHER_DIR}/BA_{Config.server}.env"
     load_dotenv(env_file)
     
     local_version = os.getenv("GameVersion")
@@ -109,16 +110,16 @@ def main():
     # 后续 Dumper 逻辑（非 JPPC 且是大版本时运行）
     if major and Config.server != "JPPC":
         # 直接metadata扫，不再使用il2cpp了
-        dumper = IL2CppDumper(install_dir="tools")
+        dumper = IL2CppDumper(install_dir=paths.TOOLS_DIR)
 
-        metadata_path = os.path.abspath(FileUtils.find_files("Temp", [r"global-metadata\.dat"], True, True)[0])
-        il2cpp_path = os.path.abspath(FileUtils.find_files("Temp", [r"libil2cpp\.so"], True, True)[0])
+        metadata_path = os.path.abspath(FileUtils.find_files(paths.TEMP_DIR, [r"global-metadata\.dat"], True, True)[0])
+        il2cpp_path = os.path.abspath(FileUtils.find_files(paths.TEMP_DIR, [r"libil2cpp\.so"], True, True)[0])
         dumper.dump_il2cpp(Config.server, il2cpp_path, metadata_path, os.path.abspath("Dumps/dump.cs"))
 
         notice("成功生成dump.cs。")
-        compile_python(os.path.join(os.path.abspath("Dumps"), "dump.cs"), "FlatData")
+        compile_python(os.path.join(os.path.abspath(paths.DUMPS_DIR), "dump.cs"), paths.FLAT_DATA_MODULE)
         notice("成功生成FlatData库。")
-        shutil.rmtree("Temp")
+        shutil.rmtree(paths.TEMP_DIR)
 
 if __name__ == "__main__":
     main()

@@ -116,3 +116,27 @@ extractor_voice.py  process_excel.py  voice_build.py
   不污染包级导入，避免把可选依赖变成 `import batools` 的硬依赖。
 - 新增 `tests/test_package_api.py`：锁定公共 API 符号集合，并在最小环境下验证 `import batools` 成功，
   防止后续重构意外破坏包的对外接口。
+
+## 8. 路径常量集中（消除“改一次路径改 10+ 文件”）
+
+反馈确认：上一轮重构只动了目录结构，没有碰真正的痛点——`other/`、`Download/`、`Temp`、
+`Voice`、`tools`(install_dir)、`Extracted`、`Dumps`、`FlatData`、`Replace`、`BA-TableBundles`
+等目录名以字符串字面量散落在 12+ 个 `.py` 文件里，改一次目录名要同步改多处。
+
+本轮将所有**相对工作目录的路径常量**收进单一模块 `batools/paths.py`（纯模块级字符串常量，
+零依赖，不引入任何封装/抽象），其余代码改为引用 `paths.*`：
+
+- 新增 `batools/paths.py`：`OTHER_DIR` / `DOWNLOAD_DIR` / `TEMP_DIR` / `VOICE_DIR` / `TOOLS_DIR` /
+  `EXTRACTED_DIR` / `DUMPS_DIR` / `REPLACE_DIR` / `TABLE_BUNDLES_DIR` / `FLAT_DATA_MODULE`。
+- 替换 `batools/` 下 9 个源文件中的散落字面量（`config.py`、`__init__.py` 另作处理）。
+- `config.py` 的 `VOICE_JSON_PATH` / `ENV_FILE_PATH` 改为基于 `paths.OTHER_DIR` 推导；
+  `__init__.py` 在导入 `config` **之前**先 `import batools.paths`，避免循环依赖（paths 不依赖 batools）。
+- 新增 `tests/test_paths.py`：断言所有常量等于原字面量（锁定行为，防回归）；`batools.paths` 加入
+  `test_smoke.py` 的 `GUARANTEED` 白名单（零依赖）。
+
+> **顺带修复的 .gitignore 缺陷**：原 `.gitignore` 的 `Voice/` 本意是忽略运行时语音输出目录，
+> 但在大小写不敏感的文件系统上也会匹配源码包 `batools/voice/`，导致**整个 voice 模块从未被 git 跟踪**
+> （refactor 提交里缺 `batools/voice/*`）。已将规则锚定为 `/Voice/`（仅忽略仓库根目录的运行时输出目录），
+> 使 `batools/voice/` 正常纳入版本控制。
+
+效果：以后改任何一个目录名，**只改 `batools/paths.py` 一个文件**，其余代码零改动。

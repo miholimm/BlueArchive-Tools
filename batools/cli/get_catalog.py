@@ -8,6 +8,7 @@ from batools.console import notice
 from batools.config import Config
 from batools.archive import ZipUtils
 from batools.extraction.catalog import CatalogMemoryPack, CNMXCatalog
+from batools import paths
 
 def parse_args():
     p = ArgumentParser(description="维护更新")
@@ -19,23 +20,23 @@ def parse_args():
 def process_cn_manifest(args, base_url: str):
     if args.type == "Media":
         url = f"{base_url}/Manifest/MediaResources/{os.getenv('MediaVersion')}/MediaManifest"
-        output_path = "Download/MediaManifest"
+        output_path = f"{paths.DOWNLOAD_DIR}/MediaManifest"
         
         FileDownloader(url, verbose=False).save_file(output_path)
         
         with open(output_path, "r", encoding="utf-8") as manifest_file:
             catalog_content = CNMXCatalog(manifest_file.read()).parse_media_manifest()
             
-        with open("Download/MediaCatalog.json", "w", encoding="utf-8") as json_file:
+        with open(f"{paths.DOWNLOAD_DIR}/MediaCatalog.json", "w", encoding="utf-8") as json_file:
             json_file.write(catalog_content)
     
     elif args.type == "Bundle" and args.client != "Windows":
         url = f"{base_url}/AssetBundles/Catalog/{os.getenv('ResourceVersion')}/{args.client}/bundleDownloadInfo.json"
-        FileDownloader(url, verbose=False).save_file("Download/BundlePackingInfo.json")
+        FileDownloader(url, verbose=False).save_file(f"{paths.DOWNLOAD_DIR}/BundlePackingInfo.json")
         
     elif args.type == "Table":
         url = f"{base_url}/Manifest/TableBundles/{os.getenv('TableVersion')}/TableManifest"
-        FileDownloader(url, verbose=False).save_file("Download/TableCatalog.json")
+        FileDownloader(url, verbose=False).save_file(f"{paths.DOWNLOAD_DIR}/TableCatalog.json")
 
 def resolve_download_metadata(args, base_url: str) -> Tuple[Optional[str], Optional[str]]:
     server, resource_type, platform = args.server, args.type, args.client
@@ -60,10 +61,10 @@ def resolve_download_metadata(args, base_url: str) -> Tuple[Optional[str], Optio
     return None, None
 
 def run_deserialization(args, filename: str):
-    input_full_path = os.path.abspath(f"Download/{filename}")
-    output_full_path = os.path.abspath(f"Download/{filename.replace('.bytes', '.json')}")
+    input_full_path = os.path.abspath(f"{paths.DOWNLOAD_DIR}/{filename}")
+    output_full_path = os.path.abspath(f"{paths.DOWNLOAD_DIR}/{filename.replace('.bytes', '.json')}")
     
-    CatalogMemoryPack(install_dir="tools").run(
+    CatalogMemoryPack(install_dir=paths.TOOLS_DIR).run(
         server=args.server,
         mode="deserialize",
         catalog_type=args.type,
@@ -75,7 +76,7 @@ def main():
     args = parse_args()
     Config.server = args.server
     
-    dotenv.load_dotenv(f"other/BA_{Config.server}.env")
+    dotenv.load_dotenv(f"{paths.OTHER_DIR}/BA_{Config.server}.env")
     base_url = os.getenv('AddressableCatalogUrl')
     
     url_to_check = None
@@ -108,11 +109,11 @@ def main():
         url, filename = resolve_download_metadata(args, base_url)
         
         if url and filename:
-            FileDownloader(url).save_file(f"Download/{filename}")
+            FileDownloader(url).save_file(f"{paths.DOWNLOAD_DIR}/{filename}")
             
             if args.server == "JP" and args.type == "Bundle" and args.client != "Windows":
                 zip_url = f"{base_url}/{args.client}_PatchPack/catalog_{args.client}.zip"
-                zip_path = f"Download/catalog_{args.client}.zip"
+                zip_path = f"{paths.DOWNLOAD_DIR}/catalog_{args.client}.zip"
                 FileDownloader(zip_url).save_file(zip_path)
                 ZipUtils.extract_zip(zip_path, "Download")
 

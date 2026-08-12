@@ -14,6 +14,7 @@ from batools.regions import Server
 from batools.downloader import FileDownloader
 from batools.extraction.bundle import BundleExtractor
 from batools.encryption import create_key, convert_string, encrypt_string, xor
+from batools import paths
 
 class ApkTools:
     def __init__(self, repo="BA-APKSRC"):
@@ -159,7 +160,7 @@ class ApkTools:
 
     def main(self, sdkurl="", gamemainconfig="", trustcert=False, modifylogin=True, modifygt4="", replace=True, modifybundle=True, server="JP"):
         Config.server = server
-        base_dir = Path("Temp")
+        base_dir = Path(paths.TEMP_DIR)
         base_dir.mkdir(parents=True, exist_ok=True)
         
         decoded_path = base_dir / "Decoded"
@@ -210,8 +211,8 @@ class ApkTools:
         self.modify_resources(main_output_path, modifylogin, modifygt4)
 
         # 替换直接替换的资源文件
-        if replace and (self.repo / "Replace").exists():
-            shutil.copytree(str(self.repo / "Replace"), str(main_output_path / "assets"), dirs_exist_ok=True)
+        if replace and (self.repo / paths.REPLACE_DIR).exists():
+            shutil.copytree(str(self.repo / paths.REPLACE_DIR), str(main_output_path / "assets"), dirs_exist_ok=True)
 
         # 修改sdk
         if sdkurl:

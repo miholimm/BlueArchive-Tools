@@ -16,6 +16,7 @@ from batools.filesystem import FileUtils
 from batools.asar import AsarUtils
 from batools.command import CommandUtils
 from batools.extraction.bundle import BundleExtractor
+from batools import paths
 
 class Server:
     def main(self, apk_url, version):
@@ -28,14 +29,14 @@ class Server:
                 notice("开始下载APK文件。")
             FileDownloader(url=apk_url, headers={"User-Agent": "Androidkb"}, verbose=True).save_file(downloader_name)
             if Config.server == "CN":
-                ZipUtils.extract_zip(zip_path=downloader_name, dest_dir="Temp")
+                ZipUtils.extract_zip(zip_path=downloader_name, dest_dir=paths.TEMP_DIR)
             else:
                 ZipUtils.extract_zip(zip_path=downloader_name, dest_dir=Temp_name)
                 apk_files = FileUtils.find_files(Temp_name, [r".*\.apk$"], sequential_match=False)
                 print(f"找到的文件: {apk_files}")
 
                 for apk in apk_files:
-                    ZipUtils.extract_zip(zip_path=apk, dest_dir="Temp")
+                    ZipUtils.extract_zip(zip_path=apk, dest_dir=paths.TEMP_DIR)
                 shutil.rmtree(Temp_name)
             os.remove(downloader_name)
         else:
@@ -74,7 +75,7 @@ class Server:
         return apk_url, version
 
     def get_game_main_config(self, files_path) -> str:
-        extractor = BundleExtractor(install_dir="tools", EXTRACT_DIR="Extracted")
+        extractor = BundleExtractor(install_dir=paths.TOOLS_DIR, EXTRACT_DIR=paths.EXTRACTED_DIR)
         config_data = {}
 
         if Config.server == "GL":
@@ -129,7 +130,7 @@ class Server:
 
     def get_server_url(self, version) -> str:
         if Config.server == "JP" or Config.server == "JPPC":
-            config_data = self.get_game_main_config("Temp")
+            config_data = self.get_game_main_config(paths.TEMP_DIR)
             server_url = config_data.get("ServerInfoDataUrl")
 
             # 如果从新 APK 中解析不到，尝试使用本地缓存的地址
@@ -162,7 +163,7 @@ class Server:
                 return None, None, None, None, None
 
         elif Config.server == "CN":
-            config_data = self.get_game_main_config("Temp")
+            config_data = self.get_game_main_config(paths.TEMP_DIR)
             # server_url = json.loads(config_data.get("ServerInfoDataUrl"))[0]
             # 两个服务器暂时不可使用
             server_url = "https://gs-api.bluearchive-cn.com/api/state"

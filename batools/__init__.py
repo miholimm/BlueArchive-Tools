@@ -40,6 +40,8 @@ APK         apktools    APK 解包 / 重打包
 显式 ``from batools.<module> import <Symbol>``。
 """
 
+import batools.paths  # 必须早于 config 导入，避免循环依赖（paths 不依赖 batools）
+
 from batools.config import Config
 from batools.filesystem import FileUtils
 from batools.command import CommandUtils

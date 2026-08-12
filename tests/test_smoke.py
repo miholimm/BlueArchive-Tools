@@ -15,6 +15,7 @@ import unittest
 
 GUARANTEED = [
     "batools.config",
+    "batools.paths",
     "batools.filesystem",
     "batools.command",
     "batools.concurrency",

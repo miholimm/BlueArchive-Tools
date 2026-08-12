@@ -4,6 +4,7 @@ import dotenv
 from argparse import ArgumentParser
 from batools.downloader import FileDownloader
 from batools.config import Config
+from batools import paths
 
 def parse_args():
     p = ArgumentParser(description="维护更新")
@@ -42,7 +43,7 @@ def get_download_url(server, res_type, client, base_url, filename, catalog):
 def main():
     args = parse_args()
     Config.server = args.server
-    dotenv.load_dotenv(f"other/BA_{args.server}.env")
+    dotenv.load_dotenv(f"{paths.OTHER_DIR}/BA_{args.server}.env")
     base_url = os.getenv('AddressableCatalogUrl')
 
     catalog = {}
