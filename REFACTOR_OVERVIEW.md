@@ -103,3 +103,16 @@ extractor_voice.py  process_excel.py  voice_build.py
 （`pycryptodome` / `xxhash` / `python-dotenv` / `lxml` / `requests` / `cloudscraper` / `flatbuffers` / `pillow` / `tqdm` / `click` / `pydub`），
 刻意排除 `pyminizip` / `unitypy` / `pysqlcipher3` 及 `PyCriCodecs` / `crcmanip` 子模块构建，避免 Test 任务依赖系统库；
 这些模块的导入由 `test_smoke.py` 在缺失时自动跳过。
+
+## 7. 公共 API 与包级文档（可维护性深化）
+
+为降低后续维护的认知负担，重构后的 `batools` 包新增了包级文档与显式公共 API：
+
+- `batools/__init__.py` 现包含完整模块职责表（模块 → 分组 → 职责）与导入约定说明，
+  新接手者无需逐个打开文件即可建立全局认知。
+- 通过 `__all__` 重新导出**零依赖**的公共符号：`Config`、`FileUtils`、`CommandUtils`、
+  `Utils`、`TemplateString`、`TaskManager`，保证 `import batools` 在最小环境下也能成功导入。
+- 需要可选第三方依赖的模块（`encryption`、`regions`、`compiler`、`extraction.*` 等）保持按需显式导入，
+  不污染包级导入，避免把可选依赖变成 `import batools` 的硬依赖。
+- 新增 `tests/test_package_api.py`：锁定公共 API 符号集合，并在最小环境下验证 `import batools` 成功，
+  防止后续重构意外破坏包的对外接口。
