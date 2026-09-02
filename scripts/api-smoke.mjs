@@ -56,6 +56,10 @@ try {
   assert.equal(initial.data.status.resources.length, 9);
   assert.equal(new Set(initial.data.status.resources.map((resource) => resource.id)).size, 9);
   assert.equal(initial.data.status.resources.every((resource) => resource.forcedStatus === "none"), true);
+  const publicStoryIndex = await call("/api/story/index");
+  expectStatus(publicStoryIndex, 200, "游客剧情索引");
+  assert.equal(Array.isArray(publicStoryIndex.data), true);
+  expectStatus(await call("/api/story/admin/index"), 401, "游客剧情编辑限制");
 
   const unknown = await call("/api/route-that-does-not-exist");
   expectStatus(unknown, 404, "未知 API");
@@ -87,6 +91,29 @@ try {
   const adminContent = await call("/api/content", { token: rootToken });
   expectStatus(adminContent, 200, "管理员内容");
   assert.equal(adminContent.data.status.resources.length, 9);
+
+  const storyIndex = await call("/api/story/admin/index", { token: rootToken });
+  expectStatus(storyIndex, 200, "管理员剧情索引");
+  const storyChapter = await call("/api/story/admin/1/1", { token: rootToken });
+  expectStatus(storyChapter, 200, "管理员剧情章节");
+  const invalidStory = structuredClone(storyChapter.data);
+  invalidStory.segments.push({ ...invalidStory.segments[0] });
+  expectStatus(
+    await call("/api/story/admin/1/1", { method: "PUT", token: rootToken, body: invalidStory }),
+    400,
+    "重复剧情对白编号",
+  );
+  const updatedStory = structuredClone(storyChapter.data);
+  updatedStory.title = "API 回归章节";
+  updatedStory.segments[0].portraitSide = "right";
+  expectStatus(
+    await call("/api/story/admin/1/1", { method: "PUT", token: rootToken, body: updatedStory }),
+    200,
+    "剧情章节保存",
+  );
+  const publicStoryChapter = await call("/api/story/1/1");
+  expectStatus(publicStoryChapter, 200, "游客读取已保存剧情章节");
+  assert.equal(publicStoryChapter.data.title, "API 回归章节");
 
   const tutorialGuest = await call("/api/site-data/tutorial");
   expectStatus(tutorialGuest, 200, "游客安装教程");
@@ -370,6 +397,7 @@ try {
   const originalSettings = adminContent.data.settings;
   const restrictedSettings = structuredClone(originalSettings);
   restrictedSettings.backgroundDim = 47;
+  restrictedSettings.theme = "dark";
   restrictedSettings.moduleVisibility.feedback = "disabled";
   restrictedSettings.moduleVisibility.news = "admin";
   restrictedSettings.moduleVisibility.status = "admin";
@@ -380,6 +408,7 @@ try {
   );
   const restrictedAdminContent = await call("/api/content", { token: rootToken });
   assert.equal(restrictedAdminContent.data.settings.backgroundDim, 47);
+  assert.equal(restrictedAdminContent.data.settings.theme, "dark");
   const restrictedPublicContent = await call("/api/content");
   assert.equal(restrictedPublicContent.data.settings.backgroundDim, 47);
   expectStatus(await call("/api/feedback"), 404, "关闭模块游客限制");
@@ -406,6 +435,15 @@ try {
   });
   expectStatus(invalidResult, 200, "背景压暗程度无效值处理");
   assert.equal(invalidResult.data.value.backgroundDim, 0);
+  const invalidThemeSettings = structuredClone(originalSettings);
+  invalidThemeSettings.theme = "invalid";
+  const invalidThemeResult = await call("/api/admin/settings", {
+    method: "PUT",
+    token: rootToken,
+    body: invalidThemeSettings,
+  });
+  expectStatus(invalidThemeResult, 200, "默认主题无效值处理");
+  assert.equal(invalidThemeResult.data.value.theme, "system");
   expectStatus(
     await call("/api/admin/settings", { method: "PUT", token: rootToken, body: originalSettings }),
     200,

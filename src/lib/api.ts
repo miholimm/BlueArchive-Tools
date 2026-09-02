@@ -1,5 +1,5 @@
 import { defaultModuleVisibility } from "../data/siteModules";
-import type { DownloadData, Member, NewsItem, SiteSettings, StatusData } from "../types";
+import type { DownloadData, Member, NewsItem, SiteSettings, StatusData, ThemePreference } from "../types";
 import type { AdminIdentity } from "../data/adminPermissions";
 import { normalizeStatusData } from "./status";
 
@@ -50,6 +50,10 @@ function normalizeBackgroundDim(value: unknown) {
     : 0;
 }
 
+function normalizeTheme(value: unknown): ThemePreference {
+  return value === "light" || value === "dark" || value === "system" ? value : "system";
+}
+
 function normalizeContent(value: Partial<SiteContent>): SiteContent {
   return {
     ...fallback,
@@ -62,6 +66,7 @@ function normalizeContent(value: Partial<SiteContent>): SiteContent {
       ...fallback.settings,
       ...(value.settings || {}),
       backgroundDim: normalizeBackgroundDim(value.settings?.backgroundDim),
+      theme: normalizeTheme(value.settings?.theme),
       moduleVisibility: {
         ...defaultModuleVisibility,
         ...(value.settings?.moduleVisibility || {}),

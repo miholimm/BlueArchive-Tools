@@ -20,6 +20,7 @@ export const ADMIN_PERMISSIONS = [
   'glossary',
   'qa',
   'security',
+  'story',
 ]
 
 function allPermissions() {

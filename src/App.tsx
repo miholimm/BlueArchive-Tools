@@ -32,6 +32,13 @@ const Glossary = lazy(() => import("./pages/Glossary"));
 const QA = lazy(() => import("./pages/QA"));
 const ApiDocs = lazy(() => import("./pages/ApiDocs"));
 
+const accentTokens = {
+  cyan: { color: "#00a3ff", rgb: "0, 163, 255" },
+  blue: { color: "#0284c7", rgb: "2, 132, 199" },
+  pink: { color: "#e94f78", rgb: "233, 79, 120" },
+  amber: { color: "#d89d00", rgb: "216, 157, 0" },
+} as const;
+
 export default function App() {
   return (
     <ContentProvider>
@@ -59,6 +66,7 @@ function SiteFrame() {
   );
   const isAdminRoute =
     location.pathname === "/admin" || location.pathname.startsWith("/admin/");
+  const accent = accentTokens[content.settings.accent as keyof typeof accentTokens] || accentTokens.cyan;
 
   return (
     <div
@@ -70,6 +78,8 @@ function SiteFrame() {
             ? `url(${content.settings.wallpaper})`
             : "none",
           "--site-background-dim": String(backgroundDim / 100),
+          "--site-accent": accent.color,
+          "--site-accent-rgb": accent.rgb,
         } as React.CSSProperties
       }
     >

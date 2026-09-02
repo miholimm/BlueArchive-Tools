@@ -61,6 +61,8 @@ export interface StorySegment {
   ja: string
   zh: string
   context?: string
+  portrait?: string
+  portraitSide?: 'left' | 'right'
 }
 
 // 历史版本

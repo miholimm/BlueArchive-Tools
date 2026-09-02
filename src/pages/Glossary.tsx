@@ -1,12 +1,14 @@
 import { Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import type { GlossaryTerm } from '../types'
 import { authFetch } from '../lib/api'
 
 export default function Glossary() {
   const [terms, setTerms] = useState<GlossaryTerm[]>([])
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [search, setSearch] = useState(() => searchParams.get('search') || '')
 
   const fetchTerms = async () => {
     try {
@@ -20,6 +22,14 @@ export default function Glossary() {
   }
 
   useEffect(() => { fetchTerms() }, [search])
+
+  const updateSearch = (value: string) => {
+    setSearch(value)
+    const next = new URLSearchParams(searchParams)
+    if (value.trim()) next.set('search', value)
+    else next.delete('search')
+    setSearchParams(next, { replace: true })
+  }
 
   return (
     <main className="page glossary-page">
@@ -36,7 +46,7 @@ export default function Glossary() {
             <Search size={18} style={{ color: 'var(--ink-dim)', flexShrink: 0 }} />
             <input
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => updateSearch(e.target.value)}
               placeholder="搜索术语（日文 / 中文 / 罗马音 / 分类）…"
               style={{
                 flex: 1, border: 'none', background: 'transparent',
@@ -78,7 +88,7 @@ export default function Glossary() {
                       <td style={{ padding: '12px 16px', fontSize: 12, color: 'var(--ink-dim)', fontStyle: 'italic' }}>{term.romaji}</td>
                       <td style={{ padding: '12px 16px', fontSize: 12 }}>
                         <span style={{
-                          background: 'var(--accent)' + '20',
+                          background: 'rgba(var(--accent-rgb), 0.12)',
                           color: 'var(--accent)',
                           padding: '2px 8px',
                           borderRadius: 8,

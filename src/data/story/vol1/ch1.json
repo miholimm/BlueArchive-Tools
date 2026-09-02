@@ -5,10 +5,10 @@
   "titleJa": "邂逅",
   "characters": ["老师", "白子", "星野"],
   "segments": [
-    { "id": "v1c1-001", "speaker": "老师", "speakerJa": "先生", "ja": "ここは…どこだ？", "zh": "这里是…什么地方？", "context": "初到阿比多斯" },
-    { "id": "v1c1-002", "speaker": "白子", "speakerJa": "シロコ", "ja": "ようこそ、先生。アビドス高等学校へ。", "zh": "欢迎来到阿比多斯高等学校，老师。", "context": "白子迎接老师" },
-    { "id": "v1c1-003", "speaker": "星野", "speakerJa": "ホシノ", "ja": "おや、新しい先生かい？よろしくね〜", "zh": "哎呀，是新来的老师吗？请多关照哦~", "context": "星野打招呼" },
-    { "id": "v1c1-004", "speaker": "老师", "speakerJa": "先生", "ja": "皆さん、よろしくお願いします。", "zh": "各位，请多多关照。", "context": "老师的回应" },
-    { "id": "v1c1-005", "speaker": "白子", "speakerJa": "シロコ", "ja": "では、校内を案内しますね。", "zh": "那么，让我带您参观一下学校吧。", "context": "白子提议参观校园" }
+    { "id": "v1c1-001", "speaker": "老师", "speakerJa": "先生", "ja": "ここは…どこだ？", "zh": "这里是…什么地方？", "context": "初到阿比多斯", "portraitSide": "left" },
+    { "id": "v1c1-002", "speaker": "白子", "speakerJa": "シロコ", "ja": "ようこそ、先生。アビドス高等学校へ。", "zh": "欢迎来到阿比多斯高等学校，老师。", "context": "白子迎接老师", "portraitSide": "right" },
+    { "id": "v1c1-003", "speaker": "星野", "speakerJa": "ホシノ", "ja": "おや、新しい先生かい？よろしくね〜", "zh": "哎呀，是新来的老师吗？请多关照哦~", "context": "星野打招呼", "portraitSide": "left" },
+    { "id": "v1c1-004", "speaker": "老师", "speakerJa": "先生", "ja": "皆さん、よろしくお願いします。", "zh": "各位，请多多关照。", "context": "老师的回应", "portraitSide": "right" },
+    { "id": "v1c1-005", "speaker": "白子", "speakerJa": "シロコ", "ja": "では、校内を案内しますね。", "zh": "那么，让我带您参观一下学校吧。", "context": "白子提议参观校园", "portraitSide": "left" }
   ]
 }

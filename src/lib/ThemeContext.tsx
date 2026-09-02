@@ -24,6 +24,10 @@ function isThemePreference(value: string | null): value is ThemePreference {
   return value === "light" || value === "dark" || value === "system";
 }
 
+function normalizeThemePreference(value: ThemePreference | undefined): ThemePreference {
+  return value === "light" || value === "dark" || value === "system" ? value : "system";
+}
+
 function readSystemTheme(): ResolvedTheme {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
@@ -42,12 +46,12 @@ export function ThemeProvider({
   const [hasManualPreference] = useState(() => isThemePreference(localStorage.getItem(storageKey)));
   const [preference, setPreferenceState] = useState<ThemePreference>(() => {
     const stored = localStorage.getItem(storageKey);
-    return isThemePreference(stored) ? stored : defaultTheme;
+    return isThemePreference(stored) ? stored : normalizeThemePreference(defaultTheme);
   });
   const [systemTheme, setSystemTheme] = useState<ResolvedTheme>(readSystemTheme);
 
   useEffect(() => {
-    if (!hasManualPreference) setPreferenceState(defaultTheme);
+    if (!hasManualPreference) setPreferenceState(normalizeThemePreference(defaultTheme));
   }, [defaultTheme, hasManualPreference]);
 
   useEffect(() => {

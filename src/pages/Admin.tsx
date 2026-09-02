@@ -43,6 +43,7 @@ import AdminStatusEditor from "../components/AdminStatusEditor";
 import AdminTutorialEditor from "../components/AdminTutorialEditor";
 import AdminFaqEditor from "../components/AdminFaqEditor";
 import AdminAntiCheatEditor from "../components/AdminAntiCheatEditor";
+import AdminStoryEditor from "../components/AdminStoryEditor";
 import type { AdminIdentity, AdminPermission } from "../data/adminPermissions";
 import { defaultModuleVisibility, siteModuleDefinitions } from "../data/siteModules";
 import type { ModuleVisibility, SiteSettings, VisibilityMode } from "../types";
@@ -86,6 +87,7 @@ const adminTabTitles: Record<string, string> = {
   "qa-admin": "问答审核",
   admins: "组员账号",
   security: "安全中心",
+  story: "剧情剧场",
 };
 
 export default function Admin() {
@@ -148,6 +150,7 @@ export default function Admin() {
     { id: "download", permission: "downloads" as AdminPermission, icon: Link2, label: "下载链接" },
     { id: "status", permission: "status" as AdminPermission, icon: Activity, label: "维护状态" },
     { id: "tutorial", permission: "tutorial" as AdminPermission, icon: BookOpen, label: "安装教程" },
+    { id: "story", permission: "story" as AdminPermission, icon: BookOpen, label: "剧情剧场" },
     { id: "faq", permission: "faq" as AdminPermission, icon: HelpCircle, label: "常见问题" },
     { id: "antiCheat", permission: "antiCheat" as AdminPermission, icon: ShieldAlert, label: "反作弊追踪" },
     { id: "settings", permission: "settings" as AdminPermission, icon: Image, label: "站点视觉" },
@@ -337,6 +340,7 @@ export default function Admin() {
           />
         )}
         {tab === "tutorial" && <AdminTutorialEditor notify={notify} />}
+        {tab === "story" && <AdminStoryEditor notify={notify} />}
         {tab === "faq" && <AdminFaqEditor notify={notify} />}
         {tab === "antiCheat" && <AdminAntiCheatEditor notify={notify} />}
         {tab === "settings" && (
@@ -718,13 +722,18 @@ function SettingsEditor({
           />
         )}
         <label>
-          主题色
-          <input
-            value={settingsDraft.accent}
-            onChange={(e) =>
-              setSettingsDraft({ ...settingsDraft, accent: e.target.value })
+          终端强调色
+          <select
+            value={["cyan", "blue", "pink", "amber"].includes(settingsDraft.accent) ? settingsDraft.accent : "cyan"}
+            onChange={(event) =>
+              setSettingsDraft({ ...settingsDraft, accent: event.target.value })
             }
-          />
+          >
+            <option value="cyan">蔚蓝</option>
+            <option value="blue">深海蓝</option>
+            <option value="pink">特别活动粉</option>
+            <option value="amber">维护警示黄</option>
+          </select>
         </label>
         <label>
           默认显示模式

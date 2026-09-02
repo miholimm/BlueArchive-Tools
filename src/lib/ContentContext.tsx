@@ -27,16 +27,23 @@ const fallback: SiteContent = {
 };
 
 const ContentContext = createContext<SiteContent>(fallback);
+const ContentLoadingContext = createContext(true);
 const ContentRefreshContext = createContext<() => Promise<void>>(
   async () => {},
 );
 
 export function ContentProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState(fallback);
+  const [loading, setLoading] = useState(true);
 
   const refresh = async () => {
-    const value = await getContent();
-    setContent(value);
+    setLoading(true);
+    try {
+      const value = await getContent();
+      setContent(value);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -46,7 +53,10 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         .then((value) => {
           if (active) setContent(value);
         })
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => {
+          if (active) setLoading(false);
+        });
     };
     const handleStorage = (event: StorageEvent) => {
       if (event.key === "ba_admin_token" || event.key === "ba_admin_identity") sync();
@@ -63,9 +73,11 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
   return (
     <ContentContext.Provider value={content}>
-      <ContentRefreshContext.Provider value={refresh}>
-        {children}
-      </ContentRefreshContext.Provider>
+      <ContentLoadingContext.Provider value={loading}>
+        <ContentRefreshContext.Provider value={refresh}>
+          {children}
+        </ContentRefreshContext.Provider>
+      </ContentLoadingContext.Provider>
     </ContentContext.Provider>
   );
 }
@@ -76,4 +88,8 @@ export function useContent() {
 
 export function useRefreshContent() {
   return useContext(ContentRefreshContext);
+}
+
+export function useContentLoading() {
+  return useContext(ContentLoadingContext);
 }

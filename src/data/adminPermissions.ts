@@ -14,6 +14,7 @@ export const adminPermissionDefinitions = [
   { id: 'glossary', label: '术语管理', description: '维护术语库' },
   { id: 'qa', label: '问答审核', description: '管理社区问答' },
   { id: 'security', label: '安全中心', description: '查看审计日志' },
+  { id: 'story', label: '剧情剧场', description: '维护章节对白、立绘与剧场站位' },
 ] as const
 
 export type AdminPermission = (typeof adminPermissionDefinitions)[number]['id']

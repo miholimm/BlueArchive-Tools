@@ -320,7 +320,7 @@ export default function QA() {
                       <span>{new Date(q.createdAt).toLocaleDateString('zh-CN')}</span>
                       {q.tags?.map(t => (
                         <span key={t} style={{
-                          background: 'var(--accent)20', color: 'var(--accent)',
+                          background: 'rgba(var(--accent-rgb), 0.12)', color: 'var(--accent)',
                           padding: '1px 6px', borderRadius: 6, fontSize: 11
                         }}>{t}</span>
                       ))}

@@ -10,8 +10,9 @@ import {
 import { Link } from "react-router-dom";
 import Hero from "../components/Hero";
 import NewsCard from "../components/NewsCard";
+import NewsCardSkeleton from "../components/NewsCardSkeleton";
 import Reveal from "../components/Reveal";
-import { useContent } from "../lib/ContentContext";
+import { useContent, useContentLoading } from "../lib/ContentContext";
 import { canAccessModule, useAdminAccess } from "../lib/moduleAccess";
 import { getResourceStatus, getStatusLabel, getStatusResource } from "../lib/status";
 import { trackEvent } from "../lib/tracking";
@@ -19,6 +20,7 @@ import StatusValue from "../components/StatusValue";
 
 export default function Home() {
   const { news, download, team, status, settings } = useContent();
+  const contentLoading = useContentLoading();
   const admin = useAdminAccess();
   const showTeam = canAccessModule(settings, "team", admin);
   const showNews = canAccessModule(settings, "news", admin);
@@ -93,12 +95,15 @@ export default function Home() {
             </div>
           </Reveal>
           <div className="news-grid">
-            {news.slice(0, 3).map((item, index) => (
+            {contentLoading && Array.from({ length: 3 }, (_, index) => (
+              <NewsCardSkeleton key={`news-skeleton-${index}`} featured={index === 0} />
+            ))}
+            {!contentLoading && news.slice(0, 3).map((item, index) => (
               <Reveal key={item.id} delay={index * 100} spring="up">
                 <NewsCard news={item} featured={index === 0} />
               </Reveal>
             ))}
-            {news.length === 0 && (
+            {!contentLoading && news.length === 0 && (
               <div className="empty-state">暂无公告，内容将在更新后显示。</div>
             )}
           </div>

@@ -33,6 +33,10 @@ const adminEndpoints = [
   ["PUT", "/api/qa/:id/accept/:answerId", "采纳问答答案"],
   ["DELETE", "/api/qa/admin/:id", "删除问题"],
   ["GET", "/api/archive", "读取管理员历史归档"],
+  ["GET", "/api/story/admin/index", "读取剧情剧场索引"],
+  ["PUT", "/api/story/admin/index", "保存剧情剧场索引"],
+  ["GET", "/api/story/admin/:volume/:chapter", "读取章节剧情草稿"],
+  ["PUT", "/api/story/admin/:volume/:chapter", "保存章节对白、立绘和站位"],
 ];
 
 const publicEndpoints = [
