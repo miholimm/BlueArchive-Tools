@@ -1,0 +1,10 @@
+services:
+  file-storage:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${FILE_STORAGE_PORT:-4317}:4317"
+    volumes:
+      - ./storage:/var/lib/blue-archive-file-storage

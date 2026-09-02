@@ -1,0 +1,23 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name console.example.com;
+
+    root /var/www/blue-archive-resource-console;
+    index index.html;
+
+    location /resource-api/ {
+        proxy_pass https://api.bluearchive.help/;
+        proxy_http_version 1.1;
+        proxy_set_header Host api.bluearchive.help;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_ssl_server_name on;
+        proxy_read_timeout 20s;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

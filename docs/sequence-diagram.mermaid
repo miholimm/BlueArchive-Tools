@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant Client as 第三方客户端
+    participant Express as Express Server
+    participant Routes as routes-api-v1.mjs
+    participant FS as server/data/
+
+    Client->>Express: GET /api/v1/status?chapter=vol1-ch1
+    Express->>Express: securityHeaders (安全响应头)
+    Express->>Express: rateLimit (IP 限流 60/min)
+    Note over Express: /api/v1 白名单<br/>跳过 requireSignature
+    Express->>Routes: 路由分发
+
+    Routes->>FS: readJSON('tasks.json')
+    FS-->>Routes: tasks[] (全部章节)
+
+    alt ?chapter= 存在
+        Routes->>Routes: tasks.filter(t => t.chapter === query)
+    else 无筛选参数
+        Routes->>Routes: 保留全部章节
+    end
+
+    Routes->>Routes: 计算 summary<br/>(total / completed / translating / pending)
+    Routes-->>Express: { code: 0, data: { chapters, summary } }
+    Express-->>Client: JSON 200 OK (&lt; 50ms)

@@ -1,0 +1,20 @@
+[
+  {
+    "server": "日服",
+    "status": "warning",
+    "lastUpdate": "2026-08-10",
+    "events": [
+      { "date": "2026-08-05", "title": "Nexon 更新反作弊策略", "description": "新增客户端完整性校验，暂不影响汉化补丁。" },
+      { "date": "2026-07-15", "title": "咖啡厅安卓客户端瘫痪事件", "description": "因反作弊误判导致大量用户闪退，已于 7/18 恢复。" }
+    ]
+  },
+  {
+    "server": "国际服",
+    "status": "safe",
+    "lastUpdate": "2026-08-10",
+    "events": [
+      { "date": "2026-08-01", "title": "例行安全审查通过", "description": "汉化补丁在国际服运行正常，暂无风险。" },
+      { "date": "2026-06-20", "title": "版本更新兼容确认", "description": "v1.45 更新后汉化补丁兼容性正常。" }
+    ]
+  }
+]

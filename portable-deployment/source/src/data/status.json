@@ -1,0 +1,13 @@
+{
+  "resources": [
+    { "id": "androidClient", "resourceVersion": "", "resourceUpdatedAt": "", "officialVersion": "", "officialUpdatedAt": "", "forcedStatus": "none" },
+    { "id": "windowsClient", "resourceVersion": "", "resourceUpdatedAt": "", "officialVersion": "", "officialUpdatedAt": "", "forcedStatus": "none" },
+    { "id": "iosClient", "resourceVersion": "", "resourceUpdatedAt": "", "officialVersion": "", "officialUpdatedAt": "", "forcedStatus": "none" },
+    { "id": "macosClient", "resourceVersion": "", "resourceUpdatedAt": "", "officialVersion": "", "officialUpdatedAt": "", "forcedStatus": "none" },
+    { "id": "textTranslation", "resourceVersion": "", "resourceUpdatedAt": "", "officialVersion": "", "officialUpdatedAt": "", "forcedStatus": "none" },
+    { "id": "cnVoice", "resourceVersion": "", "resourceUpdatedAt": "", "officialVersion": "", "officialUpdatedAt": "", "forcedStatus": "none" },
+    { "id": "krVoice", "resourceVersion": "", "resourceUpdatedAt": "", "officialVersion": "", "officialUpdatedAt": "", "forcedStatus": "none" },
+    { "id": "illustration", "resourceVersion": "", "resourceUpdatedAt": "", "officialVersion": "", "officialUpdatedAt": "", "forcedStatus": "none" },
+    { "id": "announcement", "resourceVersion": "", "resourceUpdatedAt": "", "officialVersion": "", "officialUpdatedAt": "", "forcedStatus": "none" }
+  ]
+}

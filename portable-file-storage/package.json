@@ -1,0 +1,19 @@
+{
+  "name": "blue-archive-portable-file-storage",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "test": "node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mime-types": "^2.1.35",
+    "multer": "^2.0.2"
+  }
+}

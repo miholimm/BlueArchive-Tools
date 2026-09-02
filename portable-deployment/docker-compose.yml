@@ -1,0 +1,37 @@
+services:
+  app:
+    build:
+      context: ./source
+      dockerfile: Dockerfile
+      args:
+        VITE_UMAMI_URL: ${VITE_UMAMI_URL:-}
+        VITE_UMAMI_WEBSITE_ID: ${VITE_UMAMI_WEBSITE_ID:-}
+    image: ${APP_NAME:-blue-archive-localization}:local
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${APP_PORT:-4173}:4173"
+    environment:
+      NODE_ENV: production
+      PORT: 4173
+      HOST: 0.0.0.0
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      DATA_DIR: /app/data
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+      API_KEY_SECRET: ${API_KEY_SECRET:-}
+      DATABASE_URL: ${DATABASE_URL:-}
+      DATABASE_SSL: ${DATABASE_SSL:-false}
+      QQ_OAUTH_APP_ID: ${QQ_OAUTH_APP_ID:-}
+      QQ_OAUTH_APP_SECRET: ${QQ_OAUTH_APP_SECRET:-}
+      QQ_OAUTH_REDIRECT_URI: ${QQ_OAUTH_REDIRECT_URI:-}
+    volumes:
+      - ./runtime/data:/app/data
+    depends_on:
+      init-data:
+        condition: service_completed_successfully
+  init-data:
+    image: node:22-alpine
+    user: "0:0"
+    command: ["sh", "-c", "mkdir -p /app/data && chown -R 1000:1000 /app/data"]
+    volumes:
+      - ./runtime/data:/app/data

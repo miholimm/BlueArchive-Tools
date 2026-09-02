@@ -1,0 +1,23 @@
+[Unit]
+Description=Blue Archive Localization Web
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__DEPLOY_USER__
+Group=__DEPLOY_GROUP__
+WorkingDirectory=__APP_DIR__/current
+Environment=NODE_ENV=production
+EnvironmentFile=__APP_DIR__/.env
+ExecStart=__NODE_BIN__ server/server.mjs
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=__DATA_DIR__
+
+[Install]
+WantedBy=multi-user.target

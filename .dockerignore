@@ -1,0 +1,15 @@
+node_modules
+dist
+.git
+server/data
+.env*
+CREDENTIALS.md
+.workbuddy
+.deploy
+.tmp-*
+deliverables
+*.log
+HANDOVER.md
+项目交接文档.md
+deploy/nginx/*.conf
+deploy/systemd/*.service

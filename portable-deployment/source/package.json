@@ -1,0 +1,38 @@
+{
+  "name": "blue-archive-localization",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:web": "vite",
+    "server": "node --env-file-if-exists=.env server/server.mjs",
+    "test:api": "node scripts/api-smoke.mjs",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "express": "^5.1.0",
+    "pg": "^8.16.3",
+    "lucide-react": "^0.468.0",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-markdown": "^9.0.1",
+    "react-router-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "autoprefixer": "latest",
+    "postcss": "latest",
+    "tailwindcss": "^3.4.17",
+    "typescript": "latest",
+    "vite": "latest"
+  }
+}

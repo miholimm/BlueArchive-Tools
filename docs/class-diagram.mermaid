@@ -1,0 +1,92 @@
+classDiagram
+    direction TB
+
+    %% ── 开放 API 响应 ──
+    class ChapterProgress {
+        +string chapter
+        +string title
+        +number progress
+        +string status
+        +string translator
+        +string lastUpdate
+    }
+    class StatusSummary {
+        +number total
+        +number completed
+        +number translating
+        +number pending
+    }
+
+    %% ── API Key ──
+    class ApiKey {
+        +string id
+        +string name
+        +string keyHash
+        +number rateLimit
+        +string createdAt
+        +string lastUsed
+        +boolean revoked
+    }
+    class ApiKeyCreateResponse {
+        +string id
+        +string name
+        +string key
+        +string createdAt
+    }
+
+    %% ── 任务池 ──
+    class TranslationTask {
+        +string id
+        +string chapter
+        +string title
+        +string status
+        +string claimedBy
+        +string claimedAt
+        +string deadline
+        +string completedAt
+        +string createdAt
+    }
+    class TaskClaimRequest {
+        +string chapter
+        +string contributorName
+    }
+
+    %% ── 术语库 ──
+    class GlossaryEntry {
+        +string id
+        +string termJa
+        +string termZh
+        +string category
+        +string notes
+        +string createdAt
+        +string updatedAt
+    }
+
+    %% ── QA ──
+    class QAQuestion {
+        +string id
+        +string title
+        +string content
+        +string[] tags
+        +string author
+        +number votes
+        +number answerCount
+        +string acceptedAnswerId
+        +string status
+        +string createdAt
+    }
+    class QAAnswer {
+        +string id
+        +string questionId
+        +string content
+        +string author
+        +number votes
+        +boolean accepted
+        +string createdAt
+    }
+
+    %% ── 关系 ──
+    ChapterProgress --> StatusSummary : 聚合为
+    TranslationTask --> ChapterProgress : 映射到
+    QAQuestion "1" --> "*" QAAnswer : 包含
+    ApiKey ..> ApiKeyCreateResponse : 创建时返回

@@ -1,0 +1,27 @@
+{
+  "siteTitle": "蔚蓝档案汉化组",
+  "siteSubtitle": "为玩家提供高质量本地化体验",
+  "wallpaper": "",
+  "backgroundDim": 0,
+  "accent": "cyan",
+  "theme": "system",
+  "moduleVisibility": {
+    "home": "public",
+    "team": "public",
+    "news": "public",
+    "downloads": "public",
+    "status": "public",
+    "changelog": "public",
+    "tutorial": "public",
+    "faq": "public",
+    "story": "public",
+    "feedback": "public",
+    "contributors": "public",
+    "antiCheat": "public",
+    "glossary": "public",
+    "qa": "public",
+    "apiDocs": "public",
+    "workspace": "admin",
+    "archive": "admin"
+  }
+}

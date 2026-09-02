@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#111820" />
+    <title>PACKAGE VAULT · 安装包存储舱</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="shell-grid" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark">PV</span>
+        <span>
+          <strong>PACKAGE VAULT</strong>
+          <small>BLUE ARCHIVE FILE STORAGE</small>
+        </span>
+      </a>
+      <div class="topbar-actions">
+        <span class="system-status"><i></i> STORAGE ONLINE</span>
+        <button class="button button-quiet" id="login-toggle" type="button">管理员登录</button>
+        <button class="button button-quiet is-hidden" id="logout-button" type="button">退出</button>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="intro-strip">
+        <div>
+          <p class="eyebrow">LOCALIZATION ARCHIVE / 01</p>
+          <h1>安装包，放进一个可靠的档案舱。</h1>
+          <p class="intro-copy">集中存放汉化客户端、资源包、补丁与启动器。每个文件都有独立版本、校验值和可追踪下载地址。</p>
+        </div>
+        <div class="intro-stamp">
+          <span>SHA-256</span>
+          <strong>READY</strong>
+          <small id="max-upload-label">UPLOAD LIMIT · loading</small>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="存储统计">
+        <div class="metric"><span>公开文件</span><strong id="metric-public">—</strong></div>
+        <div class="metric"><span>存储体积</span><strong id="metric-size">—</strong></div>
+        <div class="metric"><span>最近入库</span><strong id="metric-latest">—</strong></div>
+      </section>
+
+      <section class="workspace-layout">
+        <div class="catalog-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">PUBLIC CATALOG</p>
+              <h2>可用安装包</h2>
+            </div>
+            <label class="select-wrap">
+              <span>平台</span>
+              <select id="platform-filter">
+                <option value="">全部平台</option>
+                <option value="android">Android</option>
+                <option value="windows">Windows</option>
+                <option value="ios">iOS</option>
+                <option value="macos">MacOS</option>
+                <option value="other">其他</option>
+              </select>
+            </label>
+          </div>
+          <div class="catalog-list" id="public-list"></div>
+        </div>
+
+        <aside class="admin-panel is-hidden" id="admin-panel">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">ADMIN CONSOLE</p>
+              <h2>入库控制</h2>
+            </div>
+            <span class="admin-badge">AUTH OK</span>
+          </div>
+          <form id="upload-form" class="upload-form">
+            <label class="dropzone" id="dropzone" for="file-input">
+              <input id="file-input" name="file" type="file" required />
+              <span class="dropzone-icon">+</span>
+              <strong id="file-label">选择安装包</strong>
+              <small>支持大文件上传，完成后自动计算 SHA-256</small>
+            </label>
+            <div class="form-grid">
+              <label>显示名称<input name="name" maxlength="240" placeholder="蔚蓝档案汉化版" /></label>
+              <label>版本号<input name="version" maxlength="80" placeholder="1.0.0" /></label>
+              <label>平台<select name="platform"><option value="android">Android</option><option value="windows">Windows</option><option value="ios">iOS</option><option value="macos">MacOS</option><option value="other">其他</option></select></label>
+              <label>类型<select name="kind"><option value="installer">安装包</option><option value="patch">补丁</option><option value="resource">资源包</option><option value="launcher">启动器</option><option value="other">其他</option></select></label>
+            </div>
+            <label>简介<textarea name="description" rows="3" maxlength="1000" placeholder="完整汉化客户端，包含最新文本与资源。"></textarea></label>
+            <div class="publish-row">
+              <label class="check-label"><input name="published" type="checkbox" checked /><span>上传后公开下载</span></label>
+              <label class="check-label"><input name="visibility" value="admin" type="checkbox" /><span>仅管理员可见</span></label>
+            </div>
+            <div class="upload-progress is-hidden" id="upload-progress"><span></span></div>
+            <button class="button button-primary" type="submit"><span>入库并计算校验值</span><b>↗</b></button>
+          </form>
+          <div class="admin-files">
+            <div class="subheading"><span>全部文件</span><span id="admin-count">0</span></div>
+            <div id="admin-list" class="admin-list"></div>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <dialog class="login-dialog" id="login-dialog">
+      <form method="dialog" class="login-card" id="login-form">
+        <button class="dialog-close" value="cancel" aria-label="关闭">×</button>
+        <p class="eyebrow">SECURE ACCESS</p>
+        <h2>管理员登录</h2>
+        <p>登录后可以上传、发布和删除安装包。</p>
+        <label>用户名<input name="username" autocomplete="username" required value="admin" /></label>
+        <label>密码<input name="password" type="password" autocomplete="current-password" required /></label>
+        <button class="button button-primary" type="submit">进入控制台 <b>→</b></button>
+        <div class="form-message" id="login-message"></div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

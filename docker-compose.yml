@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        VITE_UMAMI_URL: ${VITE_UMAMI_URL:-}
+        VITE_UMAMI_WEBSITE_ID: ${VITE_UMAMI_WEBSITE_ID:-}
+    restart: unless-stopped
+    ports:
+      - "4173:4173"
+    environment:
+      PORT: 4173
+      HOST: 0.0.0.0
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      DATA_DIR: /app/data
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+      API_KEY_SECRET: ${API_KEY_SECRET:-}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-bluearchive}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-bluearchive}
+      DATABASE_SSL: "false"
+      QQ_OAUTH_APP_ID: ${QQ_OAUTH_APP_ID:-}
+      QQ_OAUTH_APP_SECRET: ${QQ_OAUTH_APP_SECRET:-}
+      QQ_OAUTH_REDIRECT_URI: ${QQ_OAUTH_REDIRECT_URI:-}
+    volumes:
+      - app_data:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bluearchive}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-bluearchive}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-bluearchive} -d $${POSTGRES_DB:-bluearchive}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+volumes:
+  postgres_data:
+  app_data:

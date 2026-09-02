@@ -1,0 +1,8 @@
+[
+  {"name":"Hoshino","avatar":"https://i.pravatar.cc/160?img=47","role":"项目负责人","description":"负责项目规划、版本发布与社区协调，让每一次更新都按时抵达。","joinTime":"2021.03"},
+  {"name":"Yuuka","avatar":"https://i.pravatar.cc/160?img=32","role":"翻译","description":"专注剧情与角色文本，将每一句对白还原成自然的中文表达。","joinTime":"2021.06"},
+  {"name":"Aru","avatar":"https://i.pravatar.cc/160?img=44","role":"校对","description":"在文字细节里寻找准确性，维护术语表与全项目语言一致性。","joinTime":"2022.01"},
+  {"name":"Neru","avatar":"https://i.pravatar.cc/160?img=49","role":"程序","description":"构建补丁工具与资源管线，让汉化内容稳定、快速地交付。","joinTime":"2022.08"},
+  {"name":"Mika","avatar":"https://i.pravatar.cc/160?img=25","role":"美术","description":"负责字体适配与界面重绘，让汉化后的画面依旧保有原作气质。","joinTime":"2023.02"},
+  {"name":"Serika","avatar":"https://i.pravatar.cc/160?img=5","role":"测试","description":"覆盖多设备与多场景测试，记录每一个可复现的问题。","joinTime":"2023.07"}
+]

@@ -1,0 +1,23 @@
+[Unit]
+Description=Blue Archive Localization Web
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=bluearchive
+Group=bluearchive
+WorkingDirectory=/opt/blue-archive-localization
+Environment=NODE_ENV=production
+EnvironmentFile=/opt/blue-archive-localization/.env
+ExecStart=/usr/bin/node server/server.mjs
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/blue-archive-localization/server/data
+
+[Install]
+WantedBy=multi-user.target
