@@ -284,11 +284,36 @@
 }
 
 .app-shell[data-theme='dark'] .hero-art { background: radial-gradient(circle at 50% 48%, rgba(0, 163, 255, 0.25), transparent 30%), linear-gradient(135deg, #071324, #0c2542 54%, #0a1729); }
-.hero-grid { opacity: 0.28; background-size: 38px 38px; }
+.hero-grid { opacity: 0.28; background-size: 38px 38px; z-index: 0; }
 .hero-orbit { border-color: var(--hud-border-strong); }
-.hero-glow { background: radial-gradient(circle, rgba(0, 163, 255, 0.38), transparent 68%); }
+.hero-glow { background: radial-gradient(circle, rgba(0, 163, 255, 0.38), transparent 68%); z-index: 0; }
 .hero-orb { display: none; }
-.hero-stamp { font-family: var(--font-mono); color: var(--cyan-strong); }
+.hero-stamp { font-family: var(--font-mono); color: var(--cyan-strong); z-index: 3; }
+
+/* Dynamic halo + decorative particles (spec 二.3) */
+.hero-halo { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 0; }
+.hero-halo-ring { position: absolute; width: min(80%, 540px); aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--hud-border-strong); box-shadow: 0 0 42px rgba(0, 163, 255, 0.18), inset 0 0 46px rgba(0, 163, 255, 0.12); animation: haloPulse 6.4s ease-in-out infinite; }
+.hero-halo-ring-2 { width: min(60%, 400px); border-color: rgba(0, 163, 255, 0.28); animation-delay: -3.2s; }
+.app-shell[data-theme='dark'] .hero-halo-ring { box-shadow: 0 0 50px rgba(0, 163, 255, 0.3), inset 0 0 52px rgba(0, 163, 255, 0.2); }
+@keyframes haloPulse { 0%, 100% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.05); opacity: 0.92; } }
+
+.hero-particles { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.spark { position: absolute; width: 13px; height: 13px; color: var(--schale-sky); filter: drop-shadow(0 0 5px rgba(0, 163, 255, 0.85)); animation: sparkTwinkle 3.6s ease-in-out infinite; }
+.spark::before, .spark::after { content: ''; position: absolute; background: currentColor; box-shadow: 0 0 7px currentColor; }
+.spark::before { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); }
+.spark::after { top: 50%; left: 0; height: 1px; width: 100%; transform: translateY(-50%); }
+.spark.s1 { top: 17%; left: 21%; }
+.spark.s2 { top: 29%; right: 17%; animation-delay: -1s; }
+.spark.s3 { bottom: 25%; left: 29%; animation-delay: -2s; }
+.spark.s4 { bottom: 19%; right: 25%; animation-delay: -0.5s; }
+.spark.s5 { top: 49%; left: 11%; animation-delay: -1.6s; }
+@keyframes sparkTwinkle { 0%, 100% { opacity: 0.25; transform: scale(0.7) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }
+
+.hero-coords { position: absolute; right: 18px; bottom: 16px; z-index: 2; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; color: var(--cyan-strong); font: 500 8px/1.2 var(--font-mono); letter-spacing: 0.12em; pointer-events: none; opacity: 0.72; }
+.hero-coords .crosshair { position: relative; width: 13px; height: 13px; margin-bottom: 2px; }
+.hero-coords .crosshair::before, .hero-coords .crosshair::after { content: ''; position: absolute; background: currentColor; }
+.hero-coords .crosshair::before { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); }
+.hero-coords .crosshair::after { top: 50%; left: 0; height: 1px; width: 100%; transform: translateY(-50%); }
 
 .hero-figure {
   left: 50%;
@@ -296,6 +321,7 @@
   width: 390px;
   height: 390px;
   transform: translate(-50%, -50%);
+  z-index: 2;
 }
 
 .schale-radar {
@@ -659,6 +685,7 @@
   .hero { display: grid; grid-template-columns: 1fr; grid-template-areas: 'copy' 'art'; flex-direction: initial; min-height: 0; }
   .hero-copy { padding: 61px 21px 43px; }
   .hero-art { height: 260px; }
+  .hero-coords { display: none; }
   .hero h1 { font-size: 52px; line-height: 1.02; }
   .hero-lead { font-size: 17px; }
   .hero-description { margin: 16px 0 22px; }
@@ -702,7 +729,9 @@
   .app-shell::after,
   .loading-skeleton-panel,
   .news-card-skeleton::before,
-  .status-pulse { animation: none; }
+  .status-pulse,
+  .hero-halo-ring,
+  .spark { animation: none; }
 }
 
 /* ===== BA Story Player integration (ba-story-player) ===== */

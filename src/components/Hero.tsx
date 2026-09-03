@@ -36,6 +36,22 @@ export default function Hero({
       <div className="hero-art">
         <div className="hero-grid" />
         <div className="hero-glow" />
+        <div className="hero-halo" aria-hidden="true">
+          <span className="hero-halo-ring" />
+          <span className="hero-halo-ring hero-halo-ring-2" />
+        </div>
+        <div className="hero-particles" aria-hidden="true">
+          <span className="spark s1" />
+          <span className="spark s2" />
+          <span className="spark s3" />
+          <span className="spark s4" />
+          <span className="spark s5" />
+        </div>
+        <div className="hero-coords" aria-hidden="true">
+          <span className="crosshair" />
+          <em>35.68°N</em>
+          <em>139.76°E</em>
+        </div>
         <div className="hero-stamp">
           BLUE
           <br />
