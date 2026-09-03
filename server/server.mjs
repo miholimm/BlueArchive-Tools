@@ -10,6 +10,7 @@ import { glossaryRoutes } from "./routes-glossary.mjs";
 import { qaRoutes } from "./routes-qa.mjs";
 import { qqOAuthRoutes } from "./routes-qq-oauth.mjs";
 import { staticDataRoutes, storyDataRoutes } from "./routes-static.mjs";
+import { storyProxyRoutes } from "./routes-story-proxy.mjs";
 import { rateLimit, securityHeaders, getRequestIp } from "./security.mjs";
 
 await initRepository(config.root);
@@ -48,6 +49,7 @@ app.use("/api/v1", apiV1);
 app.use("/api/auth/qq", qqOAuthRoutes);
 app.use("/api/site-data", staticDataRoutes);
 app.use("/api/story", storyDataRoutes);
+app.use("/api/story-proxy", storyProxyRoutes);
 // API Key 管理（需认证）
 app.use("/api/admin/api-keys", apiKeyRoutes);
 // 任务池（公开 GET，管理操作需认证）

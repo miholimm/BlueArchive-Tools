@@ -11,6 +11,25 @@ const SAMPLES: Record<string, string> = {
 }
 const CDN = 'https://yuuka.cdn.diyigemt.com/image/ba-all-data'
 
+// 这些源已开放 CORS（Access-Control-Allow-Origin: *），浏览器可直接拉取，无需经本站代理
+const CORS_OPEN_HOSTS = new Set([
+  'yuuka.cdn.diyigemt.com',
+  'raw.githubusercontent.com',
+  'cdn.jsdelivr.net',
+  'api.github.com',
+])
+const CORS_OPEN_SUFFIXES = ['.githubusercontent.com']
+function isCorsOpen(url: string): boolean {
+  try {
+    const u = new URL(url)
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') return false
+    const h = u.hostname
+    return CORS_OPEN_HOSTS.has(h) || CORS_OPEN_SUFFIXES.some((s) => h.endsWith(s))
+  } catch {
+    return false
+  }
+}
+
 function StoryPlayerInner() {
   const [story, setStory] = useState<unknown>(null)
   const [loading, setLoading] = useState(true)
@@ -36,8 +55,18 @@ function StoryPlayerInner() {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch(url)
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      // 同源静态示例（/ba-stories/*）直接拉取；已开放 CORS 的源（CDN / GitHub raw / jsdelivr）也直连；
+      // 其余跨域源经本站代理绕过 CORS（SSRF 白名单保护）。
+      const target = !url.startsWith('http')
+        ? url
+        : isCorsOpen(url)
+          ? url
+          : `/api/story-proxy?url=${encodeURIComponent(url)}`
+      const res = await fetch(target)
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.error || `HTTP ${res.status}`)
+      }
       const data = await res.json()
       setStory(data)
       trackEvent('story_player_load', { source: url.startsWith('http') ? 'remote' : 'sample', url })
@@ -61,6 +90,26 @@ function StoryPlayerInner() {
     loadFromUrl(`https://preview.blue-archive.io/story/favor/${padded.slice(0, 5)}/${padded}.json`)
   }
 
+  // 本地 JSON 上传：完全离线、无 CORS / 代理依赖，最适合汉化组直接载入提取好的剧情单元
+  const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setLoading(true)
+    setError('')
+    try {
+      const text = await file.text()
+      const data = JSON.parse(text)
+      setStory(data)
+      trackEvent('story_player_load', { source: 'upload', name: file.name })
+    } catch (err) {
+      setError(err instanceof Error ? `文件解析失败：${err.message}` : '文件解析失败')
+      setStory(null)
+    } finally {
+      setLoading(false)
+      e.target.value = '' // 允许重复选择同一文件
+    }
+  }
+
   return (
     <main className="page-shell ba-story-player-page">
       <div className="page-hero">
@@ -74,7 +123,7 @@ function StoryPlayerInner() {
       <section className="section">
         <div className="ba-sp-toolbar">
           <div className="ba-sp-field">
-            <label>剧情 ID（favor）</label>
+            <label>剧情 ID（favor，实验性）</label>
             <div className="ba-sp-row">
               <input
                 value={storyId}
@@ -113,6 +162,17 @@ function StoryPlayerInner() {
               <option value="Tw">繁體中文</option>
             </select>
           </div>
+          <div className="ba-sp-field">
+            <label>或上传本地剧情 JSON</label>
+            <div className="ba-sp-row">
+              <input
+                type="file"
+                accept=".json,application/json"
+                onChange={onFile}
+                className="ba-sp-file"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="ba-sp-presets">
@@ -130,7 +190,7 @@ function StoryPlayerInner() {
         {error && (
           <div className="ba-sp-error">
             <AlertTriangle size={16} />
-            {error}（远程剧情可能受跨域限制，请改用「示例」或同源 JSON 地址）
+            {error}（推荐：直接用「示例」、上传本地 JSON，或粘贴已开放 CORS 的地址，如 GitHub raw / jsdelivr）
           </div>
         )}
 

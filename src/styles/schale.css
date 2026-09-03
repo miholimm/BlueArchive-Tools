@@ -744,6 +744,8 @@
 .ba-sp-field input, .ba-sp-field select { min-height: 42px; padding: 0 13px; color: var(--ink); background: var(--glass-input); border: 1px solid var(--hud-border); clip-path: var(--hud-cut-tight); font-family: var(--font-ui); font-size: 13px; }
 .ba-sp-field input:focus, .ba-sp-field select:focus { outline: 0; border-color: var(--hud-border-strong); box-shadow: var(--hud-glow); }
 .ba-sp-lang { min-width: 150px; }
+.ba-sp-file { width: 100%; min-height: 42px; padding: 9px 13px; color: var(--ink); background: var(--glass-input); border: 1px dashed var(--hud-border-strong); clip-path: var(--hud-cut-tight); font-family: var(--font-ui); font-size: 12px; cursor: pointer; }
+.ba-sp-file:hover { border-color: var(--hud-cyan, #2fd4ff); box-shadow: var(--hud-glow); }
 .ba-sp-presets { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
 .ba-sp-error { display: flex; align-items: center; gap: 8px; margin: 0 0 18px; padding: 12px 14px; color: #b73356; background: rgba(255,107,139,.12); border: 1px solid rgba(255,107,139,.4); clip-path: var(--hud-cut-tight); font-size: 12px; line-height: 1.5; }
 .ba-sp-stage { position: relative; min-height: 320px; padding: 14px; border: 1px solid var(--hud-border-strong); clip-path: var(--hud-cut); background: radial-gradient(circle at 50% 0, rgba(0,163,255,.16), transparent 46%), linear-gradient(135deg, rgba(4,37,65,.94), rgba(7,21,38,.95)); overflow: hidden; }
