@@ -9,6 +9,7 @@ SERVER_ACCESS.local.md
 dist/
 dist.old/
 dist-new/
+dist-*/
 server-*.log
 server/data/
 .tmp-*/
