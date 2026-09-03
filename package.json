@@ -17,13 +17,15 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
+    "ba-story-player": "^0.8.1",
     "express": "^5.1.0",
-    "pg": "^8.16.3",
     "lucide-react": "^0.468.0",
+    "pg": "^8.16.3",
     "react": "latest",
     "react-dom": "latest",
     "react-markdown": "^9.0.1",
-    "react-router-dom": "latest"
+    "react-router-dom": "latest",
+    "vue": "^3.5.42"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",

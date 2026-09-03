@@ -1,4 +1,4 @@
-import { BookOpen, Search, X } from 'lucide-react'
+import { BookOpen, Play, Search, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Reveal from '../components/Reveal'
@@ -114,6 +114,9 @@ export default function Story() {
           <span className="eyebrow">STORY / 04</span>
           <h1>剧情库</h1>
           <p>中日对照阅读，沉浸体验主线故事。</p>
+          <Link to="/story-player" className="button button-primary" style={{ marginTop: '18px' }}>
+            打开原版剧情播放器 <Play size={16} />
+          </Link>
         </div>
       </Reveal>
 

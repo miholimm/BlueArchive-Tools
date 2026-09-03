@@ -160,7 +160,7 @@ button { cursor: pointer; appearance: none }
 
 .brand strong,
 .brand small { display: block }
-.brand strong { font-family: 'Noto Serif SC', serif; font-size: 17px; letter-spacing: .06em }
+.brand strong { font-family: var(--font-display); font-size: 17px; letter-spacing: .06em }
 .brand small { font-size: 9px; color: var(--ink-muted); letter-spacing: .16em; margin-top: 3px }
 
 .nav-links { display: flex; height: 100%; align-items: center; gap: 20px; white-space: nowrap }
@@ -241,7 +241,7 @@ button { cursor: pointer; appearance: none }
   padding: 6px;
   opacity: 0;
   pointer-events: none;
-  transition: all .25s var(--spring-snappy);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .25s; transition-timing-function: var(--spring-snappy);
   z-index: 60;
 }
 
@@ -259,7 +259,7 @@ button { cursor: pointer; appearance: none }
   color: var(--ink-dim);
   border-radius: 8px;
   height: auto;
-  transition: all .2s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .2s;
   white-space: nowrap;
 }
 
@@ -380,7 +380,7 @@ button { cursor: pointer; appearance: none }
   gap: 8px;
   font-size: 13px;
   font-weight: 600;
-  transition: all .25s cubic-bezier(.4,0,.2,1);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .25s; transition-timing-function: cubic-bezier(.4,0,.2,1);
   border-radius: 999px;
   letter-spacing: .02em;
 }
@@ -471,7 +471,7 @@ button { cursor: pointer; appearance: none }
 .hero .eyebrow { color: var(--cyan-strong) }
 
   .hero h1 {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: clamp(48px,6vw,86px);
   line-height: 1.08;
   letter-spacing: .08em;
@@ -671,7 +671,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .figure-card strong {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 18px;
   line-height: 1.25;
   color: var(--ink);
@@ -695,7 +695,7 @@ button { cursor: pointer; appearance: none }
   position: absolute;
   right: -10px;
   bottom: -20px;
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 180px;
   font-weight: 900;
   color: rgba(6,182,212,0.05);
@@ -754,7 +754,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .hero-stats strong {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 24px;
   color: var(--cyan-strong);
   font-weight: 700;
@@ -788,7 +788,7 @@ button { cursor: pointer; appearance: none }
 
 .section-heading h2,
 .download-group-heading h2 {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 32px;
   letter-spacing: .08em;
   margin: 9px 0 7px;
@@ -856,7 +856,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .stat-block strong {
-  font-family: 'Noto Serif SC';
+  font-family: var(--font-display);
   font-size: 21px;
   display: block;
   margin: 5px 0;
@@ -916,7 +916,7 @@ button { cursor: pointer; appearance: none }
     0 0 0 1px rgba(255,255,255,0.5);
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: all .45s var(--spring-bounce);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .45s; transition-timing-function: var(--spring-bounce);
   position: relative;
   filter: drop-shadow(0 4px 12px rgba(6,182,212,0.06));
 }
@@ -998,7 +998,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .news-cover-letter {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 64px;
   font-weight: 900;
   color: rgba(255,255,255,0.85);
@@ -1010,7 +1010,7 @@ button { cursor: pointer; appearance: none }
   position: absolute;
   top: 10px;
   left: 12px;
-  font-family: 'Noto Serif SC';
+  font-family: var(--font-display);
   font-size: 11px;
   color: var(--cyan-strong);
   z-index: 1;
@@ -1048,7 +1048,7 @@ button { cursor: pointer; appearance: none }
 .news-meta span { display: flex; align-items: center; gap: 5px }
 
 .news-card-body h3 {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 18px;
   margin: 8px 0;
   color: var(--ink);
@@ -1091,7 +1091,7 @@ button { cursor: pointer; appearance: none }
   -webkit-backdrop-filter: blur(20px) saturate(145%);
 }
 
-.manifesto h2 { font-family: 'Noto Serif SC', serif; font-size: 38px; letter-spacing: .06em; color: var(--ink) }
+.manifesto h2 { font-family: var(--font-display); font-size: 38px; letter-spacing: .06em; color: var(--ink) }
 .manifesto-copy p { color: var(--ink-soft); font-size: 13px; line-height: 2; margin: 0 0 22px }
 .manifesto-icons { display: flex; flex-direction: column; gap: 18px; color: var(--cyan-strong); opacity: .76; filter: drop-shadow(0 4px 8px rgba(6,182,212,0.18)) }
 
@@ -1173,7 +1173,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .quick-grid button span,
-.quick-grid a span { font-size: 17px; font-weight: 700; display: block; font-family: 'Noto Serif SC'; color: var(--ink) }
+.quick-grid a span { font-size: 17px; font-weight: 700; display: block; font-family: var(--font-display); color: var(--ink) }
 .quick-grid button small,
 .quick-grid a small { font-size: 10px; color: var(--ink-dim); display: block; margin-top: 4px }
 
@@ -1226,7 +1226,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .page-hero h1 {
-  font-family: 'Noto Serif SC';
+  font-family: var(--font-display);
   font-size: 48px;
   margin: 18px 0 8px;
   letter-spacing: .08em;
@@ -1242,7 +1242,7 @@ button { cursor: pointer; appearance: none }
   position: absolute;
   right: max(28px,calc((100% - 1184px)/2));
   bottom: 34px;
-  font-family: 'Noto Serif SC';
+  font-family: var(--font-display);
   font-size: 52px;
   color: var(--cyan);
   z-index: 1;
@@ -1322,7 +1322,7 @@ button { cursor: pointer; appearance: none }
   font-size: 11px;
   padding: 8px 14px;
   border-radius: 6px;
-  transition: all .2s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .2s;
 }
 
 .role-filters button.active {
@@ -1372,7 +1372,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .member-avatar-fallback span {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 56px;
   font-weight: 900;
   color: rgba(255,255,255,0.9);
@@ -1398,7 +1398,7 @@ button { cursor: pointer; appearance: none }
   background: rgba(255,255,255,0.35);
 }
 
-.member-info h3 { font-family: 'Noto Serif SC'; font-size: 18px; margin: 0 0 6px; letter-spacing: .04em; color: var(--ink) }
+.member-info h3 { font-family: var(--font-display); font-size: 18px; margin: 0 0 6px; letter-spacing: .04em; color: var(--ink) }
 .role-pill {
   display: inline-block;
   font-size: 10px;
@@ -1456,7 +1456,7 @@ button { cursor: pointer; appearance: none }
 
 .article-heading { margin-bottom: 28px }
 .article-heading h1 {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 42px;
   margin: 14px 0;
   letter-spacing: .04em;
@@ -1497,7 +1497,7 @@ button { cursor: pointer; appearance: none }
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3 {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   color: var(--ink);
   margin: 32px 0 14px;
 }
@@ -1563,7 +1563,7 @@ button { cursor: pointer; appearance: none }
 
 .download-content { flex: 1 }
 .download-title { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px }
-.download-title h3 { font-family: 'Noto Serif SC'; font-size: 17px; margin: 0; letter-spacing: .04em; color: var(--ink) }
+.download-title h3 { font-family: var(--font-display); font-size: 17px; margin: 0; letter-spacing: .04em; color: var(--ink) }
 .download-title span { font-size: 11px; color: var(--ink-dim) }
 .download-content p { font-size: 12px; color: var(--ink-dim); margin: 4px 0 }
 .download-content small { font-size: 10px; color: var(--ink-muted) }
@@ -1579,7 +1579,7 @@ button { cursor: pointer; appearance: none }
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
-  transition: all .25s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .25s;
   flex: none;
 }
 
@@ -1643,10 +1643,10 @@ button { cursor: pointer; appearance: none }
 
 .modal-close:hover { background: var(--glass-medium); color: var(--ink) }
 
-.download-modal h2 { font-family: 'Noto Serif SC'; font-size: 26px; margin: 12px 0 28px; color: var(--ink) }
+.download-modal h2 { font-family: var(--font-display); font-size: 26px; margin: 12px 0 28px; color: var(--ink) }
 
 .selected-download { margin: 12px 0 24px }
-.selected-download p { font-size: 18px; font-family: 'Noto Serif SC'; margin: 0 0 6px; color: var(--ink) }
+.selected-download p { font-size: 18px; font-family: var(--font-display); margin: 0 0 6px; color: var(--ink) }
 .selected-download span { font-size: 12px; color: var(--ink-dim); display: block; margin-bottom: 18px }
 
 .modal-footnote { font-size: 10px; color: var(--ink-muted); margin-top: 28px; text-align: center }
@@ -1834,7 +1834,7 @@ button { cursor: pointer; appearance: none }
 
 .footer-note { justify-self: end; text-align: right }
 .footer-note span { color: var(--ink-muted); font-size: 9px; letter-spacing: .16em }
-.footer-note strong { font-family: 'Noto Serif SC'; display: block; font-size: 17px; margin: 14px 0; color: var(--ink) }
+.footer-note strong { font-family: var(--font-display); display: block; font-size: 17px; margin: 14px 0; color: var(--ink) }
 .footer-note svg { color: var(--cyan) }
 
 .footer-bottom {
@@ -1855,7 +1855,7 @@ button { cursor: pointer; appearance: none }
   padding: 5px 12px;
   border: 1px solid var(--border-subtle);
   border-radius: 999px;
-  transition: all .25s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .25s;
   background: var(--glass-light);
   backdrop-filter: blur(8px);
 }
@@ -1912,7 +1912,7 @@ button { cursor: pointer; appearance: none }
   display: grid;
   place-items: center;
   margin: 0 auto 24px;
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-weight: 900;
   font-size: 30px;
   color: var(--cyan-strong);
@@ -1932,7 +1932,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .loading-mark {
-  font-family: 'Noto Serif SC';
+  font-family: var(--font-display);
   font-size: 24px;
   font-weight: 700;
   color: var(--ink);
@@ -2045,7 +2045,7 @@ button { cursor: pointer; appearance: none }
 .admin-login-card .brand-mark { margin-bottom: 8px }
 
 .admin-login-card h1 {
-  font-family: 'Noto Serif SC';
+  font-family: var(--font-display);
   font-size: 34px;
   margin: 15px 0 9px;
   color: var(--ink);
@@ -2193,7 +2193,7 @@ button { cursor: pointer; appearance: none }
   text-align: left;
   font-size: 12px;
   border-radius: 8px;
-  transition: all .2s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .2s;
   position: relative;
 }
 
@@ -2259,7 +2259,7 @@ button { cursor: pointer; appearance: none }
   border-radius: 2px;
 }
 
-.admin-header h1 { font-family: 'Noto Serif SC'; font-size: 34px; margin: 13px 0 0; color: var(--ink) }
+.admin-header h1 { font-family: var(--font-display); font-size: 34px; margin: 13px 0 0; color: var(--ink) }
 
 .admin-online {
   font-size: 10px;
@@ -2321,7 +2321,7 @@ button { cursor: pointer; appearance: none }
   z-index: 1;
 }
 
-.panel-heading h2 { font-family: 'Noto Serif SC'; font-size: 22px; margin: 0 0 4px; color: var(--ink) }
+.panel-heading h2 { font-family: var(--font-display); font-size: 22px; margin: 0 0 4px; color: var(--ink) }
 .panel-heading p { font-size: 11px; color: var(--ink-dim); margin: 0 }
 
 .panel-actions { display: flex; align-items: center; gap: 12px }
@@ -2387,7 +2387,7 @@ button { cursor: pointer; appearance: none }
   background: var(--glass-light);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  transition: all .25s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .25s;
 }
 
 .news-editor:hover {
@@ -2397,7 +2397,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .editor-number {
-  font-family: 'Noto Serif SC';
+  font-family: var(--font-display);
   font-size: 14px;
   color: var(--ink-muted);
   text-align: center;
@@ -2685,7 +2685,7 @@ button { cursor: pointer; appearance: none }
   background: var(--glass-card);
   border: 1px solid var(--border-subtle);
   backdrop-filter: blur(18px);
-  transition: all .3s cubic-bezier(.4,0,.2,1);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .3s; transition-timing-function: cubic-bezier(.4,0,.2,1);
   position: relative;
   overflow: hidden;
 }
@@ -2719,7 +2719,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .admin-stats div span { display: block; font-size: 11px; color: var(--ink-dim); margin-bottom: 8px }
-.admin-stats div strong { font-family: 'Noto Serif SC'; font-size: 42px; color: var(--cyan-strong); display: block }
+.admin-stats div strong { font-family: var(--font-display); font-size: 42px; color: var(--cyan-strong); display: block }
 
 .admin-section-kicker {
   display: inline-flex;
@@ -2773,7 +2773,7 @@ button { cursor: pointer; appearance: none }
 .admin-user-list-heading h3 {
   margin: 0;
   color: var(--ink);
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 18px;
 }
 
@@ -3009,7 +3009,7 @@ button { cursor: pointer; appearance: none }
 .admin-user-name-row h4 {
   margin: 0;
   color: var(--ink);
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 15px;
 }
 
@@ -3184,7 +3184,7 @@ button { cursor: pointer; appearance: none }
 .news-card,
 .member-card,
 .download-card {
-  transition: all .45s var(--spring-bounce);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .45s; transition-timing-function: var(--spring-bounce);
 }
 
 .news-card:hover,
@@ -3196,7 +3196,7 @@ button { cursor: pointer; appearance: none }
 /* Bouton bounce */
 .button,
 .download-action {
-  transition: all .35s var(--spring-snappy);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .35s; transition-timing-function: var(--spring-snappy);
 }
 
 .button:hover,
@@ -3213,7 +3213,7 @@ button { cursor: pointer; appearance: none }
 /* Quick grid cards */
 .quick-grid button,
 .quick-grid a {
-  transition: all .45s var(--spring-bounce);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .45s; transition-timing-function: var(--spring-bounce);
 }
 
 .quick-grid button:hover,
@@ -3223,7 +3223,7 @@ button { cursor: pointer; appearance: none }
 
 /* Status cards */
 .status-card {
-  transition: all .4s var(--spring-soft);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .4s; transition-timing-function: var(--spring-soft);
 }
 
 .status-card:hover {
@@ -3273,7 +3273,7 @@ button { cursor: pointer; appearance: none }
   opacity: 0;
   transform: translateY(20px);
   pointer-events: none;
-  transition: all .4s var(--spring-bounce);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .4s; transition-timing-function: var(--spring-bounce);
 }
 
 .back-to-top.visible {
@@ -3641,7 +3641,7 @@ button { cursor: pointer; appearance: none }
   background: var(--glass-light);
   color: var(--ink-muted);
   flex: none;
-  transition: all .2s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .2s;
 }
 
 .banner-close:hover {
@@ -3707,7 +3707,7 @@ button { cursor: pointer; appearance: none }
   font-size: 11px;
   padding: 5px 12px;
   border-radius: 999px;
-  transition: all .25s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .25s;
 }
 
 .checksum-toggle:hover {
@@ -3778,7 +3778,7 @@ button { cursor: pointer; appearance: none }
   background: var(--glass-light);
   color: var(--ink-muted);
   flex: none;
-  transition: all .2s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .2s;
 }
 
 .checksum-copy-btn:hover {
@@ -3851,7 +3851,7 @@ button { cursor: pointer; appearance: none }
   background: var(--glass-light);
   color: var(--ink-muted);
   flex: none;
-  transition: all .2s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .2s;
 }
 
 .changelog-search-clear:hover,
@@ -3874,7 +3874,7 @@ button { cursor: pointer; appearance: none }
   padding: 32px 30px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  transition: all .4s var(--spring-soft);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .4s; transition-timing-function: var(--spring-soft);
 }
 
 .changelog-card:hover {
@@ -3900,7 +3900,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .changelog-version {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 26px;
   margin: 0;
   letter-spacing: .04em;
@@ -3953,7 +3953,7 @@ button { cursor: pointer; appearance: none }
   font-weight: 700;
   color: var(--ink);
   margin: 0 0 12px;
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
 }
 
 .changelog-icon-add {
@@ -4055,7 +4055,7 @@ button { cursor: pointer; appearance: none }
   font-size: 13px;
   font-weight: 600;
   border-radius: 999px;
-  transition: all .3s var(--spring-snappy);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .3s; transition-timing-function: var(--spring-snappy);
 }
 
 .tutorial-tab:hover {
@@ -4086,7 +4086,7 @@ button { cursor: pointer; appearance: none }
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-radius: var(--radius-lg);
-  transition: all .4s var(--spring-soft);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .4s; transition-timing-function: var(--spring-soft);
 }
 
 .tutorial-step-card:hover {
@@ -4104,7 +4104,7 @@ button { cursor: pointer; appearance: none }
   background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(13,148,136,0.1));
   border: 1px solid var(--cyan-border);
   color: var(--cyan-strong);
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 18px;
   font-weight: 700;
   flex: none;
@@ -4115,7 +4115,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .tutorial-step-title {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 18px;
   color: var(--ink);
   margin: 0 0 8px;
@@ -4140,7 +4140,7 @@ button { cursor: pointer; appearance: none }
   border-radius: var(--radius-md);
   color: var(--ink-muted);
   font-size: 28px;
-  transition: all .3s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .3s;
 }
 
 .tutorial-img-placeholder:hover {
@@ -4167,7 +4167,7 @@ button { cursor: pointer; appearance: none }
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 20px;
   color: var(--ink);
   margin: 0 0 20px;
@@ -4249,7 +4249,7 @@ button { cursor: pointer; appearance: none }
   font-weight: 600;
   padding: 8px 18px;
   border-radius: 999px;
-  transition: all .3s var(--spring-snappy);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .3s; transition-timing-function: var(--spring-snappy);
 }
 
 .faq-category-btn:hover {
@@ -4279,7 +4279,7 @@ button { cursor: pointer; appearance: none }
   -webkit-backdrop-filter: blur(18px);
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: all .35s var(--spring-soft);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .35s; transition-timing-function: var(--spring-soft);
 }
 
 .faq-item:hover {
@@ -4411,7 +4411,7 @@ button { cursor: pointer; appearance: none }
   font-size: 15px;
   color: var(--ink);
   margin-bottom: 4px;
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
 }
 
 .faq-footer-cta span {
@@ -4430,7 +4430,7 @@ button { cursor: pointer; appearance: none }
   font-size: 12px;
   font-weight: 600;
   border-radius: 999px;
-  transition: all .3s var(--spring-snappy);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .3s; transition-timing-function: var(--spring-snappy);
   white-space: nowrap;
 }
 
@@ -4481,7 +4481,7 @@ button { cursor: pointer; appearance: none }
   -webkit-backdrop-filter: blur(22px);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: all .45s var(--spring-bounce);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .45s; transition-timing-function: var(--spring-bounce);
   box-shadow: var(--shadow-sm), 0 0 0 1px rgba(255,255,255,0.5);
 }
 
@@ -4524,7 +4524,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .story-volume-body h3 {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 17px;
   margin: 0 0 2px;
   color: var(--ink);
@@ -4551,7 +4551,7 @@ button { cursor: pointer; appearance: none }
   background: rgba(6,182,212,0.08);
   border: 1px solid rgba(6,182,212,0.15);
   border-radius: 999px;
-  transition: all .2s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .2s;
 }
 
 .story-chapter-link:hover {
@@ -4577,7 +4577,7 @@ button { cursor: pointer; appearance: none }
   background: var(--glass-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  transition: all .25s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .25s;
 }
 
 .story-result-card:hover {
@@ -4632,7 +4632,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .story-reader-heading h1 {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 36px;
   margin: 10px 0;
   color: var(--ink);
@@ -4678,7 +4678,7 @@ button { cursor: pointer; appearance: none }
   color: var(--ink-dim);
   border-radius: 999px;
   font-size: 12px;
-  transition: all .2s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .2s;
 }
 
 .story-nav-btn:hover:not(:disabled) {
@@ -4759,7 +4759,7 @@ button { cursor: pointer; appearance: none }
   line-height: 2;
   color: var(--ink-soft);
   margin: 0;
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
 }
 
 .story-text-zh {
@@ -4767,7 +4767,7 @@ button { cursor: pointer; appearance: none }
   line-height: 2;
   color: var(--ink);
   margin: 0;
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
 }
 
 .story-dots {
@@ -4783,7 +4783,7 @@ button { cursor: pointer; appearance: none }
   border-radius: 50%;
   background: var(--border-glow);
   border: 0;
-  transition: all .25s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .25s;
   cursor: pointer;
 }
 
@@ -4811,7 +4811,7 @@ button { cursor: pointer; appearance: none }
   font-size: 13px;
   font-weight: 600;
   z-index: 40;
-  transition: all .3s var(--spring-snappy);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .3s; transition-timing-function: var(--spring-snappy);
 }
 
 .story-feedback-fab:hover {
@@ -4870,7 +4870,7 @@ button { cursor: pointer; appearance: none }
 .access-card h1 {
   margin: 14px 0 10px;
   color: var(--ink);
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
 }
 
 .access-card p {
@@ -4896,7 +4896,7 @@ button { cursor: pointer; appearance: none }
 .settings-access-heading h3 {
   margin: 8px 0 5px;
   color: var(--ink);
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
 }
 
 .settings-access-heading p {
@@ -5097,7 +5097,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .archive-version strong {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 15px;
   color: var(--ink);
 }
@@ -5148,7 +5148,7 @@ button { cursor: pointer; appearance: none }
   border: 1px solid rgba(16,185,129,0.25);
   background: rgba(16,185,129,0.08);
   border-radius: 999px;
-  transition: all .2s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .2s;
 }
 
 .download-diff-link:hover {
@@ -5174,7 +5174,7 @@ button { cursor: pointer; appearance: none }
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 22px;
   margin: 0 0 4px;
   color: var(--ink);
@@ -5240,7 +5240,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .feedback-list-section h2 {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 22px;
   margin: 0 0 20px;
   color: var(--ink);
@@ -5256,7 +5256,7 @@ button { cursor: pointer; appearance: none }
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 20px 24px;
-  transition: all .3s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .3s;
 }
 
 .feedback-item:hover {
@@ -5373,7 +5373,7 @@ button { cursor: pointer; appearance: none }
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 22px;
   margin: 0 0 24px;
   color: var(--ink);
@@ -5523,7 +5523,7 @@ button { cursor: pointer; appearance: none }
   border-radius: var(--radius-lg);
   padding: 24px;
   box-shadow: var(--shadow-sm), 0 0 0 1px rgba(255,255,255,0.5);
-  transition: all .4s var(--spring-soft);
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .4s; transition-timing-function: var(--spring-soft);
 }
 
 .ac-server-card:hover {
@@ -5555,7 +5555,7 @@ button { cursor: pointer; appearance: none }
 }
 
 .ac-server-title h3 {
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 17px;
   margin: 0;
 }
@@ -5667,7 +5667,7 @@ button { cursor: pointer; appearance: none }
   font-size: 13px;
   color: var(--ink);
   margin-bottom: 6px;
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
 }
 
 .ac-safety-tip p {
@@ -5707,7 +5707,7 @@ button { cursor: pointer; appearance: none }
   background: var(--glass-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  transition: all .3s;
+  transition-property: transform, color, background-color, border-color, box-shadow, opacity, filter, max-height; transition-duration: .3s;
 }
 
 .contributor-row:hover {
@@ -5771,7 +5771,7 @@ button { cursor: pointer; appearance: none }
   color: var(--cyan-strong);
   font-weight: 700;
   font-size: 15px;
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
 }
 
 /* ===== Story / Archive / Feedback Section Spacing ===== */
@@ -6099,7 +6099,7 @@ button { cursor: pointer; appearance: none }
   display: block;
   margin-top: 4px;
   color: var(--ink);
-  font-family: 'Noto Serif SC', serif;
+  font-family: var(--font-display);
   font-size: 18px;
 }
 

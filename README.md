@@ -13,6 +13,10 @@
 - 单资源下载确认弹窗，不展示无意义的分支选择
 - 文件校验信息只向已认证管理员返回和显示
 - 九项资源的版本自动比对、状态卡片与管理员强制覆盖
+- Schale OS 终端视觉、日间学园与夜间特别行动双主题
+- 首页雷达 HUD、状态版本一键复制与相对自动比对时间
+- 平台下载工作台、三步安装引导与只读环境自检
+- MomoTalk 问答流、剧情全屏剧场、术语 Hover Tip 与剧情立绘配置后台
 - 团队成员搜索与职位筛选
 - 剧情库、更新日志、安装教程、FAQ、贡献榜和反作弊追踪
 - 翻译反馈提交、脱敏公开状态、管理员采纳、回复和拒绝
@@ -269,6 +273,31 @@ src/styles.css           全站视觉、动画和响应式样式
 - `0` 保持原有亮度；旧设置缺少该字段时也会按 `0` 处理
 - 设置保存为 `settings.backgroundDim`，服务端会将无效值回退为 `0`，并将超范围值限制在 `0` 到 `80`
 - 该效果只应用于背景图层，不会压暗文字、卡片、按钮和其他前景内容
+
+## 视觉主题与终端 Token
+
+管理员可在 `/admin` 的“站点视觉”中选择默认模式：`跟随设备`、`日间学园`或`夜间特别行动`。访客还可使用导航栏右侧主题切换器临时覆盖显示偏好，偏好仅保存在当前浏览器的本地存储中。
+
+设计 token 同时定义在 `tailwind.config.js` 与 `src/styles/schale.css`：
+
+- `schale.sky` / `schale.core`：主终端天蓝与高对比操作色
+- `schale.alert`：待更新、需要注意的状态
+- `schale.signal`：特别活动与异常提示
+- `surface.day` / `surface.night`：日间与夜间底色
+- `shadow.hud` / `shadow.glow`：HUD 面板和微发光边缘
+- `transitionTimingFunction.schale`：终端式动画曲线
+
+全局页面优先使用 Barlow Condensed、Noto Sans SC 与 IBM Plex Mono，不再使用 Noto Serif SC 作为 display 字体。
+
+## 剧情剧场管理
+
+拥有 `剧情剧场` 权限的管理员可在 `/admin` 的“剧情剧场”中维护章节索引、角色名单、每段中日对白、场景描述、立绘 URL 与左右站位。
+
+- 管理 API：`GET/PUT /api/story/admin/index`
+- 章节 API：`GET/PUT /api/story/admin/:volume/:chapter`
+- 运行期编辑数据存于 `server/data/story-*.json`，不会修改源数据文件
+- 未被编辑过的章节仍从 `src/data/story/` 回退读取
+- 立绘 URL 可使用 HTTPS 地址或站内绝对路径；未填写时游客端显示终端式角色占位图
 
 ## API
 
