@@ -1065,6 +1065,8 @@
 .app-shell .nav-dropdown-trigger {
   position: relative;
   padding-right: 22px;
+  /* trigger 被 .nav-dropdown 拉成满高（72px），column 内容默认从顶端排——纵向居中 */
+  justify-content: center;
 }
 
 .app-shell .nav-dropdown-trigger .nav-caret {
