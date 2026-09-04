@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useContent } from '../lib/ContentContext'
 import { canAccessModule, useAdminAccess } from '../lib/moduleAccess'
+import BrandMark from './BrandMark'
 import ThemeToggle from './ThemeToggle'
 import type { SiteModuleId } from '../types'
 
@@ -131,7 +132,7 @@ export default function Navbar() {
     <header className="site-nav">
       <div className="nav-inner">
         <Link to="/" className="brand" onClick={closeMenu}>
-          <span className="brand-mark">BA</span>
+          <BrandMark />
           <span><strong>蔚蓝档案</strong><small>本地化计划 / 2026</small></span>
         </Link>
 

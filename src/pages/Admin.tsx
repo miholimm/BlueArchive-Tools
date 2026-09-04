@@ -44,6 +44,7 @@ import AdminTutorialEditor from "../components/AdminTutorialEditor";
 import AdminFaqEditor from "../components/AdminFaqEditor";
 import AdminAntiCheatEditor from "../components/AdminAntiCheatEditor";
 import AdminStoryEditor from "../components/AdminStoryEditor";
+import BrandMark from "../components/BrandMark";
 import type { AdminIdentity, AdminPermission } from "../data/adminPermissions";
 import { defaultModuleVisibility, siteModuleDefinitions } from "../data/siteModules";
 import type { ModuleVisibility, SiteSettings, VisibilityMode } from "../types";
@@ -173,7 +174,7 @@ export default function Admin() {
     return (
       <main className="admin-login">
         <div className="admin-login-card">
-          <div className="brand-mark">BA</div>
+          <BrandMark size={44} />
           <span className="eyebrow">CONTROL ROOM / ADMIN</span>
           <h1>管理后台</h1>
           <p>登录后可管理公告、下载、维护状态、安装教程、常见问题、反作弊追踪和站点设置。</p>
@@ -277,7 +278,7 @@ export default function Admin() {
     <main className="admin-shell">
       <aside className="admin-side">
         <div className="brand">
-          <span className="brand-mark">BA</span>
+          <BrandMark size={32} />
           <span>
             <strong>管理后台</strong>
             <small>CONTROL ROOM</small>

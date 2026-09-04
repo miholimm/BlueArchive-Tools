@@ -993,3 +993,18 @@
   .app-shell .district-grid { grid-template-columns: 1fr; }
   .app-shell .district-card:hover { transform: none; }
 }
+
+/* ── 品牌标识：白子头像（游戏内图标 · 本地资产 public/images/shiroko-icon.webp） ── */
+.app-shell .brand-mark-img {
+  object-fit: cover;
+  background: var(--card-alt);
+  flex-shrink: 0;
+}
+
+.app-shell .loading-logo-img {
+  object-fit: cover;
+  border-radius: 50%;
+  background: var(--card);
+  border: 2px solid var(--halo-ring);
+  box-shadow: 0 0 22px var(--halo-glow);
+}
