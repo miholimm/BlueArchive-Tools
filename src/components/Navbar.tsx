@@ -1,4 +1,4 @@
-import { ChevronDown, Menu, X } from 'lucide-react'
+import { BookOpen, Building2, ChevronDown, Download, Menu, Users, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useContent } from '../lib/ContentContext'
@@ -7,34 +7,56 @@ import ThemeToggle from './ThemeToggle'
 import type { SiteModuleId } from '../types'
 
 type DropdownItem = { to: string; label: string; module: SiteModuleId }
-type NavItem =
-  | { kind: 'link'; to: string; label: string; module: SiteModuleId; icon?: React.ComponentType<{ size?: number }> }
-  | { kind: 'dropdown'; label: string; icon: React.ComponentType<{ size?: number }>; items: DropdownItem[] }
+type District = {
+  label: string
+  icon: React.ComponentType<{ size?: number }>
+  items: DropdownItem[]
+}
 
-const navItems: NavItem[] = [
-  { kind: 'link', to: '/', label: '首页', module: 'home' },
-  { kind: 'link', to: '/team', label: '汉化组', module: 'team' },
-  { kind: 'link', to: '/news', label: '公告', module: 'news' },
-  { kind: 'link', to: '/story', label: '剧情库', module: 'story' },
-  { kind: 'link', to: '/changelog', label: '更新日志', module: 'changelog' },
-  { kind: 'link', to: '/tutorial', label: '安装教程', module: 'tutorial' },
-  { kind: 'link', to: '/download', label: '资源下载', module: 'downloads' },
-  { kind: 'link', to: '/faq', label: '常见问题', module: 'faq' },
-  { kind: 'link', to: '/status', label: '维护状态', module: 'status' },
+// 基沃托斯导航：18 条路由收敘为 4 个「城区」，替代原先 13 项平级入口
+const districts: District[] = [
   {
-    kind: 'dropdown',
-    label: '社区',
-    icon: ChevronDown,
+    label: '夏莱',
+    icon: Building2,
     items: [
-      { to: '/feedback', label: '翻译反馈', module: 'feedback' },
+      { to: '/', label: '首页', module: 'home' },
+      { to: '/team', label: '汉化组', module: 'team' },
+      { to: '/news', label: '公告', module: 'news' },
       { to: '/contributors', label: '贡献榜', module: 'contributors' },
-      { to: '/anti-cheat', label: '反作弊追踪', module: 'antiCheat' },
-      { to: '/workspace', label: '协作工作台', module: 'workspace' },
-      { to: '/glossary', label: '术语库', module: 'glossary' },
     ],
   },
-  { kind: 'link', to: '/qa', label: '问答', module: 'qa' },
-  { kind: 'link', to: '/api-docs', label: 'API 文档', module: 'apiDocs' },
+  {
+    label: '剧情',
+    icon: BookOpen,
+    items: [
+      { to: '/story', label: '剧情库', module: 'story' },
+      { to: '/story-player', label: '原版播放器', module: 'story' },
+      { to: '/glossary', label: '术语库', module: 'glossary' },
+      { to: '/archive', label: '档案库', module: 'archive' },
+    ],
+  },
+  {
+    label: '资源',
+    icon: Download,
+    items: [
+      { to: '/download', label: '资源下载', module: 'downloads' },
+      { to: '/tutorial', label: '安装教程', module: 'tutorial' },
+      { to: '/changelog', label: '更新日志', module: 'changelog' },
+      { to: '/status', label: '维护状态', module: 'status' },
+    ],
+  },
+  {
+    label: '社区',
+    icon: Users,
+    items: [
+      { to: '/faq', label: '常见问题', module: 'faq' },
+      { to: '/qa', label: '问答', module: 'qa' },
+      { to: '/feedback', label: '翻译反馈', module: 'feedback' },
+      { to: '/anti-cheat', label: '反作弊追踪', module: 'antiCheat' },
+      { to: '/workspace', label: '协作工作台', module: 'workspace' },
+      { to: '/api-docs', label: 'API 文档', module: 'apiDocs' },
+    ],
+  },
 ]
 
 function NavDropdown({ label, icon: Icon, items, mobile, onClose }: {
@@ -73,12 +95,14 @@ function NavDropdown({ label, icon: Icon, items, mobile, onClose }: {
       >
         {Icon && <Icon size={16} />}
         <span>{label}</span>
+        <ChevronDown size={13} className="nav-caret" />
       </button>
       <div className={`nav-dropdown-menu ${open ? 'is-visible' : ''}`}>
         {items.map(item => (
           <NavLink
             key={item.to}
             to={item.to}
+            end={item.to === '/'}
             onClick={() => { setOpen(false); onClose?.() }}
           >
             {item.label}
@@ -94,15 +118,14 @@ export default function Navbar() {
   const closeMenu = () => setOpen(false)
   const { settings } = useContent()
   const admin = useAdminAccess()
-  const visibleItems = navItems.reduce<NavItem[]>((items, item) => {
-    if (item.kind === 'link') {
-      if (canAccessModule(settings, item.module, admin)) items.push(item)
-      return items
-    }
-    const visibleDropdownItems = item.items.filter(entry => canAccessModule(settings, entry.module, admin))
-    if (visibleDropdownItems.length) items.push({ ...item, items: visibleDropdownItems })
-    return items
-  }, [])
+
+  // 按权限过滤，空城区自动隐藏
+  const visibleDistricts = districts
+    .map(district => ({
+      ...district,
+      items: district.items.filter(entry => canAccessModule(settings, entry.module, admin)),
+    }))
+    .filter(district => district.items.length > 0)
 
   return (
     <header className="site-nav">
@@ -114,40 +137,28 @@ export default function Navbar() {
 
         {/* Desktop nav */}
         <nav className="nav-links desktop-nav">
-          {visibleItems.map(item =>
-            item.kind === 'link' ? (
-              <NavLink key={item.to} to={item.to} end={item.to === '/'}>
-                {item.label}
-              </NavLink>
-            ) : (
-              <NavDropdown
-                key={item.label}
-                label={item.label}
-                icon={item.icon}
-                items={item.items}
-              />
-            )
-          )}
+          {visibleDistricts.map(district => (
+            <NavDropdown
+              key={district.label}
+              label={district.label}
+              icon={district.icon}
+              items={district.items}
+            />
+          ))}
         </nav>
 
         {/* Mobile nav */}
         <nav className={open ? 'nav-links mobile-nav is-open' : 'nav-links mobile-nav'}>
-          {visibleItems.map(item =>
-            item.kind === 'link' ? (
-              <NavLink key={item.to} to={item.to} end={item.to === '/'} onClick={closeMenu}>
-                {item.label}
-              </NavLink>
-            ) : (
-              <NavDropdown
-                key={item.label}
-                label={item.label}
-                icon={item.icon}
-                items={item.items}
-                mobile
-                onClose={closeMenu}
-              />
-            )
-          )}
+          {visibleDistricts.map(district => (
+            <NavDropdown
+              key={district.label}
+              label={district.label}
+              icon={district.icon}
+              items={district.items}
+              mobile
+              onClose={closeMenu}
+            />
+          ))}
         </nav>
 
         <div className="nav-meta">

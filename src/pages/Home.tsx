@@ -1,11 +1,14 @@
 import {
   ArrowRight,
+  BookOpen,
+  Building2,
   CalendarDays,
   Check,
   Download,
   Languages,
   Radio,
   ShieldCheck,
+  Users,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Hero from "../components/Hero";
@@ -38,6 +41,62 @@ export default function Home() {
     (items) => items.length > 0,
   ).length;
 
+  // 城区导览：与导航栏的四个城区一一对应，给新访客清晰的落脚点
+  const districtCards = [
+    {
+      key: "schale",
+      label: "夏莱",
+      en: "SCHALE",
+      icon: Building2,
+      desc: "认识团队、追踪公告与贡献记录",
+      gate: showTeam,
+      links: [
+        { to: "/team", label: "汉化组", show: showTeam },
+        { to: "/news", label: "公告", show: showNews },
+        { to: "/contributors", label: "贡献榜", show: canAccessModule(settings, "contributors", admin) },
+      ],
+    },
+    {
+      key: "story",
+      label: "剧情",
+      en: "STORY",
+      icon: BookOpen,
+      desc: "剧情库、原版播放器与术语档案",
+      gate: canAccessModule(settings, "story", admin),
+      links: [
+        { to: "/story", label: "剧情库", show: canAccessModule(settings, "story", admin) },
+        { to: "/story-player", label: "原版播放器", show: canAccessModule(settings, "story", admin) },
+        { to: "/glossary", label: "术语库", show: canAccessModule(settings, "glossary", admin) },
+      ],
+    },
+    {
+      key: "resources",
+      label: "资源",
+      en: "RESOURCES",
+      icon: Download,
+      desc: "下载汉化资源、安装教程与更新日志",
+      gate: showDownloads,
+      links: [
+        { to: "/download", label: "资源下载", show: showDownloads },
+        { to: "/tutorial", label: "安装教程", show: showTutorial },
+        { to: "/status", label: "维护状态", show: showStatus },
+      ],
+    },
+    {
+      key: "community",
+      label: "社区",
+      en: "COMMUNITY",
+      icon: Users,
+      desc: "问答、翻译反馈与协作工作台",
+      gate: canAccessModule(settings, "qa", admin),
+      links: [
+        { to: "/qa", label: "问答", show: canAccessModule(settings, "qa", admin) },
+        { to: "/feedback", label: "翻译反馈", show: canAccessModule(settings, "feedback", admin) },
+        { to: "/faq", label: "常见问题", show: canAccessModule(settings, "faq", admin) },
+      ],
+    },
+  ];
+
   return (
     <>
       <Hero
@@ -46,6 +105,43 @@ export default function Home() {
         showDownloads={showDownloads}
       />
       <main>
+        <section className="section district-section">
+          <Reveal>
+            <div className="section-heading">
+              <div>
+                <span className="eyebrow">KIVOTOS / 城区导览</span>
+                <h2>从哪个城区开始？</h2>
+                <p>全站内容按四个城区组织，选择你的目的地。</p>
+              </div>
+            </div>
+          </Reveal>
+          <div className="district-grid">
+            {districtCards
+              .filter((district) => district.gate)
+              .map((district, index) => {
+                const Icon = district.icon
+                return (
+                  <Reveal key={district.key} delay={index * 80} spring="up">
+                    <article className="district-card">
+                      <span className="district-halo" aria-hidden="true" />
+                      <span className="district-icon"><Icon size={22} /></span>
+                      <h3>{district.label}</h3>
+                      <span className="district-en">{district.en}</span>
+                      <p>{district.desc}</p>
+                      <div className="district-links">
+                        {district.links
+                          .filter((link) => link.show)
+                          .map((link) => (
+                            <Link key={link.to} to={link.to}>{link.label}</Link>
+                          ))}
+                      </div>
+                    </article>
+                  </Reveal>
+                )
+              })}
+          </div>
+        </section>
+
         {showStatus && <section className="section status-strip">
           <Reveal>
             <div className="section-heading compact">
