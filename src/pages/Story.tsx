@@ -111,7 +111,7 @@ export default function Story() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero">
-          <span className="eyebrow">STORY / 04</span>
+          <span className="eyebrow">STORY / LIBRARY</span>
           <h1>剧情库</h1>
           <p>中日对照阅读，沉浸体验主线故事。</p>
           <Link to="/story-player" className="button button-primary" style={{ marginTop: '18px' }}>

@@ -105,7 +105,7 @@ export default function FAQ() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero faq-page-hero">
-          <span className="eyebrow">HELP CENTER / 07</span>
+          <span className="eyebrow">COMMUNITY / HELP</span>
           <h1>常见问题</h1>
           <p>快速查找安装、启动、更新和报错的解决方案。</p>
           <div className="page-hero-number">

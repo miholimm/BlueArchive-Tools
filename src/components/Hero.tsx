@@ -47,18 +47,6 @@ export default function Hero({
           <span className="spark s4" />
           <span className="spark s5" />
         </div>
-        <div className="hero-coords" aria-hidden="true">
-          <span className="crosshair" />
-          <em>35.68°N</em>
-          <em>139.76°E</em>
-        </div>
-        <div className="hero-stamp">
-          BLUE
-          <br />
-          ARCHIVE
-          <br />
-          <span>LOCALIZATION</span>
-        </div>
         <div className="hero-figure">
           <SchaleRadar status={translateStatus} />
           {showStatus && <div className="figure-card figure-card-main">

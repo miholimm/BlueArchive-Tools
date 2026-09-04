@@ -23,7 +23,7 @@ export default function News() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero news-page-hero">
-          <span className="eyebrow">TRANSMISSION / 02</span>
+          <span className="eyebrow">SCHALE / NOTICE</span>
           <h1>更新公告</h1>
           <p>项目的每一段进度，都在这里留下记录。</p>
           <div className="news-signal">● ARCHIVE ONLINE</div>

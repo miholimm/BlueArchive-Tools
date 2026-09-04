@@ -162,7 +162,7 @@ export default function Navbar() {
         </nav>
 
         <div className="nav-meta">
-          <span className="live-dot" /> AUTO CHECK <span className="nav-version">v1.0.0</span>
+          <span className="live-dot" /> 自动校验 <span className="nav-version">v1.0.0</span>
         </div>
         <ThemeToggle />
         <button

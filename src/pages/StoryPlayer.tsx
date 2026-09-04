@@ -113,7 +113,7 @@ function StoryPlayerInner() {
   return (
     <main className="page-shell ba-story-player-page">
       <div className="page-hero">
-        <span className="eyebrow">STORY PLAYER / BA-ARCHIVE</span>
+        <span className="eyebrow">STORY / PLAYER</span>
         <h1>原版剧情播放器</h1>
         <p>
           基于社区 <code>ba-story-player</code> 引擎，还原游戏内立绘、语音与特效的沉浸式剧情体验。

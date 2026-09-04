@@ -22,7 +22,7 @@ export default function Status() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero status-page-hero">
-          <span className="eyebrow">SYSTEM / 04</span>
+          <span className="eyebrow">RESOURCES / STATUS</span>
           <h1>维护状态</h1>
           <p>展示九项资源的当前维护信息与版本记录。</p>
           <div className="page-hero-number">

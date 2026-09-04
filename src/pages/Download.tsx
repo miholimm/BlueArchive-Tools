@@ -45,7 +45,7 @@ export default function Download() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero download-page-hero">
-          <span className="eyebrow">DOWNLOAD / 03</span>
+          <span className="eyebrow">RESOURCES / DOWNLOAD</span>
           <h1>资源下载</h1>
           <p>选择你的设备，开始一段全新的校园生活。</p>
           <div className="page-hero-number">
@@ -83,7 +83,7 @@ export default function Download() {
             <div className="download-group">
               <div className="download-group-heading">
                 <div>
-                  <span className="eyebrow">PLATFORM</span>
+                  <span className="eyebrow">RESOURCES / PLATFORM</span>
                   <h2>{activeGroup.label}</h2>
                 </div>
                 <span>{activeGroup.note}</span>

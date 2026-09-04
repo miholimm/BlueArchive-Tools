@@ -68,7 +68,7 @@ export default function Feedback() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero">
-          <span className="eyebrow">FEEDBACK / 06</span>
+          <span className="eyebrow">COMMUNITY / FEEDBACK</span>
           <h1>翻译反馈</h1>
           <p>提交翻译建议，帮助我们改进汉化质量。</p>
         </div>

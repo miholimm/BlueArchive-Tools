@@ -50,7 +50,7 @@ export default function Contributors() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero">
-          <span className="eyebrow">CONTRIBUTORS / 08</span>
+          <span className="eyebrow">SCHALE / CONTRIBUTORS</span>
           <h1>贡献榜</h1>
           <p>感谢每一位为汉化项目付出努力的老师。</p>
         </div>

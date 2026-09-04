@@ -164,7 +164,7 @@ export default function ApiDocs() {
   return (
     <main className="page api-docs-page">
       <div className="page-hero">
-        <span className="eyebrow">DEVELOPER</span>
+        <span className="eyebrow">COMMUNITY / API</span>
         <h1>API 文档</h1>
         <p>面向开发者的开放 API 接口参考文档</p>
       </div>

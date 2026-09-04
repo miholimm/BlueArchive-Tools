@@ -93,7 +93,7 @@ export default function Workspace() {
   return (
     <main className="page workspace-page">
       <div className="page-hero">
-        <span className="eyebrow">COLLABORATION</span>
+        <span className="eyebrow">COMMUNITY / WORKSPACE</span>
         <h1>协作工作台</h1>
         <p>仅限已登录且拥有任务权限的组员认领、提交与审核翻译任务。</p>
       </div>

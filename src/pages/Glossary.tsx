@@ -34,7 +34,7 @@ export default function Glossary() {
   return (
     <main className="page glossary-page">
       <div className="page-hero">
-        <span className="eyebrow">REFERENCE</span>
+        <span className="eyebrow">STORY / GLOSSARY</span>
         <h1>术语库</h1>
         <p>蔚蓝档案中日译名对照表，确保翻译一致性</p>
       </div>

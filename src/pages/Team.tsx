@@ -33,7 +33,7 @@ export default function Team() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero">
-          <span className="eyebrow">TEAM / 01</span>
+          <span className="eyebrow">SCHALE / TEAM</span>
           <h1>认识汉化组</h1>
           <p>每一份热爱，都值得被认真翻译。</p>
           <div className="page-hero-number">

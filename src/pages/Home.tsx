@@ -145,7 +145,7 @@ export default function Home() {
         {showStatus && <section className="section status-strip">
           <Reveal>
             <div className="section-heading compact">
-              <span className="eyebrow">01 / STATUS</span>
+              <span className="eyebrow">SCHALE / STATUS</span>
               <h2>项目状态</h2>
               <p>展示文本汉化资源与官方版本的自动比对结果。</p>
             </div>
@@ -160,7 +160,7 @@ export default function Home() {
                   <span>当前汉化状态</span>
                   <strong><i className={`status-pulse ${translateStatus}`} />{translateStatusLabel}</strong>
                 </div>
-                <b>AUTO CHECK</b>
+                <b>自动校验</b>
               </div>
               <div className="stat-block">
                 <span>资源版本</span>
@@ -181,7 +181,7 @@ export default function Home() {
           <Reveal>
             <div className="section-heading">
               <div>
-                <span className="eyebrow">02 / TRANSMISSION</span>
+                <span className="eyebrow">SCHALE / NOTICE</span>
                 <h2>最新公告</h2>
                 <p>记录每一次版本更新与项目进展。</p>
               </div>
@@ -212,7 +212,7 @@ export default function Home() {
               <span className="decor-line" />
             </div>
             <div>
-              <span className="eyebrow">03 / OUR MISSION</span>
+              <span className="eyebrow">SCHALE / MISSION</span>
               <h2>
                 让故事，
                 <br />
@@ -239,7 +239,7 @@ export default function Home() {
           <Reveal>
             <div className="section-heading">
               <div>
-                <span className="eyebrow">04 / GET STARTED</span>
+                <span className="eyebrow">RESOURCES / GET STARTED</span>
                 <h2>开始你的基沃托斯之旅</h2>
                   <p>
                   {showTeam ? `${team.length} 位成员持续维护` : '项目持续维护'}

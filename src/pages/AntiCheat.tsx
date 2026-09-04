@@ -31,7 +31,7 @@ export default function AntiCheat() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero">
-          <span className="eyebrow">ANTI-CHEAT / 07</span>
+          <span className="eyebrow">COMMUNITY / ANTI-CHEAT</span>
           <h1>反作弊追踪</h1>
           <p>各服务器反作弊动态与安全状态，帮助汉化用户了解风险。</p>
         </div>

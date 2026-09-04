@@ -82,7 +82,7 @@ export default function Tutorial() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero tutorial-page-hero">
-          <span className="eyebrow">GETTING STARTED / 06</span>
+          <span className="eyebrow">RESOURCES / TUTORIAL</span>
           <h1>安装教程</h1>
           <p>选择你的平台，跟随步骤完成汉化补丁安装。</p>
           <div className="page-hero-number">

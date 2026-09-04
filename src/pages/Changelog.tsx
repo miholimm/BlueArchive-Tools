@@ -47,7 +47,7 @@ export default function Changelog() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero changelog-page-hero">
-          <span className="eyebrow">VERSION HISTORY / 05</span>
+          <span className="eyebrow">RESOURCES / CHANGELOG</span>
           <h1>更新日志</h1>
           <p>追踪汉化补丁的每一次迭代与改进。</p>
           <div className="page-hero-number">

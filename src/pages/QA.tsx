@@ -183,7 +183,7 @@ export default function QA() {
   return (
     <main className="page qa-page">
       <div className="page-hero">
-        <span className="eyebrow">COMMUNITY</span>
+        <span className="eyebrow">COMMUNITY / QA</span>
         <h1>问答</h1>
         <p>汉化相关问题讨论，翻译疑难解答</p>
       </div>

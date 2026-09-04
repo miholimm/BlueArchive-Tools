@@ -40,7 +40,7 @@ export default function Archive() {
     <main className="page-shell">
       <Reveal>
         <div className="page-hero">
-          <span className="eyebrow">ARCHIVE / 05</span>
+          <span className="eyebrow">STORY / ARCHIVE</span>
           <h1>历史归档</h1>
           <p>过往版本存档，可按需下载旧版汉化包。</p>
         </div>

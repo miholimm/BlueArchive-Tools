@@ -112,7 +112,7 @@ export default function AnnouncementDetail() {
       </Reveal>
       <Reveal>
         <div className="article-heading">
-          <span className="eyebrow">TRANSMISSION / 0{item.id}</span>
+          <span className="eyebrow">SCHALE / NOTICE 0{item.id}</span>
           <h1>{item.title}</h1>
           <div className="article-meta">
             <span>
