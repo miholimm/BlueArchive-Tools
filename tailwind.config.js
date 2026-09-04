@@ -21,7 +21,7 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Unbounded"', '"Teko"', '"Barlow Condensed"', '"Noto Sans SC"', 'sans-serif'],
+        display: ['"M PLUS Rounded 1c"', '"Noto Sans SC"', 'sans-serif'],
         sans: ['"Noto Sans SC"', 'sans-serif'],
         mono: ['"IBM Plex Mono"', 'monospace'],
       },

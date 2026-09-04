@@ -36,10 +36,19 @@ export default function Hero({
       <div className="hero-art">
         <div className="hero-grid" />
         <div className="hero-glow" />
+        <span className="hero-cloud cloud-1" aria-hidden="true" />
+        <span className="hero-cloud cloud-2" aria-hidden="true" />
         <div className="hero-halo" aria-hidden="true">
           <span className="hero-halo-ring" />
           <span className="hero-halo-ring hero-halo-ring-2" />
         </div>
+        <img
+          className="hero-shiroko"
+          src="/images/shiroko-portrait.webp"
+          alt="砂狼白子"
+          loading="eager"
+          decoding="async"
+        />
         <div className="hero-particles" aria-hidden="true">
           <span className="spark s1" />
           <span className="spark s2" />
@@ -80,7 +89,7 @@ export default function Hero({
       </div>
       <div className="hero-copy">
         <div className="eyebrow">
-          <Sparkles size={14} /> PROJECT / BLUE ARCHIVE
+          <Sparkles size={14} /> 学园 × 青春 × 物语 RPG
         </div>
         <h1>
           {titleLead}

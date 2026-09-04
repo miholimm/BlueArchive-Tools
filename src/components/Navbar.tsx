@@ -9,15 +9,18 @@ import type { SiteModuleId } from '../types'
 
 type DropdownItem = { to: string; label: string; module: SiteModuleId }
 type District = {
+  en: string
   label: string
   icon: React.ComponentType<{ size?: number }>
   items: DropdownItem[]
 }
 
 // 基沃托斯导航：18 条路由收敘为 4 个「城区」，替代原先 13 项平级入口
+// 标签采用官方式双行：英文大写主标签 + 中文副标签
 const districts: District[] = [
   {
-    label: '夏莱',
+    en: 'SCHALE',
+    label: '夏莱总部',
     icon: Building2,
     items: [
       { to: '/', label: '首页', module: 'home' },
@@ -27,6 +30,7 @@ const districts: District[] = [
     ],
   },
   {
+    en: 'STORY',
     label: '剧情',
     icon: BookOpen,
     items: [
@@ -37,6 +41,7 @@ const districts: District[] = [
     ],
   },
   {
+    en: 'RESOURCES',
     label: '资源',
     icon: Download,
     items: [
@@ -47,6 +52,7 @@ const districts: District[] = [
     ],
   },
   {
+    en: 'COMMUNITY',
     label: '社区',
     icon: Users,
     items: [
@@ -60,7 +66,8 @@ const districts: District[] = [
   },
 ]
 
-function NavDropdown({ label, icon: Icon, items, mobile, onClose }: {
+function NavDropdown({ en, label, icon: Icon, items, mobile, onClose }: {
+  en: string
   label: string
   icon: React.ComponentType<{ size?: number }>
   items: DropdownItem[]
@@ -94,8 +101,8 @@ function NavDropdown({ label, icon: Icon, items, mobile, onClose }: {
         onClick={mobile ? toggle : undefined}
         aria-expanded={open}
       >
-        {Icon && <Icon size={16} />}
-        <span>{label}</span>
+        <span className="nav-district-en">{Icon && <Icon size={15} />}{en}</span>
+        <span className="nav-district-zh">{label}</span>
         <ChevronDown size={13} className="nav-caret" />
       </button>
       <div className={`nav-dropdown-menu ${open ? 'is-visible' : ''}`}>
@@ -140,7 +147,8 @@ export default function Navbar() {
         <nav className="nav-links desktop-nav">
           {visibleDistricts.map(district => (
             <NavDropdown
-              key={district.label}
+              key={district.en}
+              en={district.en}
               label={district.label}
               icon={district.icon}
               items={district.items}
@@ -152,7 +160,8 @@ export default function Navbar() {
         <nav className={open ? 'nav-links mobile-nav is-open' : 'nav-links mobile-nav'}>
           {visibleDistricts.map(district => (
             <NavDropdown
-              key={district.label}
+              key={district.en}
+              en={district.en}
               label={district.label}
               icon={district.icon}
               items={district.items}
