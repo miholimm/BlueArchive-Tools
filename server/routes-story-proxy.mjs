@@ -56,7 +56,7 @@ function isPrivateIp(ip) {
   return false
 }
 
-storyProxyRoutes.get('/', async (req, res) => {
+export async function handleStoryProxy(req, res) {
   const raw = req.query.url
   if (typeof raw !== 'string' || !raw) {
     return res.status(400).json({ error: '缺少 url 参数' })
@@ -109,4 +109,7 @@ storyProxyRoutes.get('/', async (req, res) => {
     clearTimeout(timer)
     res.status(502).json({ error: '代理拉取失败（可能网络不可达或上游拒绝）' })
   }
-})
+}
+
+storyProxyRoutes.get('/', handleStoryProxy)
+storyProxyRoutes.get('', handleStoryProxy)
