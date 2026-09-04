@@ -16,6 +16,8 @@ export interface BaStoryPlayerBridgeProps {
   useMp3?: boolean
   useSuperSampling?: '' | '2' | '4' | boolean
   storySummary?: { chapterName: string; summary: string }
+  /** 玩家称谓，播放器会把 summary 里的 [USERNAME] 替换为该值 */
+  userName?: string
 }
 
 const DEFAULT_DATA_URL = 'https://yuuka.cdn.diyigemt.com/image/ba-all-data'
@@ -53,6 +55,7 @@ export default function BaStoryPlayerBridge(props: BaStoryPlayerBridgeProps) {
           useMp3: props.useMp3 ?? true,
           useSuperSampling: props.useSuperSampling ?? false,
           storySummary: props.storySummary ?? { chapterName: '蔚蓝档案', summary: '汉化组剧情演示' },
+          userName: props.userName ?? '老师',
         })
         app.mount(el)
       })

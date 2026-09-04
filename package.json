@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "ba-story-player": "^0.8.1",
+    "ba-story-player": "file:C:/Users/flhan/WorkBuddy/_vendor/ba-story-player/lib/ba-story-player",
     "express": "^5.1.0",
     "lucide-react": "^0.468.0",
     "pg": "^8.16.3",
