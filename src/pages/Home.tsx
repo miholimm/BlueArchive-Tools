@@ -105,6 +105,30 @@ export default function Home() {
         showDownloads={showDownloads}
       />
       <main>
+        {showNews && news.length > 0 && (
+          <section className="news-strip">
+            <div className="news-strip-inner">
+              <div className="news-strip-head">
+                <span className="news-strip-label">NEWS / 最新公告</span>
+                <Link to="/news" className="news-strip-more">
+                  查看全部 <ArrowRight size={14} />
+                </Link>
+              </div>
+              <ul className="news-strip-list">
+                {news.slice(0, 4).map((item) => (
+                  <li key={item.id}>
+                    <Link to={`/news/${item.id}`} className="news-strip-row">
+                      <time>{item.date}</time>
+                      <span className="news-strip-tag">公告</span>
+                      <span className="news-strip-title">{item.title}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
+
         <section className="section district-section">
           <Reveal>
             <div className="section-heading">

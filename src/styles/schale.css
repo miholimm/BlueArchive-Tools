@@ -1095,6 +1095,98 @@
 /* 状态卡浮于雷达盘之上 */
 .app-shell .figure-card { position: relative; z-index: 3; }
 
+/* ── 官方式新闻条（hero 下方：日期 + 分类 + 标题） ── */
+.app-shell .news-strip {
+  max-width: 1140px;
+  margin: 26px auto 0;
+  padding: 0 24px;
+}
+
+.app-shell .news-strip-inner {
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.app-shell .news-strip-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 20px;
+  border-bottom: 1px solid var(--card-line);
+  background: var(--card-alt);
+}
+
+.app-shell .news-strip-label {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--ink);
+  letter-spacing: .04em;
+}
+
+.app-shell .news-strip-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--sky);
+  text-decoration: none;
+}
+
+.app-shell .news-strip-list { list-style: none; margin: 0; padding: 4px 0; }
+
+.app-shell .news-strip-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 20px;
+  text-decoration: none;
+  transition: background .18s;
+}
+
+.app-shell .news-strip-row:hover { background: var(--card-alt); }
+
+.app-shell .news-strip-row time {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-dim);
+  flex-shrink: 0;
+}
+
+.app-shell .news-strip-tag {
+  flex-shrink: 0;
+  padding: 2px 10px;
+  border-radius: var(--r-pill);
+  background: var(--card-alt);
+  border: 1px solid var(--card-line-strong);
+  color: var(--cyan-strong);
+  font-size: 11px;
+}
+
+.app-shell .news-strip-title {
+  font-size: 13px;
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .app-shell .news-strip-row time { display: none; }
+}
+
+/* 窄视口下状态卡依次收起，避免被首屏底边裁切 */
+@media (max-width: 1200px) {
+  .app-shell .figure-card-3 { display: none; }
+}
+
+@media (max-width: 1024px) {
+  .app-shell .figure-card-2 { display: none; }
+}
+
 .app-shell .hero-cloud {
   position: absolute;
   height: 30px;
