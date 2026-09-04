@@ -21,9 +21,10 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"M PLUS Rounded 1c"', '"Noto Sans SC"', 'sans-serif'],
+        display: ['"Noto Sans SC"', 'sans-serif'],
+        round: ['"M PLUS Rounded 1c"', '"Noto Sans SC"', 'sans-serif'],
         sans: ['"Noto Sans SC"', 'sans-serif'],
-        mono: ['"IBM Plex Mono"', 'monospace'],
+        mono: ['"IBM Plex Mono"', '"Noto Sans SC"', 'monospace'],
       },
       borderRadius: {
         panel: '18px',

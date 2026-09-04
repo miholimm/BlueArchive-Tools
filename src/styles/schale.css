@@ -1,9 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=M+PLUS+Rounded+1c:wght@700;800;900&family=Noto+Sans+SC:wght@400;500;600;700;800;900&display=swap');
 
 .app-shell {
-  --font-display: 'M PLUS Rounded 1c', 'Noto Sans SC', sans-serif;
+  /* 中文标题统一 Noto 特粗黑体（M PLUS Rounded 无简体字形，混排会撕裂）；
+     --font-round 仅用于纯拉丁/数字标签 */
+  --font-display: 'Noto Sans SC', sans-serif;
+  --font-round: 'M PLUS Rounded 1c', 'Noto Sans SC', sans-serif;
   --font-ui: 'Noto Sans SC', sans-serif;
-  --font-mono: 'IBM Plex Mono', monospace;
+  --font-mono: 'IBM Plex Mono', 'Noto Sans SC', monospace;
 
   --halo: #ffc94d;
   --halo-soft: #ffe49a;
@@ -1049,7 +1052,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-family: var(--font-display);
+  font-family: var(--font-round);
   font-weight: 800;
   font-size: 13px;
   letter-spacing: .08em;
@@ -1114,6 +1117,9 @@
 
 /* 状态卡浮于雷达盘之上 */
 .app-shell .figure-card { position: relative; z-index: 3; }
+
+/* figure 组（雷达+状态卡）整体上移，避免底部状态卡被首屏底边裁切 */
+.app-shell .hero-figure { top: 45%; }
 
 /* ── 官方式新闻条（hero 下方：日期 + 分类 + 标题） ── */
 .app-shell .news-strip {
@@ -1294,3 +1300,35 @@
     width: calc(100% - 20px);
   }
 }
+
+/* ── 字重统一：标题一律特粗黑体（修复粗细倒挂），纯拉丁标签用圆体 ── */
+.app-shell .hero h1,
+.app-shell .section-heading h2,
+.app-shell .page-hero h1,
+.app-shell .article-heading h1,
+.app-shell .download-group-heading h2,
+.app-shell .manifesto h2,
+.app-shell .news-card-body h3,
+.app-shell .download-title h3,
+.app-shell .story-reader-heading h1,
+.app-shell .status-resource-card strong,
+.app-shell .status-main strong,
+.app-shell .stat-block strong,
+.app-shell .brand strong,
+.app-shell .footer-note strong {
+  font-weight: 800;
+}
+
+.app-shell .hero h1 { font-weight: 900; }
+
+/* 纯拉丁/数字标签：圆体（不与中文混排，无缺字撕裂） */
+.app-shell .eyebrow,
+.app-shell .nav-district-en,
+.app-shell .district-en,
+.app-shell .loading-mark {
+  font-family: var(--font-round);
+}
+
+.app-shell .eyebrow { font-weight: 700; letter-spacing: .1em; }
+
+.app-shell .stat-block strong { font-family: var(--font-round); font-variant-numeric: tabular-nums; }
