@@ -1073,10 +1073,28 @@
   position: absolute;
   right: 4px;
   top: 50%;
-  transform: translateY(-50%);
+  /* rotate 与 translate 解耦：transform 函数列表长度一致的插值才平滑，
+     混合写法在部分渲染路径会离散跳变（箭头上下颠） */
+  transform: none;
+  translate: 0 -50%;
+  rotate: 0deg;
+  transition: rotate .22s ease;
 }
 
-.app-shell .nav-dropdown-trigger.is-open .nav-caret { transform: translateY(-50%) rotate(180deg); }
+.app-shell .nav-dropdown-trigger.is-open .nav-caret {
+  transform: none;
+  rotate: 180deg;
+}
+
+/* hover 穿越桥：鼠标滑向菜单途中不离开触发器 hover 区，消除开合抖动 */
+.app-shell .nav-dropdown-menu::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -12px;
+  height: 12px;
+}
 
 /* 首屏：官方 key visual —— 天空渐变 + 云 + 白子立绘 */
 .app-shell .hero {
