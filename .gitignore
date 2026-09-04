@@ -34,3 +34,4 @@ portable-deployment/source.previous.*/
 portable-file-storage/FILE_STORAGE_ACCESS.local.md
 portable-file-storage/data/
 portable-file-storage/.env
+.playwright-cli/
