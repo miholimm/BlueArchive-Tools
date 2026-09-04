@@ -1092,6 +1092,9 @@
 /* 内部含 absolute 装饰的卡片，统一补定位上下文 */
 .app-shell .download-card { position: relative; }
 
+/* 状态卡浮于雷达盘之上 */
+.app-shell .figure-card { position: relative; z-index: 3; }
+
 .app-shell .hero-cloud {
   position: absolute;
   height: 30px;
