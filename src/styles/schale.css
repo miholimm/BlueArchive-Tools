@@ -1086,8 +1086,11 @@
 
 /* 移除终端时代的整幅描边框与 art 区旧面板底色 */
 .app-shell .hero::after { content: none; }
-.app-shell .hero-art { background: none; }
+.app-shell .hero-art { background: none; position: relative; }
 .app-shell[data-theme='dark'] .hero-art { background: none; }
+
+/* 内部含 absolute 装饰的卡片，统一补定位上下文 */
+.app-shell .download-card { position: relative; }
 
 .app-shell .hero-cloud {
   position: absolute;
