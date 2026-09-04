@@ -1249,3 +1249,28 @@
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
 }
+
+/* ── 悬浮导航岛：与页面顶端保持呼吸距离，不再贴死顶边 ── */
+.app-shell .site-nav {
+  position: sticky;
+  top: 14px;
+  margin: 14px auto 12px;
+  width: calc(100% - 32px);
+  max-width: 1240px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--card-line);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 悬浮胶囊条不再需要旧的底部分割渐变线 */
+.app-shell .site-nav::after { content: none; }
+
+.app-shell .nav-dropdown-menu { border-radius: var(--r-md); }
+
+@media (max-width: 640px) {
+  .app-shell .site-nav {
+    top: 10px;
+    margin: 10px auto 8px;
+    width: calc(100% - 20px);
+  }
+}
