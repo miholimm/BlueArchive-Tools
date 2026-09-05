@@ -1245,6 +1245,13 @@
   margin: 12px 0 0; font-size: 11px; color: var(--ink-muted);
 }
 
+/* 滚动提示移到右下角，避免与 hero-stats 重叠 */
+.app-shell .hero-scroll {
+  left: auto;
+  right: clamp(24px, 6vw, 64px);
+  bottom: 20px;
+}
+
 /* figure 组（雷达+状态卡）整体上移，避免底部状态卡被首屏底边裁切 */
 .app-shell .hero-figure { top: 45%; }
 
