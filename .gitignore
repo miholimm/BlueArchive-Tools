@@ -35,3 +35,7 @@ portable-file-storage/FILE_STORAGE_ACCESS.local.md
 portable-file-storage/data/
 portable-file-storage/.env
 .playwright-cli/
+
+# 播放器引擎构建产物例外（file: 依赖需要 dist 随仓库分发）
+!vendor/ba-story-player/dist
+!vendor/ba-story-player/dist/**
