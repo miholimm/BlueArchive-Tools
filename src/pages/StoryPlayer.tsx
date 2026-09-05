@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, Loader2, Play } from 'lucide-react'
+import { AlertTriangle, ChevronDown, ListTree, Loader2, Play } from 'lucide-react'
 import BaStoryPlayerBridge, { type StoryLanguage } from '../components/story/BaStoryPlayerBridge'
 import { trackEvent } from '../lib/tracking'
 import ModuleGate from '../components/ModuleGate'
@@ -30,6 +30,22 @@ function isCorsOpen(url: string): boolean {
   }
 }
 
+// ── 剧情目录：碧蓝档案剧情站（ba-archive/blue-archive）全量剧情 ──
+type CatalogItem = { type: string; file: string; path: string }
+type Catalog = { total: number; cdn: string; repo: string; items: CatalogItem[] }
+
+const STORY_TYPES: Array<{ key: string; label: string }> = [
+  { key: 'favor', label: '好感剧情' },
+  { key: 'main', label: '主线' },
+  { key: 'event', label: '活动' },
+  { key: 'other', label: '其他' },
+  { key: 'ai', label: 'AI翻译' },
+]
+const typeLabel = (key: string) => STORY_TYPES.find((t) => t.key === key)?.label ?? key
+
+// 剧情站仓库内的剧情 JSON 也可经 jsDelivr 直连（CORS 开放）
+const STORY_REPO_CDN = 'https://cdn.jsdelivr.net/gh/ba-archive/blue-archive@main/apps/blue-archive-story-viewer/public/story/'
+
 function StoryPlayerInner() {
   const [story, setStory] = useState<unknown>(null)
   const [loading, setLoading] = useState(true)
@@ -39,6 +55,41 @@ function StoryPlayerInner() {
   const [storyUrl, setStoryUrl] = useState('')
   const [mountWidth, setMountWidth] = useState(1000)
   const wrapRef = useRef<HTMLDivElement | null>(null)
+
+  // 剧情目录
+  const [catalog, setCatalog] = useState<Catalog | null>(null)
+  const [catalogError, setCatalogError] = useState('')
+  const [catalogOpen, setCatalogOpen] = useState(false)
+  const [catType, setCatType] = useState('favor')
+  const [catSearch, setCatSearch] = useState('')
+  const [catLimit, setCatLimit] = useState(60)
+
+  const loadCatalog = async () => {
+    setCatalogError('')
+    try {
+      const res = await fetch('/api/story-catalog')
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.error || `HTTP ${res.status}`)
+      }
+      setCatalog(await res.json())
+    } catch (e) {
+      setCatalogError(e instanceof Error ? e.message : '目录拉取失败')
+    }
+  }
+
+  useEffect(() => {
+    if (catalogOpen && !catalog && !catalogError) loadCatalog()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [catalogOpen])
+
+  const catalogFiltered = useMemo(() => {
+    if (!catalog) return []
+    const q = catSearch.trim()
+    return catalog.items.filter(
+      (i) => (catType ? i.type === catType : true) && (!q || i.file.includes(q) || i.path.includes(q)),
+    )
+  }, [catalog, catType, catSearch])
 
   useEffect(() => {
     const el = wrapRef.current
@@ -86,8 +137,8 @@ function StoryPlayerInner() {
   const loadById = () => {
     const id = storyId.trim()
     if (!id) return
-    const padded = id
-    loadFromUrl(`https://preview.blue-archive.io/story/favor/${padded.slice(0, 5)}/${padded}.json`)
+    // 剧情站仓库静态目录：story/favor/{学生前5位}/{剧情编号}.json（jsDelivr 直连，CORS 开放）
+    loadFromUrl(`${STORY_REPO_CDN}favor/${id.slice(0, 5)}/${id}.json`)
   }
 
   // 本地 JSON 上传：完全离线、无 CORS / 代理依赖，最适合汉化组直接载入提取好的剧情单元
@@ -128,7 +179,7 @@ function StoryPlayerInner() {
               <input
                 value={storyId}
                 onChange={(e) => setStoryId(e.target.value)}
-                placeholder="例如 200362"
+                placeholder="如 100533（优香 第3话）"
                 onKeyDown={(e) => e.key === 'Enter' && loadById()}
               />
               <button className="button button-primary" onClick={loadById}>
@@ -185,6 +236,84 @@ function StoryPlayerInner() {
           <Link className="button button-ghost" to="/story">
             返回剧情库
           </Link>
+        </div>
+
+        {/* 全量剧情目录：来自碧蓝档案剧情站仓库，按需从 jsDelivr 拉取播放 */}
+        <div className="ba-catalog">
+          <button className="ba-catalog-toggle" onClick={() => setCatalogOpen((o) => !o)}>
+            <ListTree size={15} />
+            剧情目录{catalog ? `（${catalog.total} 个剧情）` : '（全站 1300+）'}
+            <ChevronDown size={14} className={catalogOpen ? 'is-open' : ''} />
+          </button>
+          {catalogOpen && (
+            <div className="ba-catalog-panel">
+              {catalogError && (
+                <div className="ba-catalog-error">
+                  <AlertTriangle size={14} /> 目录拉取失败：{catalogError}
+                </div>
+              )}
+              {!catalog && !catalogError && (
+                <div className="ba-catalog-loading">
+                  <Loader2 className="spin" size={18} /> 正在拉取全量剧情目录…
+                </div>
+              )}
+              {catalog && (
+                <>
+                  <div className="ba-catalog-filters">
+                    <button className={catType === '' ? 'is-active' : ''} onClick={() => setCatType('')}>
+                      全部 {catalog.total}
+                    </button>
+                    {STORY_TYPES.map((t) => {
+                      const n = catalog.items.filter((i) => i.type === t.key).length
+                      return (
+                        <button
+                          key={t.key}
+                          className={catType === t.key ? 'is-active' : ''}
+                          onClick={() => setCatType(t.key)}
+                        >
+                          {t.label} {n}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <input
+                    className="ba-catalog-search"
+                    value={catSearch}
+                    onChange={(e) => setCatSearch(e.target.value)}
+                    placeholder="按剧情编号过滤，如 100533"
+                  />
+                  <ul className="ba-catalog-list">
+                    {catalogFiltered.slice(0, catLimit).map((item) => (
+                      <li key={item.path}>
+                        <span className={`ba-catalog-type t-${item.type}`}>{typeLabel(item.type)}</span>
+                        <span className="ba-catalog-file">{item.path.replace(/\.json$/, '')}</span>
+                        <button
+                          className="ba-catalog-play"
+                          onClick={() => {
+                            loadFromUrl(`${STORY_REPO_CDN}${item.path}`)
+                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                          }}
+                        >
+                          <Play size={13} /> 播放
+                        </button>
+                      </li>
+                    ))}
+                    {catalogFiltered.length === 0 && (
+                      <li className="ba-catalog-empty">没有匹配的剧情</li>
+                    )}
+                  </ul>
+                  {catalogFiltered.length > catLimit && (
+                    <button className="ba-catalog-more" onClick={() => setCatLimit((l) => l + 100)}>
+                      显示更多（剩余 {catalogFiltered.length - catLimit}）
+                    </button>
+                  )}
+                  <p className="ba-catalog-note">
+                    数据来源：碧蓝档案剧情站（ba-archive/blue-archive），点击播放时从 jsDelivr 实时拉取。
+                  </p>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {error && (

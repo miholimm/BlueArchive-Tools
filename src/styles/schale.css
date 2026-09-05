@@ -1118,6 +1118,133 @@
 /* 状态卡浮于雷达盘之上 */
 .app-shell .figure-card { position: relative; z-index: 3; }
 
+/* 状态卡浮于雷达盘之上 */
+.app-shell .figure-card { position: relative; z-index: 3; }
+
+/* ── 剧情目录面板（播放器页） ── */
+.app-shell .ba-catalog { margin-bottom: 18px; }
+
+.app-shell .ba-catalog-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid var(--card-line-strong);
+  border-radius: var(--r-pill);
+  background: var(--card);
+  color: var(--ink);
+  font: 700 13px/1 var(--font-ui);
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+
+.app-shell .ba-catalog-toggle:hover { background: var(--card-alt); border-color: var(--sky); }
+
+.app-shell .ba-catalog-toggle svg { transition: transform .2s ease; }
+.app-shell .ba-catalog-toggle svg.is-open { transform: rotate(180deg); }
+
+.app-shell .ba-catalog-panel {
+  margin-top: 12px;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-shell .ba-catalog-error {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 14px; border-radius: var(--r-sm);
+  color: #b73356; background: rgba(255,107,139,.12);
+  border: 1px solid rgba(255,107,139,.4); font-size: 12px;
+}
+
+.app-shell .ba-catalog-loading {
+  display: flex; align-items: center; gap: 8px;
+  padding: 18px 6px; color: var(--ink-dim); font-size: 13px;
+}
+
+.app-shell .ba-catalog-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+
+.app-shell .ba-catalog-filters button {
+  padding: 5px 13px; border-radius: var(--r-pill);
+  border: 1px solid var(--card-line);
+  background: var(--card-alt); color: var(--ink-soft);
+  font: 600 12px/1 var(--font-ui); cursor: pointer;
+  transition: background .18s, color .18s, border-color .18s;
+}
+
+.app-shell .ba-catalog-filters button.is-active {
+  background: var(--sky); border-color: var(--sky); color: #fff;
+}
+
+.app-shell .ba-catalog-search {
+  width: 100%; min-height: 38px; margin-bottom: 10px; padding: 0 14px;
+  color: var(--ink); background: var(--glass-input);
+  border: 1px solid var(--card-line); border-radius: var(--r-sm);
+  font-family: var(--font-ui); font-size: 13px;
+}
+
+.app-shell .ba-catalog-search:focus { outline: 0; border-color: var(--sky); }
+
+.app-shell .ba-catalog-list {
+  list-style: none; margin: 0; padding: 0;
+  max-height: 420px; overflow-y: auto;
+}
+
+.app-shell .ba-catalog-list li {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: var(--r-xs);
+  transition: background .15s;
+}
+
+.app-shell .ba-catalog-list li:hover { background: var(--card-alt); }
+
+.app-shell .ba-catalog-type {
+  flex-shrink: 0; padding: 2px 8px;
+  border-radius: var(--r-pill); font-size: 10px;
+  background: var(--card-alt); border: 1px solid var(--card-line);
+  color: var(--ink-dim);
+}
+
+.app-shell .ba-catalog-type.t-main { color: var(--sky-strong); border-color: var(--card-line-strong); }
+.app-shell .ba-catalog-type.t-favor { color: var(--teal); border-color: rgba(15,148,131,.4); }
+.app-shell .ba-catalog-type.t-event { color: var(--halo); border-color: var(--halo-ring); }
+.app-shell .ba-catalog-type.t-ai { color: var(--sakura, #ff87a5); border-color: rgba(255,135,165,.4); }
+
+.app-shell .ba-catalog-file {
+  flex: 1; min-width: 0;
+  font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.app-shell .ba-catalog-play {
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 12px; border-radius: var(--r-pill);
+  border: 1px solid var(--card-line-strong);
+  background: var(--card); color: var(--sky-strong);
+  font: 600 11px/1 var(--font-ui); cursor: pointer;
+  transition: background .18s, color .18s;
+}
+
+.app-shell .ba-catalog-play:hover { background: var(--sky); border-color: var(--sky); color: #fff; }
+
+.app-shell .ba-catalog-empty { padding: 16px 10px; color: var(--ink-muted); font-size: 12px; }
+
+.app-shell .ba-catalog-more {
+  width: 100%; margin-top: 10px; padding: 9px;
+  border: 1px dashed var(--card-line-strong); border-radius: var(--r-sm);
+  background: none; color: var(--sky-strong);
+  font: 600 12px/1 var(--font-ui); cursor: pointer;
+}
+
+.app-shell .ba-catalog-more:hover { background: var(--card-alt); }
+
+.app-shell .ba-catalog-note {
+  margin: 12px 0 0; font-size: 11px; color: var(--ink-muted);
+}
+
 /* figure 组（雷达+状态卡）整体上移，避免底部状态卡被首屏底边裁切 */
 .app-shell .hero-figure { top: 45%; }
 

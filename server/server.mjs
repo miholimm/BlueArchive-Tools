@@ -11,6 +11,7 @@ import { qaRoutes } from "./routes-qa.mjs";
 import { qqOAuthRoutes } from "./routes-qq-oauth.mjs";
 import { staticDataRoutes, storyDataRoutes } from "./routes-static.mjs";
 import { handleStoryProxy } from "./routes-story-proxy.mjs";
+import { storyCatalogRoutes } from "./routes-story-catalog.mjs";
 import { rateLimit, securityHeaders, getRequestIp } from "./security.mjs";
 
 await initRepository(config.root);
@@ -51,6 +52,8 @@ app.use("/api/site-data", staticDataRoutes);
 app.use("/api/story", storyDataRoutes);
 app.get("/api/story-proxy", handleStoryProxy);
 app.get("/api/story-proxy/", handleStoryProxy);
+// 剧情目录（碧蓝档案剧情站仓库全量剧情索引，内存缓存 1h）
+app.use("/api/story-catalog", storyCatalogRoutes);
 // API Key 管理（需认证）
 app.use("/api/admin/api-keys", apiKeyRoutes);
 // 任务池（公开 GET，管理操作需认证）
