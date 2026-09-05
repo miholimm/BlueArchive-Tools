@@ -20,6 +20,14 @@ try {
   studentNames = {}
 }
 
+// main/event/other 的章节标题（批量从剧情 JSON 的 #title 单元提取，静态产物）
+let storyTitles = {}
+try {
+  storyTitles = JSON.parse(readFileSync(join(HERE, 'data', 'story-titles.json'), 'utf8'))
+} catch {
+  storyTitles = {}
+}
+
 const studentName = (id) => studentNames[id] || ''
 
 // 依据路径生成可读标题：favor/event/ai 带学生名与话数，main/other 保留编号
@@ -43,6 +51,16 @@ function makeTitle(type, seg, file) {
     return type === 'ai' ? `${name} 第${epNum}话（AI翻译）` : `${name} 第${epNum}话`
   }
   if (name) return name
+  // main/event/other：查批量提取的章节标题（「第1话;异变」→「异变」）
+  const rel = `${type}/${file}`
+  const chapter = storyTitles[rel]
+  if (chapter) {
+    const parts = String(chapter).split(';')
+    const epPrefix = /^(第\d+话)$/.exec(parts[0])
+    const text = parts.length > 1 && epPrefix ? parts.slice(1).join(';') : String(chapter)
+    // 清洗 BBCode 颜色标记（[FF6666]…[-]）
+    return text.replace(/\[[0-9A-Fa-f]{6}\]|\[[-]\]/g, '').trim()
+  }
   return ''
 }
 
