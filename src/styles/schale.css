@@ -1212,9 +1212,18 @@
 .app-shell .ba-catalog-type.t-event { color: var(--halo); border-color: var(--halo-ring); }
 .app-shell .ba-catalog-type.t-ai { color: var(--sakura, #ff87a5); border-color: rgba(255,135,165,.4); }
 
-.app-shell .ba-catalog-file {
+.app-shell .ba-catalog-body {
   flex: 1; min-width: 0;
-  font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft);
+  display: flex; flex-direction: column; gap: 2px;
+}
+
+.app-shell .ba-catalog-title {
+  font-size: 13px; font-weight: 600; color: var(--ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.app-shell .ba-catalog-file {
+  font-family: var(--font-mono); font-size: 10px; color: var(--ink-muted);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 

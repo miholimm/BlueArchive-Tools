@@ -31,7 +31,7 @@ function isCorsOpen(url: string): boolean {
 }
 
 // ── 剧情目录：碧蓝档案剧情站（ba-archive/blue-archive）全量剧情 ──
-type CatalogItem = { type: string; file: string; path: string }
+type CatalogItem = { type: string; file: string; path: string; title?: string }
 type Catalog = { total: number; cdn: string; repo: string; items: CatalogItem[] }
 
 const STORY_TYPES: Array<{ key: string; label: string }> = [
@@ -87,7 +87,9 @@ function StoryPlayerInner() {
     if (!catalog) return []
     const q = catSearch.trim()
     return catalog.items.filter(
-      (i) => (catType ? i.type === catType : true) && (!q || i.file.includes(q) || i.path.includes(q)),
+      (i) =>
+        (catType ? i.type === catType : true) &&
+        (!q || i.title?.includes(q) || i.file.includes(q) || i.path.includes(q)),
     )
   }, [catalog, catType, catSearch])
 
@@ -280,13 +282,18 @@ function StoryPlayerInner() {
                     className="ba-catalog-search"
                     value={catSearch}
                     onChange={(e) => setCatSearch(e.target.value)}
-                    placeholder="按剧情编号过滤，如 100533"
+                    placeholder="按角色名或编号搜索，如 优香 / 白子 / 100533"
                   />
                   <ul className="ba-catalog-list">
                     {catalogFiltered.slice(0, catLimit).map((item) => (
                       <li key={item.path}>
                         <span className={`ba-catalog-type t-${item.type}`}>{typeLabel(item.type)}</span>
-                        <span className="ba-catalog-file">{item.path.replace(/\.json$/, '')}</span>
+                        <span className="ba-catalog-body">
+                          <span className="ba-catalog-title">
+                            {item.title || item.path.replace(/\.json$/, '')}
+                          </span>
+                          <span className="ba-catalog-file">{item.path.replace(/\.json$/, '')}</span>
+                        </span>
                         <button
                           className="ba-catalog-play"
                           onClick={() => {

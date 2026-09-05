@@ -39,3 +39,5 @@ portable-file-storage/.env
 # 播放器引擎构建产物例外（file: 依赖需要 dist 随仓库分发）
 !vendor/ba-story-player/dist
 !vendor/ba-story-player/dist/**
+!server/data/
+!server/data/student-names.json

@@ -1,4 +1,7 @@
 import { Router } from 'express'
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 
 // 剧情目录：从 ba-archive/blue-archive（碧蓝档案剧情站）仓库枚举全部剧情 JSON。
 // 仓库即线上剧情站 blue-archive.io 的源，public/story/{类型}/{学生}/{剧情}.json。
@@ -7,6 +10,41 @@ import { Router } from 'express'
 const REPO = 'ba-archive/blue-archive'
 const STORY_PREFIX = 'apps/blue-archive-story-viewer/public/story/'
 const CACHE_TTL = 60 * 60 * 1000
+
+// 学生 Id → 中文名（来自剧情站 students.yaml，构建期转换的静态映射）
+const HERE = dirname(fileURLToPath(import.meta.url))
+let studentNames = {}
+try {
+  studentNames = JSON.parse(readFileSync(join(HERE, 'data', 'student-names.json'), 'utf8'))
+} catch {
+  studentNames = {}
+}
+
+const studentName = (id) => studentNames[id] || ''
+
+// 依据路径生成可读标题：favor/event/ai 带学生名与话数，main/other 保留编号
+function makeTitle(type, seg, file) {
+  let studentId = ''
+  let ep = ''
+  if (type === 'favor') {
+    studentId = seg[1] ?? ''
+    ep = file.slice(5)
+  } else if (type === 'ai') {
+    // ai/favor/{学生}/{GroupId}
+    studentId = seg[2] ?? ''
+    ep = file.slice(5)
+  } else if (type === 'event') {
+    studentId = seg[1] ?? ''
+    ep = file.slice(5)
+  }
+  const name = studentName(studentId)
+  const epNum = parseInt(ep, 10)
+  if (name && Number.isFinite(epNum) && epNum > 0) {
+    return type === 'ai' ? `${name} 第${epNum}话（AI翻译）` : `${name} 第${epNum}话`
+  }
+  if (name) return name
+  return ''
+}
 
 let cache = null
 
@@ -32,7 +70,7 @@ async function fetchCatalog() {
       const seg = rel.split('/')
       const type = seg[0]
       const file = seg[seg.length - 1].replace(/\.json$/, '')
-      return { type, file, path: rel }
+      return { type, file, path: rel, title: makeTitle(type, seg, file) }
     })
 
   const data = {
