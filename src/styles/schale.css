@@ -1121,6 +1121,39 @@
 /* 状态卡浮于雷达盘之上 */
 .app-shell .figure-card { position: relative; z-index: 3; }
 
+/* ── 最近播放快捷行 ── */
+.app-shell .ba-recent {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 16px;
+}
+
+.app-shell .ba-recent-label {
+  flex-shrink: 0; padding-top: 6px;
+  font: 600 11px/1 var(--font-ui); letter-spacing: .08em;
+  color: var(--ink-muted);
+}
+
+.app-shell .ba-recent-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.app-shell .ba-recent-chip {
+  padding: 6px 14px; border-radius: var(--r-pill);
+  border: 1px solid var(--card-line-strong);
+  background: var(--card); color: var(--ink-soft);
+  font: 600 12px/1 var(--font-ui); cursor: pointer;
+  transition: background .18s, color .18s, border-color .18s;
+}
+
+.app-shell .ba-recent-chip:hover {
+  background: var(--sky); border-color: var(--sky); color: #fff;
+}
+
+.app-shell .ba-recent-clear {
+  padding: 6px 10px; border: 0; background: none;
+  color: var(--ink-muted); font-size: 11px; cursor: pointer;
+}
+
+.app-shell .ba-recent-clear:hover { color: var(--schale-signal); }
+
 /* ── 剧情目录面板（播放器页） ── */
 .app-shell .ba-catalog { margin-bottom: 18px; }
 

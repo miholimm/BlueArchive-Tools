@@ -103,6 +103,29 @@ function StoryPlayerInner() {
     return () => ro.disconnect()
   }, [])
 
+  // 最近播放（localStorage 持久化，最多 8 条）
+  type RecentItem = { url: string; title: string }
+  const RECENT_KEY = 'ba-story-player:recent'
+  const [recent, setRecent] = useState<RecentItem[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]')
+    } catch {
+      return []
+    }
+  })
+
+  const recordRecent = (url: string, title?: string) => {
+    setRecent((prev) => {
+      const next = [{ url, title: title || url }, ...prev.filter((r) => r.url !== url)].slice(0, 8)
+      try {
+        localStorage.setItem(RECENT_KEY, JSON.stringify(next))
+      } catch {
+        /* storage full — 忽略 */
+      }
+      return next
+    })
+  }
+
   const loadFromUrl = async (url: string) => {
     if (!url) return
     setLoading(true)
@@ -122,6 +145,8 @@ function StoryPlayerInner() {
       }
       const data = await res.json()
       setStory(data)
+      const catalogTitle = catalog?.items.find((i) => `${catalog.cdn}${i.path}` === url)?.title
+      recordRecent(url, catalogTitle ?? (data.chapterName as string | undefined))
       trackEvent('story_player_load', { source: url.startsWith('http') ? 'remote' : 'sample', url })
     } catch (e) {
       setError(e instanceof Error ? `加载失败：${e.message}` : '加载失败')
@@ -239,6 +264,28 @@ function StoryPlayerInner() {
             返回剧情库
           </Link>
         </div>
+
+        {recent.length > 0 && (
+          <div className="ba-recent">
+            <span className="ba-recent-label">最近播放</span>
+            <div className="ba-recent-chips">
+              {recent.map((r) => (
+                <button key={r.url} className="ba-recent-chip" onClick={() => loadFromUrl(r.url)}>
+                  {r.title}
+                </button>
+              ))}
+              <button
+                className="ba-recent-clear"
+                onClick={() => {
+                  setRecent([])
+                  localStorage.removeItem(RECENT_KEY)
+                }}
+              >
+                清空
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* 全量剧情目录：来自碧蓝档案剧情站仓库，按需从 jsDelivr 拉取播放 */}
         <div className="ba-catalog">
