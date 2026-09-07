@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, ChevronDown, ListTree, Loader2, Play } from 'lucide-react'
+import { AlertTriangle, ChevronDown, FileJson, ListTree, Loader2, Play, UploadCloud } from 'lucide-react'
 import BaStoryPlayerBridge, { type StoryLanguage } from '../components/story/BaStoryPlayerBridge'
 import { trackEvent } from '../lib/tracking'
 import ModuleGate from '../components/ModuleGate'
@@ -55,6 +55,11 @@ function StoryPlayerInner() {
   const [storyUrl, setStoryUrl] = useState('')
   const [mountWidth, setMountWidth] = useState(1000)
   const wrapRef = useRef<HTMLDivElement | null>(null)
+
+  // 本地文件上传
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const [uploadName, setUploadName] = useState('')
+  const [dragActive, setDragActive] = useState(false)
 
   // 剧情目录
   const [catalog, setCatalog] = useState<Catalog | null>(null)
@@ -169,9 +174,9 @@ function StoryPlayerInner() {
   }
 
   // 本地 JSON 上传：完全离线、无 CORS / 代理依赖，最适合汉化组直接载入提取好的剧情单元
-  const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  const handleFile = async (file: File) => {
     if (!file) return
+    setUploadName(file.name)
     setLoading(true)
     setError('')
     try {
@@ -184,8 +189,20 @@ function StoryPlayerInner() {
       setStory(null)
     } finally {
       setLoading(false)
-      e.target.value = '' // 允许重复选择同一文件
     }
+  }
+
+  const onFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) handleFile(file)
+    e.target.value = '' // 允许重复选择同一文件
+  }
+
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setDragActive(false)
+    const file = e.dataTransfer.files?.[0]
+    if (file) handleFile(file)
   }
 
   return (
@@ -240,15 +257,35 @@ function StoryPlayerInner() {
               <option value="Tw">繁體中文</option>
             </select>
           </div>
-          <div className="ba-sp-field">
+          <div className="ba-sp-field ba-sp-upload-field">
             <label>或上传本地剧情 JSON</label>
-            <div className="ba-sp-row">
+            <div
+              className={`ba-sp-drop${dragActive ? ' is-drag' : ''}`}
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={(e) => {
+                e.preventDefault()
+                setDragActive(true)
+              }}
+              onDragLeave={() => setDragActive(false)}
+              onDrop={onDrop}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click()
+              }}
+            >
               <input
+                ref={fileInputRef}
                 type="file"
                 accept=".json,application/json"
-                onChange={onFile}
-                className="ba-sp-file"
+                onChange={onFileInput}
+                className="ba-sp-file-input"
               />
+              {uploadName ? <FileJson size={22} /> : <UploadCloud size={22} />}
+              <span className="ba-sp-drop-main">
+                {uploadName || '拖拽 JSON 到此处，或点击选择文件'}
+              </span>
+              <span className="ba-sp-drop-sub">支持 .json · 本地解析，不上传服务器</span>
             </div>
           </div>
         </div>

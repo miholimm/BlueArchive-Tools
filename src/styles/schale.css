@@ -1118,8 +1118,45 @@
 /* 状态卡浮于雷达盘之上 */
 .app-shell .figure-card { position: relative; z-index: 3; }
 
-/* 状态卡浮于雷达盘之上 */
-.app-shell .figure-card { position: relative; z-index: 3; }
+/* ── 本地上传区：圆角虚线拖拽卡（替换原生 file input） ── */
+.app-shell .ba-sp-file-input { display: none; }
+
+.app-shell .ba-sp-drop {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  padding: 24px 18px;
+  border: 1.5px dashed var(--card-line-strong);
+  border-radius: var(--r-md);
+  background: var(--card-alt);
+  cursor: pointer;
+  transition: border-color .2s, background .2s, transform .18s, box-shadow .2s;
+}
+
+.app-shell .ba-sp-drop:hover,
+.app-shell .ba-sp-drop.is-drag {
+  border-color: var(--sky);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-shell .ba-sp-drop.is-drag { transform: scale(1.01); }
+
+.app-shell .ba-sp-drop:focus-visible {
+  outline: 2px solid var(--sky);
+  outline-offset: 2px;
+}
+
+.app-shell .ba-sp-drop svg { color: var(--sky); }
+
+.app-shell .ba-sp-drop-main {
+  max-width: 100%;
+  font: 600 13px/1.4 var(--font-ui);
+  color: var(--ink);
+  text-align: center;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.app-shell .ba-sp-drop-sub { font-size: 11px; color: var(--ink-muted); text-align: center; }
 
 /* ── 最近播放快捷行 ── */
 .app-shell .ba-recent {
