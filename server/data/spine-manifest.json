@@ -1,0 +1,1686 @@
+{
+ "_meta": {
+  "source": "https://yuuka.cdn.diyigemt.com/image/（蓝色档案剧情站 CDN）",
+  "cdn": {
+   "main": "ba-all-data（主资源）",
+   "spine42": "ba-all-data-spine42（Spine 4.2 专用；ch*/np* 代码角色走这里）"
+  },
+  "patterns": {
+   "standing": "spine/{英文名小写}_spr/{同名}.skel|.atlas|.png  ← 站立/半身立绘",
+   "l2d": "spine/{角色代码大写}_home/{同名}.skel  ← L2D 大厅动态立绘（约 2MB）",
+   "l2dSub": "spine/{代码}_home/{代码}_{NN}/{代码}_{NN}.skel  ← L2D 子骨骼/差分",
+   "supersampling": "spine/{名}_spr/{名}4/{名}.skel  ← 4x 超采样变体"
+  },
+  "caseSensitive": "是。英文名用小写、数字代码用大写（CH0184）；主 CDN 上小写代码路径 404",
+  "howEngineUses": "ba-story-player 由剧情 JSON 的 CharacterSpine_xxx / l2dSpine 字段拼路径；ch*/np* 走 spine42",
+  "probed": "2026-09-25",
+  "scanRange": "CH0001~CH0400（抽样扫描，非穷尽；实际代码可能超出该范围）"
+ },
+ "students": [
+  {
+   "id": "10000",
+   "cn": "阿露",
+   "en": "aru",
+   "standingSkelBytes": 25019
+  },
+  {
+   "id": "10001",
+   "cn": "艾米",
+   "en": "eimi",
+   "standingSkelBytes": 12798
+  },
+  {
+   "id": "10002",
+   "cn": "晴奈",
+   "en": "haruna",
+   "standingSkelBytes": 15272
+  },
+  {
+   "id": "10003",
+   "cn": "日富美",
+   "en": "hifumi",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10004",
+   "cn": "日奈",
+   "en": "hina",
+   "standingSkelBytes": 39997
+  },
+  {
+   "id": "10005",
+   "cn": "星野",
+   "en": "hoshino",
+   "standingSkelBytes": 28006
+  },
+  {
+   "id": "10006",
+   "cn": "伊织",
+   "en": "iori",
+   "standingSkelBytes": 10520
+  },
+  {
+   "id": "10007",
+   "cn": "真纪",
+   "en": "maki",
+   "standingSkelBytes": 9876
+  },
+  {
+   "id": "10008",
+   "cn": "尼禄",
+   "en": "neru",
+   "standingSkelBytes": 21093
+  },
+  {
+   "id": "10009",
+   "cn": "泉",
+   "en": "izumi",
+   "standingSkelBytes": 18254
+  },
+  {
+   "id": "10010",
+   "cn": "白子",
+   "en": "shiroko",
+   "standingSkelBytes": 25338
+  },
+  {
+   "id": "10011",
+   "cn": "瞬",
+   "en": "shun",
+   "standingSkelBytes": 19638
+  },
+  {
+   "id": "10012",
+   "cn": "堇",
+   "en": "sumire",
+   "standingSkelBytes": 14012
+  },
+  {
+   "id": "10013",
+   "cn": "鹤城",
+   "en": "tsurugi",
+   "standingSkelBytes": 17338
+  },
+  {
+   "id": "10014",
+   "cn": "泉奈",
+   "en": "izuna",
+   "standingSkelBytes": 9325
+  },
+  {
+   "id": "10015",
+   "cn": "爱丽丝",
+   "en": "aris",
+   "standingSkelBytes": 24843
+  },
+  {
+   "id": "10016",
+   "cn": "绿",
+   "en": "midori",
+   "standingSkelBytes": 22180
+  },
+  {
+   "id": "10017",
+   "cn": "切里诺",
+   "en": "cherino",
+   "standingSkelBytes": 16554
+  },
+  {
+   "id": "10018",
+   "cn": "柚子",
+   "en": "yuzu",
+   "standingSkelBytes": 15581
+  },
+  {
+   "id": "10019",
+   "cn": "梓",
+   "en": "azusa",
+   "standingSkelBytes": 14000
+  },
+  {
+   "id": "10020",
+   "cn": "小春",
+   "en": "koharu",
+   "standingSkelBytes": 16749
+  },
+  {
+   "id": "10021",
+   "cn": "梓(泳装)",
+   "en": "azusaswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10022",
+   "cn": "日奈(泳装)",
+   "en": "hinaswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10023",
+   "cn": "伊织(泳装)",
+   "en": "ioriswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10024",
+   "cn": "白子(单车)",
+   "en": "shirokocycling",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10025",
+   "cn": "瞬(幼女)",
+   "en": "shunsmall",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10026",
+   "cn": "尼禄(兔女郎)",
+   "en": "nerubunny",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10027",
+   "cn": "花凛(兔女郎)",
+   "en": "karinbunny",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10028",
+   "cn": "明日奈(兔女郎)",
+   "en": "asunabunny",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10029",
+   "cn": "夏",
+   "en": "natsu",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10030",
+   "cn": "千夏(温泉)",
+   "en": "chinatsuhotspring",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10031",
+   "cn": "阿露(正月)",
+   "en": "arunewyear",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10032",
+   "cn": "睦月(正月)",
+   "en": "mutsukinewyear",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10033",
+   "cn": "若藻",
+   "en": "wakamo",
+   "standingSkelBytes": 15811
+  },
+  {
+   "id": "10034",
+   "cn": "三森",
+   "en": "mimori",
+   "standingSkelBytes": 11497
+  },
+  {
+   "id": "10035",
+   "cn": "忧",
+   "en": "ui",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10036",
+   "cn": "日向",
+   "en": "hinata",
+   "standingSkelBytes": 9835
+  },
+  {
+   "id": "10037",
+   "cn": "玛利娜",
+   "en": "marina",
+   "standingSkelBytes": 20733
+  },
+  {
+   "id": "10038",
+   "cn": "宫子",
+   "en": "miyako",
+   "standingSkelBytes": 18952
+  },
+  {
+   "id": "10039",
+   "cn": "美游",
+   "en": "miyu",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10040",
+   "cn": "月咏",
+   "en": "tsukuyo",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10041",
+   "cn": "美咲",
+   "en": "misaki",
+   "standingSkelBytes": 29835
+  },
+  {
+   "id": "10042",
+   "cn": "亚津子",
+   "en": "atsuko",
+   "standingSkelBytes": 16038
+  },
+  {
+   "id": "10043",
+   "cn": "若藻(泳装)",
+   "en": "wakamoswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10044",
+   "cn": "野宫(泳装)",
+   "en": "nonomiswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10045",
+   "cn": "星野(泳装)",
+   "en": "hoshinoswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10046",
+   "cn": "泉奈(泳装)",
+   "en": "izunaswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10047",
+   "cn": "千世(泳装)",
+   "en": "chiseswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10048",
+   "cn": "纱织",
+   "en": "saori",
+   "standingSkelBytes": 34593
+  },
+  {
+   "id": "10049",
+   "cn": "和纱",
+   "en": "kazusa",
+   "standingSkelBytes": 19780
+  },
+  {
+   "id": "10050",
+   "cn": "心奈",
+   "en": "kokona",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10051",
+   "cn": "咏叶(应援团)",
+   "en": "utahacheersquad",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10052",
+   "cn": "诺亚",
+   "en": "noa",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10053",
+   "cn": "优香(体操服)",
+   "en": "yuukatrack",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10054",
+   "cn": "玛丽(体操服)",
+   "en": "maritrack",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10055",
+   "cn": "时雨",
+   "en": "shigure",
+   "standingSkelBytes": 15614
+  },
+  {
+   "id": "10056",
+   "cn": "芹奈(圣诞)",
+   "en": "serinachristmas",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10057",
+   "cn": "晴奈(正月)",
+   "en": "harunanewyear",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10058",
+   "cn": "美弥",
+   "en": "mine",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10059",
+   "cn": "未花",
+   "en": "mika",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10060",
+   "cn": "惠",
+   "en": "megu",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10061",
+   "cn": "樱子",
+   "en": "sakurako",
+   "standingSkelBytes": 21430
+  },
+  {
+   "id": "10062",
+   "cn": "时",
+   "en": "toki",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10063",
+   "cn": "小雪",
+   "en": "koyuki",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10064",
+   "cn": "佳代子(正月)",
+   "en": "kayokonewyear",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10065",
+   "cn": "果穗",
+   "en": "kaho",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10066",
+   "cn": "爱丽丝(女仆装)",
+   "en": "arismaid",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10067",
+   "cn": "时(兔女郎)",
+   "en": "tokibunny",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10068",
+   "cn": "玲纱",
+   "en": "reisa",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10069",
+   "cn": "瑠美",
+   "en": "rumi",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10070",
+   "cn": "弥奈",
+   "en": "mina",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10071",
+   "cn": "宫子(泳装)",
+   "en": "miyakoswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10072",
+   "cn": "咲(泳装)",
+   "en": "sakiswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10073",
+   "cn": "忧(泳装)",
+   "en": "uiswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10074",
+   "cn": "花子(泳装)",
+   "en": "hanakoswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10075",
+   "cn": "梅露",
+   "en": "meru",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10076",
+   "cn": "小鸟(应援团)",
+   "en": "kotoricheersquad",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10077",
+   "cn": "一花",
+   "en": "ichika",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10078",
+   "cn": "霞",
+   "en": "kasumi",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10079",
+   "cn": "御坂美琴",
+   "en": "misakamikoto",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10080",
+   "cn": "食蜂操祈",
+   "en": "shokuhoumisaki",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10081",
+   "cn": "紫蓠",
+   "en": "yukari",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10082",
+   "cn": "莲华",
+   "en": "renge",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10083",
+   "cn": "桔梗",
+   "en": "kikyou",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10084",
+   "cn": "小玉(露营)",
+   "en": "kotamacamp",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10085",
+   "cn": "晴(露营)",
+   "en": "harecamp",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10086",
+   "cn": "日奈(礼服)",
+   "en": "hinadress",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10087",
+   "cn": "亚子(礼服)",
+   "en": "akodress",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10088",
+   "cn": "佳代子(礼服)",
+   "en": "kayokodress",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10089",
+   "cn": "阿露(礼服)",
+   "en": "arudress",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10090",
+   "cn": "海夏",
+   "en": "umika",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10091",
+   "cn": "和纱(乐队)",
+   "en": "kazusaband",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10092",
+   "cn": "喜美(乐队)",
+   "en": "yoshimiband",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10093",
+   "cn": "绮罗罗",
+   "en": "kirara",
+   "standingSkelBytes": 18712
+  },
+  {
+   "id": "10094",
+   "cn": "桃井(女仆装)",
+   "en": "momoimaid",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10095",
+   "cn": "绿(女仆装)",
+   "en": "midorimaid",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10096",
+   "cn": "康娜(泳装)",
+   "en": "kannaswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10097",
+   "cn": "萌绘(泳装)",
+   "en": "moeswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10098",
+   "cn": "星野(临战)",
+   "en": "hoshinoarmed",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10100",
+   "cn": "白子＊恐怖",
+   "en": "shirokoterror",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10101",
+   "cn": "纱织(泳装)",
+   "en": "saoriswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10102",
+   "cn": "日和(泳装)",
+   "en": "hiyoriswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10103",
+   "cn": "玛利娜(旗袍)",
+   "en": "marinaqipao",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10104",
+   "cn": "俪舒",
+   "en": "reijo",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10105",
+   "cn": "玛丽(偶像)",
+   "en": "maripopidol",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10106",
+   "cn": "樱子(偶像)",
+   "en": "sakurakopopidol",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10107",
+   "cn": "千秋",
+   "en": "chiaki",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10108",
+   "cn": "优香(睡衣)",
+   "en": "yuukapajamas",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10109",
+   "cn": "诺亚(睡衣)",
+   "en": "noapajamas",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10110",
+   "cn": "圣娅",
+   "en": "seia",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10111",
+   "cn": "尼禄(制服)",
+   "en": "neruschool",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10112",
+   "cn": "明日奈(制服)",
+   "en": "asunaschool",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10113",
+   "cn": "濑名(私服)",
+   "en": "senacasual",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10114",
+   "cn": "茱莉(打工)",
+   "en": "juriparttimer",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10115",
+   "cn": "丽",
+   "en": "rei",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10116",
+   "cn": "纱织(礼服)",
+   "en": "saoridress",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10117",
+   "cn": "光",
+   "en": "hikari",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10118",
+   "cn": "望",
+   "en": "nozomi",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10119",
+   "cn": "名草",
+   "en": "nagusa",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10120",
+   "cn": "夏(乐队)",
+   "en": "natsuband",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "10122",
+   "cn": "未花(泳装)",
+   "en": "mikaswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "13000",
+   "cn": "朱音",
+   "en": "akane",
+   "standingSkelBytes": 13983
+  },
+  {
+   "id": "13001",
+   "cn": "千世",
+   "en": "chise",
+   "standingSkelBytes": 19157
+  },
+  {
+   "id": "13002",
+   "cn": "明里",
+   "en": "akari",
+   "standingSkelBytes": 11721
+  },
+  {
+   "id": "13003",
+   "cn": "莲见",
+   "en": "hasumi",
+   "standingSkelBytes": 14833
+  },
+  {
+   "id": "13004",
+   "cn": "野宫",
+   "en": "nonomi",
+   "standingSkelBytes": 25937
+  },
+  {
+   "id": "13005",
+   "cn": "佳代子",
+   "en": "kayoko",
+   "standingSkelBytes": 9115
+  },
+  {
+   "id": "13006",
+   "cn": "睦月",
+   "en": "mutsuki",
+   "standingSkelBytes": 21775
+  },
+  {
+   "id": "13007",
+   "cn": "纯子",
+   "en": "junko",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "13008",
+   "cn": "芹香",
+   "en": "serika",
+   "standingSkelBytes": 24718
+  },
+  {
+   "id": "13009",
+   "cn": "椿",
+   "en": "tsubaki",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "13010",
+   "cn": "优香",
+   "en": "yuuka",
+   "standingSkelBytes": 12646
+  },
+  {
+   "id": "13011",
+   "cn": "桃井",
+   "en": "momoi",
+   "standingSkelBytes": 14965
+  },
+  {
+   "id": "13012",
+   "cn": "桐乃",
+   "en": "kirino",
+   "standingSkelBytes": 13421
+  },
+  {
+   "id": "13013",
+   "cn": "红叶",
+   "en": "momiji",
+   "standingSkelBytes": 12364
+  },
+  {
+   "id": "16000",
+   "cn": "遥香",
+   "en": "haruka",
+   "standingSkelBytes": 21066
+  },
+  {
+   "id": "16001",
+   "cn": "明日奈",
+   "en": "asuna",
+   "standingSkelBytes": 11150
+  },
+  {
+   "id": "16002",
+   "cn": "小鸟",
+   "en": "kotori",
+   "standingSkelBytes": 14914
+  },
+  {
+   "id": "16003",
+   "cn": "铃美",
+   "en": "suzumi",
+   "standingSkelBytes": 10893
+  },
+  {
+   "id": "16004",
+   "cn": "菲娜",
+   "en": "pina",
+   "standingSkelBytes": 8329
+  },
+  {
+   "id": "16005",
+   "cn": "鹤城(泳装)",
+   "en": "tsurugiswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "16006",
+   "cn": "泉(泳装)",
+   "en": "izumiswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "16007",
+   "cn": "巴",
+   "en": "tomoe",
+   "standingSkelBytes": 10552
+  },
+  {
+   "id": "16008",
+   "cn": "吹雪",
+   "en": "fubuki",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "16009",
+   "cn": "满",
+   "en": "michiru",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "16010",
+   "cn": "响(应援团)",
+   "en": "hibikicheersquad",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "16011",
+   "cn": "莲见(体操服)",
+   "en": "hasumitrack",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "16012",
+   "cn": "纯子(正月)",
+   "en": "junkonewyear",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "16013",
+   "cn": "小春(泳装)",
+   "en": "koharuswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "16014",
+   "cn": "伊吹",
+   "en": "ibuki",
+   "standingSkelBytes": 36107
+  },
+  {
+   "id": "16015",
+   "cn": "爱莉(乐队)",
+   "en": "airiband",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "16016",
+   "cn": "美弥(偶像)",
+   "en": "minepopidol",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "16017",
+   "cn": "青叶",
+   "en": "aoba",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20000",
+   "cn": "响",
+   "en": "hibiki",
+   "standingSkelBytes": 20997
+  },
+  {
+   "id": "20001",
+   "cn": "花凛",
+   "en": "karin",
+   "standingSkelBytes": 11878
+  },
+  {
+   "id": "20002",
+   "cn": "沙耶",
+   "en": "saya",
+   "standingSkelBytes": 13247
+  },
+  {
+   "id": "20003",
+   "cn": "真白",
+   "en": "mashiro",
+   "standingSkelBytes": 11102
+  },
+  {
+   "id": "20004",
+   "cn": "真白(泳装)",
+   "en": "mashiroswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20005",
+   "cn": "日富美(泳装)",
+   "en": "hifumiswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20006",
+   "cn": "沙耶(私服)",
+   "en": "sayacasual",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20007",
+   "cn": "初音未来",
+   "en": "hatsunemiku",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20008",
+   "cn": "亚子",
+   "en": "ako",
+   "standingSkelBytes": 24505
+  },
+  {
+   "id": "20009",
+   "cn": "切里诺(温泉)",
+   "en": "cherinohotspring",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20010",
+   "cn": "和香(温泉)",
+   "en": "nodokahotspring",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20011",
+   "cn": "芹香(正月)",
+   "en": "serikanewyear",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20012",
+   "cn": "濑名",
+   "en": "sena",
+   "standingSkelBytes": 10276
+  },
+  {
+   "id": "20013",
+   "cn": "千寻",
+   "en": "chihiro",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20014",
+   "cn": "咲",
+   "en": "saki",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20015",
+   "cn": "枫",
+   "en": "kaede",
+   "standingSkelBytes": 22881
+  },
+  {
+   "id": "20016",
+   "cn": "伊吕波",
+   "en": "iroha",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20017",
+   "cn": "日和",
+   "en": "hiyori",
+   "standingSkelBytes": 11019
+  },
+  {
+   "id": "20018",
+   "cn": "萌绘",
+   "en": "moe",
+   "standingSkelBytes": 39649
+  },
+  {
+   "id": "20019",
+   "cn": "朱音(兔女郎)",
+   "en": "akanebunny",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20020",
+   "cn": "日鞠",
+   "en": "himari",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20021",
+   "cn": "花绘(圣诞)",
+   "en": "hanaechristmas",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20022",
+   "cn": "枫香(正月)",
+   "en": "fuukanewyear",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20023",
+   "cn": "康娜",
+   "en": "kanna",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20024",
+   "cn": "渚",
+   "en": "nagisa",
+   "standingSkelBytes": 24797
+  },
+  {
+   "id": "20025",
+   "cn": "遥香(正月)",
+   "en": "harukanewyear",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20026",
+   "cn": "实里",
+   "en": "minori",
+   "standingSkelBytes": 17389
+  },
+  {
+   "id": "20027",
+   "cn": "白子(泳装)",
+   "en": "shirokoswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20028",
+   "cn": "日向(泳装)",
+   "en": "hinataswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20029",
+   "cn": "三森(泳装)",
+   "en": "mimoriswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20030",
+   "cn": "晴奈(体操服)",
+   "en": "harunatrack",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20031",
+   "cn": "时雨(温泉)",
+   "en": "shigurehotspring",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20032",
+   "cn": "艾米(泳装)",
+   "en": "eimiswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20033",
+   "cn": "真琴",
+   "en": "makoto",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20034",
+   "cn": "明里(正月)",
+   "en": "akarinewyear",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20035",
+   "cn": "椿(向导)",
+   "en": "tsubakiguide",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20036",
+   "cn": "芹香(泳装)",
+   "en": "serikaswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20037",
+   "cn": "吹雪(泳装)",
+   "en": "fubukiswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20038",
+   "cn": "巴(旗袍)",
+   "en": "tomoeqipao",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20039",
+   "cn": "妃咲",
+   "en": "kisaki",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20040",
+   "cn": "皋月",
+   "en": "satsuki",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20041",
+   "cn": "莉音",
+   "en": "rio",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20042",
+   "cn": "真纪(露营)",
+   "en": "makicamp",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20043",
+   "cn": "泉(正月)",
+   "en": "izuminewyear",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20044",
+   "cn": "堇(打工)",
+   "en": "sumireparttimer",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20045",
+   "cn": "菲娜(向导)",
+   "en": "pinaguide",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "20046",
+   "cn": "妮娅",
+   "en": "niya",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "23000",
+   "cn": "爱莉",
+   "en": "airi",
+   "standingSkelBytes": 13774
+  },
+  {
+   "id": "23001",
+   "cn": "枫香",
+   "en": "fuuka",
+   "standingSkelBytes": 15429
+  },
+  {
+   "id": "23002",
+   "cn": "花绘",
+   "en": "hanae",
+   "standingSkelBytes": 13658
+  },
+  {
+   "id": "23003",
+   "cn": "晴",
+   "en": "hare",
+   "standingSkelBytes": 13028
+  },
+  {
+   "id": "23004",
+   "cn": "咏叶",
+   "en": "utaha",
+   "standingSkelBytes": 10350
+  },
+  {
+   "id": "23005",
+   "cn": "绫音",
+   "en": "ayane",
+   "standingSkelBytes": 39944
+  },
+  {
+   "id": "23006",
+   "cn": "静子",
+   "en": "shizuko",
+   "standingSkelBytes": 7068
+  },
+  {
+   "id": "23007",
+   "cn": "花子",
+   "en": "hanako",
+   "standingSkelBytes": 11886
+  },
+  {
+   "id": "23008",
+   "cn": "玛丽",
+   "en": "mari",
+   "standingSkelBytes": 11604
+  },
+  {
+   "id": "26000",
+   "cn": "千夏",
+   "en": "chinatsu",
+   "standingSkelBytes": 13549
+  },
+  {
+   "id": "26001",
+   "cn": "小玉",
+   "en": "kotama",
+   "standingSkelBytes": 11518
+  },
+  {
+   "id": "26002",
+   "cn": "茱莉",
+   "en": "juri",
+   "standingSkelBytes": 14192
+  },
+  {
+   "id": "26003",
+   "cn": "芹奈",
+   "en": "serina",
+   "standingSkelBytes": 13446
+  },
+  {
+   "id": "26004",
+   "cn": "志美子",
+   "en": "shimiko",
+   "standingSkelBytes": 10520
+  },
+  {
+   "id": "26005",
+   "cn": "喜美",
+   "en": "yoshimi",
+   "standingSkelBytes": 14398
+  },
+  {
+   "id": "26006",
+   "cn": "和香",
+   "en": "nodoka",
+   "standingSkelBytes": 10592
+  },
+  {
+   "id": "26007",
+   "cn": "绫音(泳装)",
+   "en": "ayaneswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "26008",
+   "cn": "静子(泳装)",
+   "en": "shizukoswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "26009",
+   "cn": "柚子(女仆装)",
+   "en": "yuzumaid",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "26010",
+   "cn": "美游(泳装)",
+   "en": "miyuswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "26011",
+   "cn": "佐天泪子",
+   "en": "satenruiko",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "26012",
+   "cn": "桐乃(泳装)",
+   "en": "kirinoswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "26013",
+   "cn": "亚津子(泳装)",
+   "en": "atsukoswimsuit",
+   "standingSkelBytes": null
+  },
+  {
+   "id": "26014",
+   "cn": "花凛(制服)",
+   "en": "karinschool",
+   "standingSkelBytes": null
+  }
+ ],
+ "charCodeSystem": {
+  "hasStandingSkel": [
+   "CH0058",
+   "CH0060",
+   "CH0063",
+   "CH0064",
+   "CH0066",
+   "CH0069",
+   "CH0070",
+   "CH0071",
+   "CH0079",
+   "CH0080",
+   "CH0082",
+   "CH0086",
+   "CH0087",
+   "CH0088",
+   "CH0089",
+   "CH0092",
+   "CH0095",
+   "CH0098",
+   "CH0099",
+   "CH0100",
+   "CH0101",
+   "CH0107",
+   "CH0109",
+   "CH0110",
+   "CH0113",
+   "CH0114",
+   "CH0123",
+   "CH0124",
+   "CH0125",
+   "CH0135",
+   "CH0137",
+   "CH0138",
+   "CH0139",
+   "CH0141",
+   "CH0144",
+   "CH0145",
+   "CH0152",
+   "CH0155",
+   "CH0156",
+   "CH0157",
+   "CH0158",
+   "CH0159",
+   "CH0160",
+   "CH0161",
+   "CH0162",
+   "CH0163",
+   "CH0164",
+   "CH0165",
+   "CH0166",
+   "CH0167",
+   "CH0169",
+   "CH0170",
+   "CH0171",
+   "CH0172",
+   "CH0173",
+   "CH0174",
+   "CH0175",
+   "CH0176",
+   "CH0177",
+   "CH0178",
+   "CH0179",
+   "CH0180",
+   "CH0181",
+   "CH0182",
+   "CH0183",
+   "CH0184",
+   "CH0185",
+   "CH0186",
+   "CH0187",
+   "CH0188",
+   "CH0189",
+   "CH0190",
+   "CH0191",
+   "CH0192",
+   "CH0193",
+   "CH0194",
+   "CH0195",
+   "CH0196",
+   "CH0197",
+   "CH0198",
+   "CH0199",
+   "CH0200",
+   "CH0201",
+   "CH0202",
+   "CH0203",
+   "CH0204",
+   "CH0205",
+   "CH0209",
+   "CH0210",
+   "CH0211",
+   "CH0212",
+   "CH0213",
+   "CH0214",
+   "CH0215",
+   "CH0216",
+   "CH0217",
+   "CH0218",
+   "CH0219",
+   "CH0220",
+   "CH0221",
+   "CH0222",
+   "CH0223",
+   "CH0224",
+   "CH0225",
+   "CH0226",
+   "CH0227",
+   "CH0228",
+   "CH0229",
+   "CH0230",
+   "CH0231",
+   "CH0232",
+   "CH0233",
+   "CH0234",
+   "CH0235",
+   "CH0236",
+   "CH0238",
+   "CH0239",
+   "CH0240",
+   "CH0241",
+   "CH0242",
+   "CH0243",
+   "CH0244",
+   "CH0245",
+   "CH0246",
+   "CH0247",
+   "CH0248",
+   "CH0249",
+   "CH0250",
+   "CH0251",
+   "CH0252",
+   "CH0253",
+   "CH0254",
+   "CH0255",
+   "CH0256",
+   "CH0257",
+   "CH0258",
+   "CH0259",
+   "CH0260",
+   "CH0261",
+   "CH0262",
+   "CH0263",
+   "CH0264",
+   "CH0265",
+   "CH0266",
+   "CH0267",
+   "CH0268",
+   "CH0269",
+   "CH0270",
+   "CH0271",
+   "CH0272",
+   "CH0273",
+   "CH0274",
+   "CH0275",
+   "CH0276",
+   "CH0277",
+   "CH0278",
+   "CH0279",
+   "CH0280",
+   "CH0281",
+   "CH0282",
+   "CH0283",
+   "CH0284",
+   "CH0285",
+   "CH0286",
+   "CH0287",
+   "CH0288",
+   "CH0289",
+   "CH0290",
+   "CH0300",
+   "CH0301",
+   "CH0302",
+   "CH0303",
+   "CH0307",
+   "CH0308",
+   "CH0310",
+   "CH0311",
+   "CH0312",
+   "CH0313",
+   "CH0314"
+  ],
+  "hasL2dHomeSkel": [
+   "CH0058",
+   "CH0063",
+   "CH0064",
+   "CH0066",
+   "CH0069",
+   "CH0070",
+   "CH0071",
+   "CH0079",
+   "CH0080",
+   "CH0081",
+   "CH0082",
+   "CH0086",
+   "CH0087",
+   "CH0088",
+   "CH0089",
+   "CH0092",
+   "CH0095",
+   "CH0098",
+   "CH0099",
+   "CH0100",
+   "CH0101",
+   "CH0107",
+   "CH0109",
+   "CH0110",
+   "CH0113",
+   "CH0114",
+   "CH0123",
+   "CH0124",
+   "CH0135",
+   "CH0137",
+   "CH0138",
+   "CH0139",
+   "CH0141",
+   "CH0144",
+   "CH0145",
+   "CH0152",
+   "CH0155",
+   "CH0156",
+   "CH0158",
+   "CH0159",
+   "CH0160",
+   "CH0161",
+   "CH0163",
+   "CH0164",
+   "CH0165",
+   "CH0167",
+   "CH0169",
+   "CH0170",
+   "CH0175",
+   "CH0176",
+   "CH0177",
+   "CH0178",
+   "CH0179",
+   "CH0180",
+   "CH0181",
+   "CH0182",
+   "CH0183",
+   "CH0184",
+   "CH0185",
+   "CH0186",
+   "CH0187",
+   "CH0188",
+   "CH0189",
+   "CH0190",
+   "CH0191",
+   "CH0192",
+   "CH0193",
+   "CH0194",
+   "CH0195",
+   "CH0196",
+   "CH0197",
+   "CH0198",
+   "CH0200",
+   "CH0201",
+   "CH0202",
+   "CH0203",
+   "CH0204",
+   "CH0205",
+   "CH0209",
+   "CH0210",
+   "CH0211",
+   "CH0214",
+   "CH0215",
+   "CH0216",
+   "CH0217",
+   "CH0218",
+   "CH0219",
+   "CH0220",
+   "CH0221",
+   "CH0222",
+   "CH0224",
+   "CH0225",
+   "CH0230",
+   "CH0231",
+   "CH0232",
+   "CH0233",
+   "CH0235",
+   "CH0238",
+   "CH0239",
+   "CH0240",
+   "CH0242",
+   "CH0243",
+   "CH0245",
+   "CH0250",
+   "CH0251",
+   "CH0255",
+   "CH0257",
+   "CH0258",
+   "CH0259",
+   "CH0260",
+   "CH0261",
+   "CH0262",
+   "CH0263",
+   "CH0266",
+   "CH0267",
+   "CH0269",
+   "CH0270",
+   "CH0271",
+   "CH0273",
+   "CH0274",
+   "CH0275",
+   "CH0280",
+   "CH0281",
+   "CH0282",
+   "CH0284",
+   "CH0285",
+   "CH0286",
+   "CH0287",
+   "CH0288",
+   "CH0300",
+   "CH0301",
+   "CH0302"
+  ],
+  "counts": {
+   "standing": 179,
+   "l2d": 132
+  }
+ }
+}
