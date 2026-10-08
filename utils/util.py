@@ -2,10 +2,12 @@ import os
 import subprocess
 import re
 import tempfile
-import stat
 import platform
-import pyminizip
 import requests
+try:
+    import pyminizip
+except ImportError:
+    pyminizip = None
 
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Generator, Iterable, Literal, Protocol, Tuple
@@ -296,16 +298,22 @@ class ZipUtils:
             os.makedirs(os.path.dirname(os.path.abspath(dest_zip)), exist_ok=True)
 
             if password:
-                pyminizip.compress_multiple(
-                    files_to_add,
-                    [],
-                    dest_zip,
-                    password.decode(),
-                    5
-                )
-                if bar:
-                    for _ in files_to_add:
-                        bar.increase()
+                pwd_bytes = password if isinstance(password, bytes) else str(password).encode("utf-8")
+                if pyminizip:
+                    pyminizip.compress_multiple(
+                        files_to_add,
+                        [],
+                        dest_zip,
+                        pwd_bytes.decode("latin1"),
+                        5
+                    )
+                    if bar:
+                        for _ in files_to_add:
+                            bar.increase()
+                else:
+                    ZipUtils._create_encrypted_zip(
+                        dest_zip, files_to_add, pwd_bytes, base_dir, input_paths, bar
+                    )
             else:
                 with ZipFile(dest_zip, "w", compression=compression) as z:
                     archive_base = os.path.abspath(base_dir)
@@ -327,6 +335,100 @@ class ZipUtils:
             if bar:
                 bar.stop()
             return False
+
+    @staticmethod
+    def _create_encrypted_zip(dest_zip, files_to_add, password, base_dir, input_paths, bar=None):
+        import struct, zlib, zipfile
+        if isinstance(password, str):
+            password = password.encode("utf-8")
+
+        def _zip_crypto_encrypter(pwd):
+            key0 = 305419896
+            key1 = 591751049
+            key2 = 878082192
+            if zipfile._crctable is None:
+                zipfile._crctable = list(map(zipfile._gen_crc, range(256)))
+            crctable = zipfile._crctable
+
+            def crc32(ch, crc):
+                return (crc >> 8) ^ crctable[(crc ^ ch) & 0xFF]
+
+            def update_keys(c):
+                nonlocal key0, key1, key2
+                key0 = crc32(c, key0)
+                key1 = (key1 + (key0 & 0xFF)) & 0xFFFFFFFF
+                key1 = (key1 * 134775813 + 1) & 0xFFFFFFFF
+                key2 = crc32(key1 >> 24, key2)
+
+            for p in pwd:
+                update_keys(p)
+
+            def encrypter(data):
+                res = bytearray()
+                for c in data:
+                    k = key2 | 2
+                    c_enc = c ^ (((k * (k ^ 1)) >> 8) & 0xFF)
+                    update_keys(c)
+                    res.append(c_enc)
+                return bytes(res)
+            return encrypter
+
+        archive_base = os.path.abspath(base_dir) if base_dir else (
+            os.path.abspath(input_paths[0]) if len(input_paths) == 1 and os.path.isdir(input_paths[0]) else ""
+        )
+
+        entries = []
+        offset = 0
+        with open(dest_zip, "wb") as f:
+            for file_path in files_to_add:
+                arcname = os.path.relpath(file_path, archive_base).replace("\\", "/") if archive_base else os.path.basename(file_path)
+                arcname_bytes = arcname.encode("utf-8")
+                with open(file_path, "rb") as rf:
+                    data = rf.read()
+                crc = zlib.crc32(data) & 0xFFFFFFFF
+                uncompressed_size = len(data)
+
+                compressor = zlib.compressobj(zlib.Z_DEFAULT_COMPRESSION, zlib.DEFLATED, -15)
+                compressed = compressor.compress(data) + compressor.flush()
+
+                enc = _zip_crypto_encrypter(password)
+                header = os.urandom(11) + bytes([(crc >> 24) & 0xFF])
+                payload = enc(header) + enc(compressed)
+                compressed_size = len(payload)
+
+                local_offset = offset
+                dos_time = 0x5421
+                dos_date = 0x5cd0
+                lfh = struct.pack("<IHHHHHIIIHH",
+                    0x04034b50, 20, 1 | 0x800, 8, dos_time, dos_date,
+                    crc, compressed_size, uncompressed_size,
+                    len(arcname_bytes), 0
+                )
+                f.write(lfh)
+                f.write(arcname_bytes)
+                f.write(payload)
+                offset += len(lfh) + len(arcname_bytes) + len(payload)
+
+                entries.append((arcname_bytes, crc, compressed_size, uncompressed_size, local_offset, dos_time, dos_date))
+                if bar:
+                    bar.increase()
+
+            cd_offset = offset
+            cd_size = 0
+            for arcname_bytes, crc, comp_size, uncomp_size, local_offset, dos_time, dos_date in entries:
+                cdh = struct.pack("<IHHHHHHIIIHHHHHII",
+                    0x02014b50, 20, 20, 1 | 0x800, 8, dos_time, dos_date,
+                    crc, comp_size, uncomp_size,
+                    len(arcname_bytes), 0, 0, 0, 0, 0, local_offset
+                )
+                f.write(cdh)
+                f.write(arcname_bytes)
+                cd_size += len(cdh) + len(arcname_bytes)
+
+            eocd = struct.pack("<IHHHHIIH",
+                0x06054b50, 0, 0, len(entries), len(entries), cd_size, cd_offset, 0
+            )
+            f.write(eocd)
 
     # Used to parse the area where the EOCD (End of Central Directory) of the compressed file's central directory is located.
     @staticmethod

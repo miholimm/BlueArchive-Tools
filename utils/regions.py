@@ -11,7 +11,10 @@ from utils.encryption import create_key, convert_string
 from utils.console import notice
 from utils.config import Config
 from utils.util import ZipUtils, FileUtils, AsarUtils, CommandUtils, FileDownloader
-from xtractor.bundle import BundleExtractor
+try:
+    from xtractor.bundle import BundleExtractor
+except Exception:
+    BundleExtractor = None
 
 class Server:
     """ 由于该代码写于3月，是未重置代码，时间久远，因此闲的非常石山。如果有小伙伴能帮我改一下结构适配，改成3服兼容就好了…… """

@@ -387,6 +387,8 @@ class MemoryPack:
         if member_count > 249:
             raise MemoryPackError(f"Too many object fields: {member_count}")
 
+        w.byte(member_count)
+
         try:
             hints = get_type_hints(tp)
         except Exception:

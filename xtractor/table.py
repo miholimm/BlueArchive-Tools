@@ -273,6 +273,9 @@ class TableProcess:
 class TableExtract(TableProcess):
     def extract_db_file(self, file_path: str) -> bool:
         """Extract db file."""
+        if not self.password:
+            notice(f"未配置数据库密钥，跳过 {file_path} 解密。", "warning")
+            return False
         try:
             if db_tables := self._process_db_file(
                 path.join(self.table_file_folder, file_path)
@@ -456,7 +459,11 @@ class TableTask:
         self.prepare_api()
 
         if self.server in ("JP", "GL"):
-            self.key = self.get_key()
+            try:
+                self.key = self.get_key()
+            except Exception as e:
+                notice(f"无法获取SQLCipher密钥（无有效Token或API，跳过ExcelDB.db）: {e}", "warning")
+                self.key = None
 
         self.download = ResourceDownloader(self.server)
 
@@ -484,7 +491,7 @@ class TableTask:
                 target = os.path.join(".", name)
 
                 if not os.path.exists(source):
-                    raise RuntimeError(f"API仓库缺少目录: {name}")
+                    continue
 
                 if os.path.exists(target):
                     if os.path.isdir(target):
@@ -493,18 +500,54 @@ class TableTask:
                         os.remove(target)
 
                 shutil.move(source, target)
+        except Exception as e:
+            notice(f"API依赖拉取跳过: {e}", "warning")
         finally:
             shutil.rmtree(temp_path, ignore_errors=True)
 
     def prepare_flatdata(self):
-        print("正在克隆 FlatData 仓库...")
+        excel_dir = os.path.join(Config.FlatData, "Excel")
+        if os.path.isdir(excel_dir) and os.listdir(excel_dir):
+            print("FlatData 模块已存在，跳过准备。")
+            return
 
-        Git().clone(Config.FlatData_repositories, Config.FlatData)
+        if not (os.path.isdir(Config.FlatData) and os.listdir(Config.FlatData)):
+            print("正在克隆 FlatData 仓库...")
+            try:
+                repo_url = Config.FlatData_repositories
+                if repo_url.startswith("git@github.com:"):
+                    repo_url = "https://github.com/" + repo_url.removeprefix("git@github.com:")
+                Git().clone(repo_url, Config.FlatData)
+            except Exception as e:
+                notice(f"FlatData 仓库克隆跳过: {e}", "warning")
 
-        git = Git(Config.FlatData)
-        git.checkout(self.server)
-
-        print(f"FlatData 已切换到 {self.server} 分支。")
+        # 解压匹配服务端的 FlatData 结构包
+        if os.path.isdir(Config.FlatData):
+            import glob, zipfile
+            zips = glob.glob(os.path.join(Config.FlatData, f"{self.server}*.zip"))
+            if not zips:
+                zips = glob.glob(os.path.join(Config.FlatData, "*.zip"))
+            if zips:
+                latest_zip = sorted(zips)[-1]
+                print(f"正在提取 FlatData 模块定义包: {latest_zip}")
+                try:
+                    with zipfile.ZipFile(latest_zip, "r") as zf:
+                        zf.extractall(".")
+                    nested = os.path.join(Config.FlatData, "FlatData")
+                    if os.path.isdir(nested):
+                        for item in os.listdir(nested):
+                            src = os.path.join(nested, item)
+                            dst = os.path.join(Config.FlatData, item)
+                            if os.path.exists(dst):
+                                if os.path.isdir(dst):
+                                    shutil.rmtree(dst)
+                                else:
+                                    os.remove(dst)
+                            shutil.move(src, dst)
+                        shutil.rmtree(nested, ignore_errors=True)
+                    print("FlatData 模块提取完成。")
+                except Exception as e:
+                    notice(f"提取 FlatData 模块失败: {e}", "warning")
 
     def get_key(self):
         from request_api.YostarAPI.QueuingAPI import QueuingAPI as YostarQueuingAPI

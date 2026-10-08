@@ -94,6 +94,14 @@ jobs:
         run: |
           python process.py "$SERVER" "$TYPE" "$ACTION"
 
+      - name: 上传汉化产物
+        if: ${{ (github.event.inputs.action || github.event.action) == 'Repack' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: localized-${{ github.event.inputs.server || github.event.client_payload.server }}-tables
+          path: output/
+          if-no-files-found: ignore
+
   bundle:
     if: ${{ (github.event.inputs.type || github.event.client_payload.type) == 'Bundle' && (github.event.inputs.action || github.event.action) == 'Extract' }}
     strategy:
