@@ -46,7 +46,7 @@ def main():
     builder.run(
         sdkurl=sdk_url,
         gamemainconfig=json.dumps({"ServerInfoDataUrl": server_info_url}, separators=(",", ":")),
-        trustcert=True,
+        trustcert=False,
         modifylogin=True,
         modifygt4="zho",
         replace=True,
