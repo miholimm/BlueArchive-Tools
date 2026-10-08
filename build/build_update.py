@@ -7,6 +7,7 @@ import os
 import re
 import shutil
 import zipfile
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -129,6 +130,13 @@ class BaseBuilder:
 
         with multiprocessing.Pool(processes=self.workers) as pool:
             results = pool.map(_bundle_replace_worker, work_items)
+            pool.close()
+            pool.join()
+
+        import gc
+        import time
+        gc.collect()
+        time.sleep(1)
 
         success = sum(1 for _, ok, *_ in results if ok)
         print(f"bundle文件修改完成，成功 {success}/{len(results)}。")
@@ -386,23 +394,30 @@ class AndroidBuilder(BaseBuilder):
                     "@xml/network_security_config",
                 )
 
+        # 移除 split 属性
         for attr in [
             f"{{{android_ns}}}requiredSplitTypes",
             f"{{{android_ns}}}splitTypes",
+            f"{{{android_ns}}}isSplitRequired",
         ]:
             root.attrib.pop(attr, None)
 
-        ns = {"android": android_ns}
-        for meta in root.findall(".//meta-data", namespaces=ns):
-            if meta.get(f"{{{android_ns}}}name") == "com.android.vending.splits.required":
-                meta.set(
-                    f"{{{android_ns}}}name",
-                    "com.android.dynamic.apk.fused.modules",
-                )
-                meta.set(
-                    f"{{{android_ns}}}value",
-                    "UnityDataAssetPack,base",
-                )
+        # 移除 split 及 Google Play 专有元数据，确保单包独立安装
+        split_meta_names = {
+            "com.android.vending.splits.required",
+            "com.android.vending.splits",
+            "com.android.vending.derived.apk.id",
+            "com.android.dynamic.apk.fused.modules",
+            "com.android.stamp.source",
+            "com.android.stamp.type",
+        }
+        app_element = root.find(".//application")
+        if app_element is not None:
+            for child in list(app_element):
+                if child.tag == "meta-data":
+                    name = child.get(f"{{{android_ns}}}name")
+                    if name in split_meta_names:
+                        app_element.remove(child)
 
         manifest_path.write_text(
             etree.tostring(
@@ -552,44 +567,64 @@ class AndroidBuilder(BaseBuilder):
         print("资源替换完成。")
 
     def rebuild(self):
-        """重新构建、恢复官方签名文件并重新签名。"""
+        """重新构建、恢复 classes.dex、规范化ZIP排序并进行4字节对齐与官方签名。"""
+        if self.raw_apk.exists():
+            try:
+                self.raw_apk.unlink()
+            except Exception:
+                pass
+        if self.temp_align.exists():
+            try:
+                self.temp_align.unlink()
+            except Exception:
+                pass
+
         print("正在构建APK。")
         self.build(self.main_output_path, self.raw_apk)
 
-        print("正在恢复时间。")
+        if not self.raw_apk.exists() or self.raw_apk.stat().st_size == 0:
+            raise FileNotFoundError(f"apktool 未能成功生成 APK 产物: {self.raw_apk}")
+
+        print(f"正在规范化ZIP文件结构与恢复DEX (中间包大小: {self.raw_apk.stat().st_size} 字节)……")
         target_date = (1981, 1, 1, 0, 0, 0)
 
-        with zipfile.ZipFile(self.raw_apk, "r") as zin, zipfile.ZipFile(self.temp_align, "w",) as zout:
-            for item in zin.infolist():
-                if item.filename.startswith("classes") and item.filename.endswith(".dex"):
-                    continue
-
-                upper_name = item.filename.upper()
-                if (
-                    upper_name.startswith("META-INF/")
-                    and upper_name.rsplit("/", 1)[-1].endswith(
-                        (".RSA", ".SF", ".MF")
-                    )
-                ):
-                    continue
-
+        with zipfile.ZipFile(self.raw_apk, "r") as zin, zipfile.ZipFile(self.temp_align, "w") as zout:
+            # 1. 优先写入 AndroidManifest.xml，确保包解析首条有效
+            if "AndroidManifest.xml" in zin.namelist():
+                item = zin.getinfo("AndroidManifest.xml")
                 new_item = zipfile.ZipInfo(item.filename)
                 new_item.date_time = target_date
                 new_item.external_attr = item.external_attr
                 new_item.compress_type = item.compress_type
                 zout.writestr(new_item, zin.read(item.filename))
 
-            for name, signature_data in self.official_v1_signatures.items():
-                new_item = zipfile.ZipInfo(name)
-                new_item.date_time = target_date
-                new_item.compress_type = zipfile.ZIP_STORED
-                zout.writestr(new_item, signature_data)
-
-            for dex_file in self.dex_backup_path.iterdir():
+            # 2. 紧接着写入所有 classes*.dex
+            for dex_file in sorted(self.dex_backup_path.iterdir()):
                 new_item = zipfile.ZipInfo(dex_file.name)
                 new_item.date_time = target_date
                 new_item.compress_type = zipfile.ZIP_DEFLATED
                 zout.writestr(new_item, dex_file.read_bytes())
+
+            # 3. 写入其余文件，剔除旧签名文件及无效 META-INF 废弃条目
+            for item in zin.infolist():
+                if item.filename == "AndroidManifest.xml":
+                    continue
+                if item.filename.startswith("classes") and item.filename.endswith(".dex"):
+                    continue
+
+                upper_name = item.filename.upper()
+                if upper_name.startswith("META-INF/"):
+                    if (
+                        upper_name.rsplit("/", 1)[-1].endswith((".RSA", ".SF", ".MF", ".DSA", ".EC"))
+                        or upper_name.endswith(".VERSION")
+                    ):
+                        continue
+
+                new_item = zipfile.ZipInfo(item.filename)
+                new_item.date_time = target_date
+                new_item.external_attr = item.external_attr
+                new_item.compress_type = item.compress_type
+                zout.writestr(new_item, zin.read(item.filename))
 
         self.raw_apk.unlink()
 
@@ -610,25 +645,50 @@ class AndroidBuilder(BaseBuilder):
         self.sign()
 
     def sign(self):
-        signed_path = Path(str(self.final_path) + ".signed.tmp.apk")
-        signer = ApkSigner(
-            apk_path=str(self.final_path),
-            jks_path=str(self.repo / "beichen.jks"),
-            ks_pass="北辰汉化组a",
-            key_pass="北辰汉化组a",
-            output_path=str(signed_path),
-            alias="北辰汉化组",
-            min_sdk=28,
-            max_sdk=0x7FFFFFFF,
-            apksigner_path=str(self.repo / "apksigner.jar"),
-        )
-        signer.sign()
+        apksigner_jar = self.repo / "apksigner.jar"
+        if not apksigner_jar.exists():
+            raise FileNotFoundError(f"找不到 apksigner: {apksigner_jar}")
 
-        if not signed_path.exists():
-            raise FileNotFoundError(f"签名输出不存在: {signed_path}")
+        print("使用标准 apksigner 执行全方案(V1+V2+V3)规范化签名……")
+        sign_cmd = [
+            "java",
+            "-jar",
+            str(apksigner_jar),
+            "sign",
+            "--ks", str(self.repo / "beichen.jks"),
+            "--ks-pass", "pass:北辰汉化组a",
+            "--ks-key-alias", "北辰汉化组",
+            "--key-pass", "pass:北辰汉化组a",
+            "--min-sdk-version", "24",
+            "--v1-signer-name", "CERT",
+            "--v1-signing-enabled", "true",
+            "--v2-signing-enabled", "true",
+            "--v3-signing-enabled", "true",
+            str(self.final_path),
+        ]
+        res = subprocess.run(sign_cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
+        if res.returncode != 0:
+            raise RuntimeError(f"apksigner sign 失败: {res.stderr}\n{res.stdout}")
 
-        os.replace(signed_path, self.final_path)
-        print("签名完成。")
+        verify_cmd = [
+            "java",
+            "-jar",
+            str(apksigner_jar),
+            "verify",
+            "-v",
+            "--min-sdk-version", "24",
+            str(self.final_path),
+        ]
+        res_verify = subprocess.run(verify_cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
+        try:
+            print(res_verify.stdout)
+        except Exception:
+            pass
+
+        if res_verify.returncode != 0:
+            raise RuntimeError(f"签名验证未通过: {res_verify.stderr}\n{res_verify.stdout}")
+
+        print("签名验证完成。")
 
     def _upload(self, ssh_server, version):
         remote_directory = "/var/www/web_download"

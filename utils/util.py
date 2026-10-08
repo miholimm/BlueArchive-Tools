@@ -668,6 +668,9 @@ class CommandUtils:
                 capture_output=capture_output # 增加捕获输出以兼容依赖返回值的脚本
             )
             return True, result.stdout.strip() if capture_output else ""
+        except subprocess.CalledProcessError as e:
+            err_msg = f"{e}\nStdout: {e.stdout}\nStderr: {e.stderr}"
+            return False, err_msg
         except Exception as e:
             return False, str(e)
 

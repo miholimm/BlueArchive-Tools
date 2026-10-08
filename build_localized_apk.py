@@ -39,6 +39,8 @@ def main():
         server="JP",
         workers=1
     )
+    final_apk = repo_root / "BlueArchive_JP_CN_v1.73.459696.apk"
+    builder.final_path = final_apk
     
     # 执行全套汉化构建流程
     builder.run(
@@ -52,9 +54,14 @@ def main():
         upload=False
     )
     
-    final_apk = repo_root / "蔚蓝档案.apk"
     if not final_apk.exists():
         raise FileNotFoundError(f"构建完成但未找到最终产物: {final_apk}")
+
+    cn_apk = repo_root / "蔚蓝档案.apk"
+    try:
+        shutil.copyfile(final_apk, cn_apk)
+    except Exception:
+        pass
         
     print(f"\n[OK] 汉化 APK 构建成功: {final_apk}")
     print(f"大小: {final_apk.stat().st_size} 字节 ({final_apk.stat().st_size / 1024 / 1024:.2f} MB)")
