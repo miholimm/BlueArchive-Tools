@@ -130,7 +130,7 @@ class BaseBuilder:
         with multiprocessing.Pool(processes=self.workers) as pool:
             results = pool.map(_bundle_replace_worker, work_items)
 
-        success = sum(1 for _, ok in results if ok)
+        success = sum(1 for _, ok, *_ in results if ok)
         print(f"bundle文件修改完成，成功 {success}/{len(results)}。")
 
     def modify_sdk_url(self, sdkurl):
@@ -251,9 +251,12 @@ class AndroidBuilder(BaseBuilder):
 
     def download(self):
         """下载官方 APK。"""
-        print("正在下载APK。")
         self.base_dir.mkdir(parents=True, exist_ok=True)
-
+        if self.apk_path.exists() and self.apk_path.stat().st_size > 100 * 1024 * 1024:
+            print("本地已存在完整 APK，跳过重复下载。")
+            _, version = Server(self.server).get_apk_url()
+            return version
+        print("正在下载APK。")
         apk_url, version = Server(self.server).get_apk_url()
         FileDownloader(url=apk_url, headers={"User-Agent": "Androidkb"}).save_file(str(self.apk_path))
         return version

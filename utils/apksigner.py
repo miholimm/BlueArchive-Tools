@@ -1050,7 +1050,10 @@ public class ApkJksHelper {
             errors="replace"
         )
 
-        print(result.stdout)
+        try:
+            print(result.stdout)
+        except Exception:
+            print(result.stdout.encode("gbk", errors="replace").decode("gbk", errors="replace"))
 
         if result.returncode != 0:
             raise RuntimeError(

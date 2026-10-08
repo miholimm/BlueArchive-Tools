@@ -63,3 +63,8 @@ code/
 lib/
 request_api/
 config.py
+
+# Binaries and local tools
+tools/
+*.jks
+
