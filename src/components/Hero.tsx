@@ -196,7 +196,7 @@ export default function Hero({
           </div>
         )}
 
-        {/* 看板娘立绘展示（点击立绘亦可触发互动羁绊语音） */}
+        {/* 看板娘立绘展示（主角大立绘，清爽通透，绝对零遮挡） */}
         <div
           className="hero-character-stage"
           onClick={handleNextQuote}
@@ -220,41 +220,9 @@ export default function Hero({
           <span className="spark s5" />
         </div>
 
-        <div className="hero-figure">
+        {/* 背景科技光环（作为柔和底层科幻装饰，绝不遮挡立绘） */}
+        <div className="hero-figure hero-figure-ambient" aria-hidden="true">
           <SchaleRadar status={translateStatus} />
-          {showStatus && (
-            <div className="figure-card figure-card-main">
-              <span>01</span>
-              <strong>
-                文本汉化
-                <br />
-                {getStatusLabel(translateStatus)}
-              </strong>
-              <em>{textTranslation?.resourceVersion || "待配置"}</em>
-            </div>
-          )}
-          {showDownloads && (
-            <div className="figure-card figure-card-side figure-card-2">
-              <span>02</span>
-              <strong>
-                官方
-                <br />
-                版本
-              </strong>
-              <em>{textTranslation?.officialVersion || "待配置"}</em>
-            </div>
-          )}
-          {showStatus && (
-            <div className="figure-card figure-card-side figure-card-3">
-              <span>03</span>
-              <strong>
-                版本
-                <br />
-                校验
-              </strong>
-              <em>{translateIndicator}</em>
-            </div>
-          )}
         </div>
       </div>
       <div className="hero-copy">

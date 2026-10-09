@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, ChevronDown, FileJson, ListTree, Loader2, Play, UploadCloud } from 'lucide-react'
+import { AlertTriangle, ChevronDown, FileJson, ListTree, Loader2, Maximize2, Minimize2, Play, UploadCloud } from 'lucide-react'
 import BaStoryPlayerBridge, { type StoryLanguage } from '../components/story/BaStoryPlayerBridge'
 import { trackEvent } from '../lib/tracking'
 import ModuleGate from '../components/ModuleGate'
@@ -60,6 +60,25 @@ function StoryPlayerInner() {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [uploadName, setUploadName] = useState('')
   const [dragActive, setDragActive] = useState(false)
+
+  // 全屏状态
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+    document.addEventListener('fullscreenchange', handleFsChange)
+    return () => document.removeEventListener('fullscreenchange', handleFsChange)
+  }, [])
+
+  const toggleFullscreen = () => {
+    if (!wrapRef.current) return
+    if (!document.fullscreenElement) {
+      wrapRef.current.requestFullscreen().catch(() => {})
+    } else {
+      document.exitFullscreen().catch(() => {})
+    }
+  }
 
   // 剧情目录
   const [catalog, setCatalog] = useState<Catalog | null>(null)
@@ -414,7 +433,20 @@ function StoryPlayerInner() {
           </div>
         )}
 
-        <div className="ba-sp-stage" ref={wrapRef}>
+        <div className="ba-sp-stage-header">
+          <span className="ba-sp-stage-title">剧情播放终端</span>
+          <button
+            type="button"
+            className="ba-sp-fullscreen-btn"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? '退出全屏' : '全屏播放'}
+          >
+            {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
+            <span>{isFullscreen ? '退出全屏' : '全屏'}</span>
+          </button>
+        </div>
+
+        <div className={`ba-sp-stage${isFullscreen ? ' is-fullscreen' : ''}`} ref={wrapRef}>
           {loading && (
             <div className="ba-sp-loading">
               <Loader2 className="spin" size={26} /> 正在载入剧情引擎…

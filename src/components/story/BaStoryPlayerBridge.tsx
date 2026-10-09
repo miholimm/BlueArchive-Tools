@@ -30,12 +30,12 @@ const DEFAULT_DATA_URL = 'https://yuuka.cdn.diyigemt.com/image/ba-all-data'
  */
 export default function BaStoryPlayerBridge(props: BaStoryPlayerBridgeProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const appRef = useRef<VueApp<unknown> | null>(null)
 
   useEffect(() => {
     const el = containerRef.current
     if (!el || !props.story) return
 
-    let app: VueApp<unknown> | null = null
     let cancelled = false
 
     import('ba-story-player')
@@ -45,7 +45,14 @@ export default function BaStoryPlayerBridge(props: BaStoryPlayerBridgeProps) {
         const width = (props.width ?? el.clientWidth) || 1000
         const height = props.height ?? Math.round((width * 9) / 16)
 
-        app = createApp(StoryPlayerComponent, {
+        if (appRef.current) {
+          try {
+            appRef.current.unmount()
+          } catch {}
+          appRef.current = null
+        }
+
+        const app = createApp(StoryPlayerComponent, {
           story: props.story,
           dataUrl: props.dataUrl ?? DEFAULT_DATA_URL,
           language: props.language ?? 'Cn',
@@ -58,6 +65,7 @@ export default function BaStoryPlayerBridge(props: BaStoryPlayerBridgeProps) {
           userName: props.userName ?? '老师',
         })
         app.mount(el)
+        appRef.current = app
       })
       .catch((error) => {
         console.error('[BaStoryPlayer] failed to load engine', error)
@@ -65,13 +73,15 @@ export default function BaStoryPlayerBridge(props: BaStoryPlayerBridgeProps) {
 
     return () => {
       cancelled = true
-      try {
-        app?.unmount()
-      } catch {
-        /* component may not have mounted yet */
+      if (appRef.current) {
+        try {
+          appRef.current.unmount()
+        } catch {}
+        appRef.current = null
       }
     }
-  }, [props.story, props.dataUrl, props.language, props.width, props.height, props.startFullScreen, props.useMp3, props.useSuperSampling, props.storySummary])
+    // 关键修复：绝对不将 props.width、props.height 放入依赖数组，防止全屏或尺寸微变时不断 unmount/remount 导致崩溃重载
+  }, [props.story, props.dataUrl, props.language, props.useMp3, props.useSuperSampling])
 
   return <div ref={containerRef} className="ba-story-player-mount" />
 }
