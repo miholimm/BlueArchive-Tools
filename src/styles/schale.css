@@ -532,7 +532,15 @@
 .news-card-body h3 { font-family: var(--font-display); letter-spacing: 0.02em; }
 
 .status-overview { min-height: 148px; }
-.status-main { position: relative; }
+.status-main { position: relative; min-width: 0; }
+.status-main > div:not(.status-check) { min-width: 0; }
+.app-shell :is(.status-main strong, .status-card strong, .status-banner strong) {
+  white-space: nowrap !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
 .status-main::after { content: 'SECTOR-01 / REALTIME'; position: absolute; left: 24px; bottom: -20px; color: var(--ink-muted); font: 500 8px/1 var(--font-mono); letter-spacing: 0.11em; }
 .status-check { border-radius: 0; clip-path: var(--hud-cut-tight); }
 .status-check.pending { color: #a96e00; background: rgba(255,199,0,.16); border-color: rgba(255,199,0,.42); }
@@ -750,9 +758,97 @@
   .hero::after { inset: 9px; }
   .theme-toggle { min-width: 42px; justify-content: center; }
   .theme-toggle-icon { position: static; }
-  .status-overview { grid-template-columns: 1fr; }
-  .status-main { min-height: 92px; }
-  .stat-block { border-top: 1px solid var(--border-subtle); }
+  .status-overview {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 18px 14px;
+  }
+  .status-main {
+    min-height: 80px;
+    padding: 0 4px;
+    gap: 6px;
+    min-width: 0;
+    grid-column: 1;
+  }
+  .status-check {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    margin-left: 0;
+    flex-shrink: 0;
+  }
+  .status-check svg {
+    width: 18px;
+    height: 18px;
+  }
+  .status-main > div:not(.status-check) {
+    min-width: 0;
+    flex-shrink: 0;
+  }
+  .status-main strong {
+    font-size: 16px;
+    line-height: 1.2;
+    white-space: nowrap !important;
+  }
+  .status-pulse {
+    width: 8px;
+    height: 8px;
+    margin-right: 0;
+    flex-shrink: 0;
+  }
+  .status-main b {
+    margin-left: auto;
+    font-size: 8px;
+    white-space: nowrap;
+  }
+  .status-main::after {
+    left: 4px;
+    font-size: 7px;
+    bottom: -16px;
+  }
+  .stat-block {
+    min-width: 0;
+    overflow: hidden;
+    padding: 8px 6px;
+    border-top: 0;
+  }
+  .stat-block strong {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 15px;
+  }
+  .status-copy-value {
+    max-width: 100%;
+  }
+  .status-copy-value code {
+    max-width: calc(100% - 18px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 13px;
+  }
+  .status-link {
+    grid-column: span 2;
+    padding: 10px 4px 0;
+    justify-content: start;
+  }
+  .status-banner {
+    padding: 16px 12px;
+    gap: 10px;
+  }
+  .status-banner .status-check {
+    margin-left: 0;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+  }
+  .status-banner .status-check svg {
+    width: 18px;
+    height: 18px;
+  }
+  .status-banner strong {
+    white-space: nowrap !important;
+    font-size: 15px;
+  }
   .momo-bubble { max-width: 92%; }
   .momo-talk-thread { padding: 20px 14px; }
   .download-platform-tabs { gap: 5px; padding: 8px; }
@@ -774,8 +870,33 @@
   .story-dialogue-text { font-size: 14px; line-height: 1.75; }
   .story-reader-shell.is-theater { padding: 15px; }
   .story-reader-shell.is-theater .story-dialogue-stage { min-height: calc(100vh - 64px); margin-top: 0; }
-  .loading-skeleton-grid { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 360px) {
+  .status-main {
+    padding: 0 2px;
+    gap: 4px;
+  }
+  .status-check {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+  }
+  .status-check svg {
+    width: 16px;
+    height: 16px;
+  }
+  .status-main strong {
+    font-size: 15px;
+  }
+  .status-main b {
+    display: none;
+  }
+  .status-main::after {
+    display: none;
+  }
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   .app-shell::after,
