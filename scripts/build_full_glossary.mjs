@@ -1,0 +1,1541 @@
+import { writeFileSync } from 'node:fs';
+
+const terms = [
+  // ==========================================
+  // 1. 学园与院校 (Academies & Schools)
+  // ==========================================
+  {
+    ja: "アビドス高等学校",
+    zh: "阿拜多斯高中",
+    romaji: "Abydos Koutou Gakkou",
+    category: "学园名",
+    note: "位于奇沃托斯西南沙漠地带的历史名校，曾是最大自治区之一，现因沙漠化与巨额债务面临废校危机。对策委员会所在地。（民间旧译：阿比多斯高中）"
+  },
+  {
+    ja: "ゲヘナ学園",
+    zh: "歌裴娜学园",
+    romaji: "Gehenna Gakuen",
+    category: "学园名",
+    note: "三大自治学园之一，校风崇尚极致的个人自由与混沌。拥有风纪委员会、万魔殿、便利屋68等众多活跃社团。（民间旧译：格黑娜学园）"
+  },
+  {
+    ja: "トリニティ総合学園",
+    zh: "崔尼蒂综合学园",
+    romaji: "Trinity Sougou Gakuen",
+    category: "学园名",
+    note: "三大自治学园之一，校风保守优雅，拥有深厚的宗教与贵族传统，由古老的多所修道会学园联合组成。（民间旧译：三一综合学园 / 圣三一学园）"
+  },
+  {
+    ja: "ミレニアムサイエンススクール",
+    zh: "千禧年科技学园",
+    romaji: "Millennium Science School",
+    category: "学园名",
+    note: "三大自治学园之一，致力于科学技术、尖端工程与逻辑数学的前沿新兴学园。以学生会「研讨会」为最高领导。（民间旧译：千年科学学园）"
+  },
+  {
+    ja: "百鬼夜行連合学院",
+    zh: "百鬼夜行联合学园",
+    romaji: "Hyakkiyako Rengou Gakuin",
+    category: "学园名",
+    note: "融合和风与东洋传统文化的学园都市自治区，无单一统治中央学生会，由各大社团与商会共同协力运营。"
+  },
+  {
+    ja: "山海経高級中学校",
+    zh: "山海经高级中学",
+    romaji: "Shanhaijing Koukyuu Chuugakkou",
+    category: "学园名",
+    note: "中华风自治学园，历史悠久，讲究传统礼仪、武术修养与医药美食之道，以「玄龙门」为核心行政机构。"
+  },
+  {
+    ja: "レッドウィンター連邦学園",
+    zh: "赤冬联邦学园",
+    romaji: "Red Winter Renpou Gakuen",
+    category: "学园名",
+    note: "北境雪原上的巨大联邦学园，幅员辽阔，以肃反、大扫除与学生革命为日常。（旧译：红冬联邦学园）"
+  },
+  {
+    ja: "ヴァルキューレ警察学校",
+    zh: "女武神警察学校",
+    romaji: "Valkyrie Keisatsu Gakkou",
+    category: "学园名",
+    note: "负责奇沃托斯全域治安与警察业务的专职学园，下设公安局与生活安全局。"
+  },
+  {
+    ja: "SRT特殊学園",
+    zh: "SRT特殊学园",
+    romaji: "SRT Tokushu Gakuen",
+    category: "学园名",
+    note: "由前联邦学生会长直属设立的战术特种部队学园（Special Response Team），在总会长失踪后被强制关闭。"
+  },
+  {
+    ja: "アリウス分校",
+    zh: "阿里乌斯分校",
+    romaji: "Arius Bunkou",
+    category: "学园名",
+    note: "原为崔尼蒂的第四学派，后因宗教争端被驱逐至地下，在长年仇恨教育中沦落为封闭军事要塞。"
+  },
+  {
+    ja: "クロノス報道スクール",
+    zh: "克罗诺斯报道学园",
+    romaji: "Kronos Houdou Sukuru",
+    category: "学园名",
+    note: "奇沃托斯最大的新闻媒体与广播专门学园，全天候播放各自治区新闻与突发战况。"
+  },
+  {
+    ja: "オデュッセイア海洋学園",
+    zh: "奥德赛海洋学园",
+    romaji: "Odyssey Kaiyou Gakuen",
+    category: "学园名",
+    note: "奇沃托斯沿海大型水上船舶学园，拥有极高机动性的海上浮动校舍与战舰设施。"
+  },
+  {
+    ja: "ワイルドハント芸術学院",
+    zh: "狂猎艺术学院",
+    romaji: "Wild Hunt Geijutsu Gakuin",
+    category: "学园名",
+    note: "专精于音乐、美术、雕塑等纯艺术修养的自治区学园，性格独特前卫。"
+  },
+  {
+    ja: "ハイランダー鉄道学園",
+    zh: "高地铁路学园",
+    romaji: "Highlander Tetsudou Gakuen",
+    category: "学园名",
+    note: "掌管奇沃托斯全域超长铁路网络与装甲列车物流的核心运输学园。"
+  },
+
+  // ==========================================
+  // 2. 核心世界观与专有名词 (Lore & Core Concepts)
+  // ==========================================
+  {
+    ja: "キヴォトス",
+    zh: "奇沃托斯",
+    romaji: "Kivotos",
+    category: "世界观",
+    note: "故事发生的主要舞台，由数千所学园自治区组成的超巨型学园都市。（民间通译：基沃托斯）"
+  },
+  {
+    ja: "シャーレ",
+    zh: "夏莱",
+    romaji: "Schale",
+    category: "组织名",
+    note: "联邦搜查社（SCHALE），前联邦学生会长设立的直属独立司法搜查机构，由老师唯一领导，享有跨自治区执法豁免权。"
+  },
+  {
+    ja: "連邦生徒会",
+    zh: "联邦学生会",
+    romaji: "Renpou Seitokai",
+    category: "组织名",
+    note: "奇沃托斯都市联合管理中枢机构，在总会长失踪后由行政长官七神凛代理。"
+  },
+  {
+    ja: "先生",
+    zh: "老师",
+    romaji: "Sensei",
+    category: "世界观",
+    note: "主人公，受总会长委托来到奇沃托斯的夏莱唯一顾问成人，受全体学生信任与托付的引导者。"
+  },
+  {
+    ja: "ヘイロー",
+    zh: "光环",
+    romaji: "Halo",
+    category: "世界观",
+    note: "奇沃托斯学生头顶悬浮的几何形神圣光轮，是神秘存在的具象化体现，学生意识丧失或死亡时会熄灭。（亦称：光轮）"
+  },
+  {
+    ja: "神秘",
+    zh: "神秘",
+    romaji: "Shinpi (Mystery)",
+    category: "世界观",
+    note: "学生们与生俱来的概念本质与神话源泉，赋予她们超常体质、肉体抗子弹能力以及特殊奇迹。"
+  },
+  {
+    ja: "恐怖",
+    zh: "恐惧",
+    romaji: "Kyoufu (Terror)",
+    category: "世界观",
+    note: "神秘被极度歪曲反转后的堕落形态，象征毁灭、绝望与概念崩坏。（色彩反转后的状态）"
+  },
+  {
+    ja: "崇高",
+    zh: "崇高",
+    romaji: "Suukou (Sublime)",
+    category: "世界观",
+    note: "盖玛特利亚一直在奇沃托斯追寻与实验的形而上学概念，是神性与神秘的根本本质。"
+  },
+  {
+    ja: "シッテムの箱",
+    zh: "什亭之箱",
+    romaji: "Shittim no Hako",
+    category: "世界观",
+    note: "总会长留给老师的高科技平板终端，拥有管理圣所之塔主干网络的最高认证权限，搭载 AI 阿罗娜与普拉娜。"
+  },
+  {
+    ja: "アロナ",
+    zh: "阿罗娜",
+    romaji: "Arona",
+    category: "世界观",
+    note: "什亭之箱的主要主控 AI 少女，拥有超算权限与展开防壁保护老师安全的神奇能力。"
+  },
+  {
+    ja: "プラナ",
+    zh: "普拉娜",
+    romaji: "Plana",
+    category: "世界观",
+    note: "来自平行绝望世界线「A.R.O.N.A」的 AI 少女，最终决战后入住老师的什亭之箱成为第二主控系统。"
+  },
+  {
+    ja: "サンクトゥムタワー",
+    zh: "圣所之塔",
+    romaji: "Sanctum Tower",
+    category: "世界观",
+    note: "奇沃托斯中央矗立的通天巨塔，掌管全都市能源、防御网络与条例许可的核心控制枢纽。"
+  },
+  {
+    ja: "クラフトチェンバー",
+    zh: "制造室",
+    romaji: "Craft Chamber",
+    category: "世界观",
+    note: "位于圣所之塔内部的物质再构成装置，能通过物质裂变与生成合成各类珍稀资源。"
+  },
+  {
+    ja: "モモトーク",
+    zh: "MomoTalk",
+    romaji: "MomoTalk",
+    category: "世界观",
+    note: "奇沃托斯全境最风靡的学生社交即时通信软件，老师与学生进行私信聊天与日常羁绊互动的媒介。"
+  },
+  {
+    ja: "ゲマトリア",
+    zh: "盖玛特利亚",
+    romaji: "Gematria",
+    category: "组织名",
+    note: "由追求神性与真理的研究者组成的异界学会，成员包括导师、戈尔孔达、贝阿朵莉切、地下生活者等。"
+  },
+  {
+    ja: "色彩",
+    zh: "色彩",
+    romaji: "Shikisai (The Chroma)",
+    category: "世界观",
+    note: "来自奇沃托斯界外的不明高维灾厄存在，接触它的神秘会被逆转为恐怖与不可逆毁灭。"
+  },
+  {
+    ja: "プレナパテス",
+    zh: "诱导法则",
+    romaji: "Phrenapates",
+    category: "世界观",
+    note: "平行绝望世界线被色彩吞噬与腐化后的异界老师（曾译：普雷纳帕特斯），为了拯救最后唯一的学生跨越虚空而战。"
+  },
+  {
+    ja: "エデン条約",
+    zh: "伊甸园条约",
+    romaji: "Eden Jouyaku",
+    category: "世界观",
+    note: "由崔尼蒂与歌裴娜共同拟定的历史性和解公约，旨在建立联合防卫机构「夏莱」以终结两校宿怨。"
+  },
+  {
+    ja: "ウトナピシュティムの本船",
+    zh: "乌特纳比什姆之方舟",
+    romaji: "Utnapishtim no Honsen",
+    category: "世界观",
+    note: "长眠于千禧年地下旧废墟的古代无名神殿决战宇宙方舟战舰，最终篇升空作战的核心母舰。"
+  },
+  {
+    ja: "晄輪大祭",
+    zh: "光轮大祭",
+    romaji: "Kourin Taisai",
+    category: "世界观",
+    note: "奇沃托斯全学园每两年举办一次的超大型联合运动盛会，由千禧年科技学园与各大名校联合承办。"
+  },
+
+  // ==========================================
+  // 3. 社团与学生组织 (Clubs & Organizations)
+  // ==========================================
+  {
+    ja: "対策委員会",
+    zh: "对策委员会",
+    romaji: "Taisaku Iinkai",
+    category: "组织名",
+    note: "阿拜多斯高中仅剩五名学生为了挽救学园免于废校危机而组建的特别自治组织。"
+  },
+  {
+    ja: "セミナー",
+    zh: "研讨会",
+    romaji: "Seminar",
+    category: "组织名",
+    note: "千禧年科技学园的学生会中枢，执掌全校数十亿日元规模的巨额预算核算与行政法规管理。（主要成员：调月莉绪、早濑优香、生盐诺亚、黑崎小雪）"
+  },
+  {
+    ja: "ゲーム開発部",
+    zh: "游戏开发部",
+    romaji: "Game Kaihatsubu",
+    category: "组织名",
+    note: "千禧年科技学园社团，曾因缺乏成果面临废部，在招募天童爱丽丝后打造出奇迹复古 RPG。（成员：柚子、桃、绿、爱丽丝）"
+  },
+  {
+    ja: "ヴェリタス",
+    zh: "贝利塔斯",
+    romaji: "Veritas",
+    category: "组织名",
+    note: "千禧年首屈一指的黑客与信息安全同好社团，掌握顶尖网络入侵与情报战能力。（主要成员：各务千寻、音濑小玉、小涂晴、小钩真纪）"
+  },
+  {
+    ja: "C&C (Cleaning & Clearing)",
+    zh: "清洁工与保镖",
+    romaji: "Cleaning & Clearing",
+    category: "组织名",
+    note: "千禧年学生会直属的高级特工女仆战术小队，负责处理校内外极端危险事件与安保暗杀。（成员：美甘宁瑠、一之濑明日奈、角楯花凛、室笠茜、飞鸟马时）"
+  },
+  {
+    ja: "特異現象特務部",
+    zh: "特异现象特务部",
+    romaji: "Tokui Genshou Tokumubu",
+    category: "组织名",
+    note: "由明星日鞠创立的千禧年神秘社团，专门调查与封印超常古代技术与废墟都市遗物。（成员：明星日鞠、和泉元艾米）"
+  },
+  {
+    ja: "エンジニア部",
+    zh: "工程部",
+    romaji: "Engineer-bu",
+    category: "组织名",
+    note: "千禧年负责各项战术武器、机器人及巨型轨道炮改装维修的技术宅发明社团。（成员：白石咏叶、猫冢响、丰见柯托莉）"
+  },
+  {
+    ja: "トレーニング部",
+    zh: "训练部",
+    romaji: "Training-bu",
+    category: "组织名",
+    note: "千禧年倡导肉体极限锻炼与体育运动精神的健身社团。（成员：乙花堇）"
+  },
+  {
+    ja: "ティーパーティー",
+    zh: "茶会",
+    romaji: "Tea Party",
+    category: "组织名",
+    note: "崔尼蒂综合学园的最高行政统治团体，由三大历史派系领袖（桐藤渚、圣园未花、百合园圣亚）轮流执政。"
+  },
+  {
+    ja: "正義実現委員会",
+    zh: "正义实现委员会",
+    romaji: "Seigi Jitsugen Iinkai",
+    category: "组织名",
+    note: "崔尼蒂治安与武装执行中枢，全员装备精良制服与重武器，拥有极强的战术攻防实力。（成员：剑先鹤城、羽川莲见、仲正一花、静山真白）"
+  },
+  {
+    ja: "補習授業部",
+    zh: "补课部",
+    romaji: "Hoshuu Jugyoubu",
+    category: "组织名",
+    note: "在伊甸园条约签署前因特殊疑虑被强行组建的特别临时社团，若期末考不及格将被退学。（成员：阿慈谷日富美、白州梓、浦和花子、下江小春）"
+  },
+  {
+    ja: "シスターフッド",
+    zh: "修女会",
+    romaji: "Sisterhood",
+    category: "组织名",
+    note: "崔尼蒂最古老神秘的宗教裁判与修道势力，身着黑修女服，负责守护地下大教堂与大宗秘密。（成员：歌住樱子、伊落玛丽、若叶日向）"
+  },
+  {
+    ja: "救護騎士団",
+    zh: "救护骑士团",
+    romaji: "Kyuugo Kishidan",
+    category: "组织名",
+    note: "崔尼蒂的战地医护慈善志愿组织，奉行「以绝对武力确保伤员得到治疗」的激进仁医宗旨。（成员：苍森美祢、鹫见芹奈、朝颜花绘）"
+  },
+  {
+    ja: "放課後スイーツ部",
+    zh: "课后甜点部",
+    romaji: "Houkago Sweets-bu",
+    category: "组织名",
+    note: "崔尼蒂以探寻全奇沃托斯最美味蛋糕、巴菲与下午茶为最高理想的休闲社团。（成员：杏山和纱、柚鸟夏、栗村爱莉、伊原喜美）"
+  },
+  {
+    ja: "古書館 / 図書委員会",
+    zh: "古书馆 / 图书委员会",
+    romaji: "Koshokan / Tosho Iinkai",
+    category: "组织名",
+    note: "负责管理崔尼蒂古籍、抄本与古旧文献的社团。（成员：古关忧、圆堂志美子）"
+  },
+  {
+    ja: "自警団",
+    zh: "崔尼蒂自警团",
+    romaji: "Trinity Jikeidan",
+    category: "组织名",
+    note: "在正义实现委员会管辖不及的街区自发维护正义与市民安全的独立小组。（成员：守月铃美、宇泽玲纱）"
+  },
+  {
+    ja: "風紀委員会",
+    zh: "风纪委员会",
+    romaji: "Fuuki Iinkai",
+    category: "组织名",
+    note: "歌裴娜学园的常设治安武装部队，在日常混乱与恐怖袭击中艰难维持校园秩序。（主要成员：空崎日奈、天雨亚子、银镜伊织、火宫千夏）"
+  },
+  {
+    ja: "パンデモニウム・ソサエティー",
+    zh: "万魔殿",
+    romaji: "Pandemonium Society",
+    category: "组织名",
+    note: "歌裴娜学园的合法学生会中枢，拥有专属飞行战舰与装甲车。（主要成员：羽沼真琴、枣伊吕波、元宫千秋、伊吹）"
+  },
+  {
+    ja: "便利屋68",
+    zh: "便利屋68",
+    romaji: "Benriya 68",
+    category: "组织名",
+    note: "自称无恶不作的法外地下佣兵事务所，实则常被卷入各种善良善后事务。（成员：陆八魔阿露、浅黄睦月、鬼方佳代子、伊草遥香）"
+  },
+  {
+    ja: "美食研究会",
+    zh: "美食研究会",
+    romaji: "Bishoku Kenkyuukai",
+    category: "组织名",
+    note: "歌裴娜臭名昭著的恐怖美食社团，为品尝极致佳肴不惜炸毁餐厅与绑架名厨。（成员：黑馆晴奈、赤司淳子、狮子堂泉、鳄渊明里）"
+  },
+  {
+    ja: "給食部",
+    zh: "料理研究部",
+    romaji: "Kyuushokubu",
+    category: "组织名",
+    note: "承担全歌裴娜数千师生每日三餐食堂重任的辛勤勤务社团。（成员：爱清枫香、牛牧茱莉）"
+  },
+  {
+    ja: "温泉開発部",
+    zh: "温泉开发部",
+    romaji: "Onsen Kaihatsubu",
+    category: "组织名",
+    note: "疯狂执着于在奇沃托斯任意地点（甚至他人办公室或金库下）爆破挖掘温泉的爆破工兵社团。（成员：鬼方霞、下仓美冬）"
+  },
+  {
+    ja: "陰陽部",
+    zh: "阴阳部",
+    romaji: "Inyoubu",
+    category: "组织名",
+    note: "百鬼夜行联合学园的事实上行政代表社团，负责全境政治斡旋与大型祭典外交。"
+  },
+  {
+    ja: "百花繚乱紛争調停委員会",
+    zh: "百花缭乱纷争调停委员会",
+    romaji: "Hyakkaryoulan Funsou Choutei Iinkai",
+    category: "组织名",
+    note: "百鬼夜行历史悠久的武力仲裁中枢，负责平定各派武斗与异变调停。（成员：勘解由小路由香里、七仓莲华、御稜桔梗）"
+  },
+  {
+    ja: "修行部",
+    zh: "修行部",
+    romaji: "Shugyoubu",
+    category: "组织名",
+    note: "致力于探寻大和抚子之德、礼仪修行与茶道花道的和风社团。（成员：水羽三森、勇美椿、鹿仓枫）"
+  },
+  {
+    ja: "忍術研究部",
+    zh: "忍术研究部",
+    romaji: "Ninjutsu Kenkyuubu",
+    category: "组织名",
+    note: "热衷于古代忍术传承、烟雾弹潜入与忍者道修行的热血社团。（成员：千鸟道雪、出云泉奈、大野月咏）"
+  },
+  {
+    ja: "お祭り運営委員会",
+    zh: "节庆运营委员会",
+    romaji: "Omatsuri Unei Iinkai",
+    category: "组织名",
+    note: "百鬼夜行负责各类传统祭典、街区摊位与百夜堂联营的商业策划社团。（成员：河和静子）"
+  },
+  {
+    ja: "玄竜門",
+    zh: "玄龙门",
+    romaji: "Genryuumon",
+    category: "组织名",
+    note: "山海经高级中学最高行政机构与门派，统率学园政务与规章戒律。（门主：龙华妃姬，执行官：近卫美奈）"
+  },
+  {
+    ja: "梅花園",
+    zh: "梅花园",
+    romaji: "Bakaen",
+    category: "组织名",
+    note: "山海经附设的幼教与托管机构，负责奇沃托斯幼童学生的启蒙看护。（教官：春原瞬、春原心奈）"
+  },
+  {
+    ja: "玄武商会",
+    zh: "玄武商会",
+    romaji: "Genbu Shoukai",
+    category: "组织名",
+    note: "山海经最大的商界行会，垄断各类南北干货、中药食材与餐饮物流。（会长：京极琉美）"
+  },
+  {
+    ja: "錬丹術研究会",
+    zh: "炼丹术研究会",
+    romaji: "Rentan Jutsu Kenkyuukai",
+    category: "组织名",
+    note: "山海经研究长生不老秘药、化学试剂与各种古怪实验药品的学究社团。（部长：药子沙耶）"
+  },
+  {
+    ja: "レッドウィンター事務局",
+    zh: "赤冬事务局",
+    romaji: "Red Winter Jimukyoku",
+    category: "组织名",
+    note: "赤冬联邦学园最高行政机构，以切里诺总书记为核心。（主要成员：连河切里诺、佐城智惠、池仓玛利娜）"
+  },
+  {
+    ja: "227号特別クラス",
+    zh: "227号特别班",
+    romaji: "227-gou Tokubetsu Class",
+    category: "组织名",
+    note: "赤冬被流放至边境极寒废旧校舍的受惩处学生班级。（成员：天见时雨、间宵草薙、秋泉红叶等）"
+  },
+  {
+    ja: "工農学生同盟",
+    zh: "工农学生同盟",
+    romaji: "Kounou Gakusei Doumei",
+    category: "组织名",
+    note: "赤冬常年发动罢工与抗争以争取工人学生权益的左翼学生运动团体。（领袖：安守实里）"
+  },
+  {
+    ja: "RABBIT小隊",
+    zh: "RABBIT小队",
+    romaji: "RABBIT Shoutai",
+    category: "组织名",
+    note: "SRT特殊学园废校后由一年级精锐组成的不屈战术小队，长期驻扎公园露营坚守信念。（成员：月雪宫子、空井咲、霞泽美游、风仓萌）"
+  },
+  {
+    ja: "FOX小隊",
+    zh: "FOX小队",
+    romaji: "FOX Shoutai",
+    category: "组织名",
+    note: "原SRT三年级精锐高级特战队，在学园封闭后转入隐秘战线。（队长：七度雪乃）"
+  },
+  {
+    ja: "アリウススクワッド",
+    zh: "阿里乌斯小队",
+    romaji: "Arius Squad",
+    category: "组织名",
+    note: "阿里乌斯分校最顶尖刺杀战术小队，后在老师感化下脱离贝阿朵莉切控制走向救赎。（成员：锭前纱织、秤亚津子、今之间美咲、槌永日和）"
+  },
+  {
+    ja: "カイザーコーポレーション",
+    zh: "凯撒集团",
+    romaji: "Kaiser Corporation",
+    category: "组织名",
+    note: "奇沃托斯内势力庞大的跨自治区商业垄断财阀，拥有私人武装保安佣兵部队（Kaiser PMC），多次策划夺权与违规收购。"
+  },
+
+  // ==========================================
+  // 4. 总力战与大决战 BOSS (Raid Bosses)
+  // ==========================================
+  {
+    ja: "ビナー",
+    zh: "比纳",
+    romaji: "Binah",
+    category: "总力战BOSS",
+    note: "十诫第三使徒，沙漠中苏醒的超巨型机械巨蟒，装甲属性为重装甲，擅长全图大范围沙暴激光扫射。（曾译：薇娜）"
+  },
+  {
+    ja: "ケセド",
+    zh: "切赛德",
+    romaji: "Chesed",
+    category: "总力战BOSS",
+    note: "十诫第四使徒，工厂内无限生成自爆杂兵的要塞核心，需消灭四波机械护卫使外壳展开才能造成致命伤害。（曾译：切瑟德）"
+  },
+  {
+    ja: "シロ＆クロ",
+    zh: "白＆黑",
+    romaji: "Shiro & Kuro",
+    category: "总力战BOSS",
+    note: "游乐园废墟内被神秘污染的吉祥物玩偶。一阶段白投掷巨大保龄球，二阶段黑操纵旋转木马冲撞。"
+  },
+  {
+    ja: "ヒエロニムス",
+    zh: "耶罗尼穆斯",
+    romaji: "Hieronymus",
+    category: "总力战BOSS",
+    note: "地下大教堂召唤出的死灵受难圣骨人形，具备极高伤害与全灭吟唱，依赖绿色圣遗物治疗充能以施加脆弱减防。（曾译：希罗尼穆斯）"
+  },
+  {
+    ja: "ペロロジラ",
+    zh: "佩洛洛吉拉",
+    romaji: "Perorodzilla",
+    category: "总力战BOSS",
+    note: "由海洋被色彩污染的佩洛洛玩偶异化形成的哥斯拉巨怪，特殊装甲，能喷射高温白热光线并分裂小佩洛洛。（俗称：大鸡）"
+  },
+  {
+    ja: "ホド",
+    zh: "霍德",
+    romaji: "Hod",
+    category: "总力战BOSS",
+    note: "十诫第八使徒，控制千禧年通信基站的柱形电子网络中枢，需使用足额眩晕/控制（CC）技能破除其防御壁。"
+  },
+  {
+    ja: "ゴズ",
+    zh: "戈兹",
+    romaji: "Goz",
+    category: "总力战BOSS",
+    note: "游乐园奇术剧场的魔术师异形，擅长纸牌魔术、激光列车冲撞与三分身障眼法。（曾译：高兹）"
+  },
+  {
+    ja: "グレゴリオ",
+    zh: "格里高利",
+    romaji: "Gregorio",
+    category: "总力战BOSS",
+    note: "大管风琴形态的高等使徒，要求玩家队伍根据圣歌风琴的音调实时维持特定数量的异常状态减益效果。"
+  },
+  {
+    ja: "ホバークラフト",
+    zh: "气垫船 (若藻)",
+    romaji: "Hovercraft",
+    category: "总力战BOSS",
+    note: "狐坂若藻操纵的重型登陆气垫船，一阶段与若藻正面交火，二阶段在沿海公路上演火箭炮追逐战。"
+  },
+  {
+    ja: "クロカゲ",
+    zh: "黑影",
+    romaji: "Kurokage",
+    category: "总力战BOSS",
+    note: "百鬼夜行传说中的百物语巨猫大妖怨灵，弹力装甲属性，拥有独特的威压度与幻影咆哮机制。"
+  },
+  {
+    ja: "セトの憤怒",
+    zh: "赛特之怒",
+    romaji: "Set's Wrath",
+    category: "总力战BOSS",
+    note: "制约解除决战中登场的高难神格BOSS，具备十人超大编制团队作战机制与多段暴怒全屏AOE。"
+  },
+
+  // ==========================================
+  // 5. 战斗与系统机制 (Combat & Game Systems)
+  // ==========================================
+  {
+    ja: "爆発",
+    zh: "爆发",
+    romaji: "Bakuhatsu (Explosive)",
+    category: "系统机制",
+    note: "攻击属性（红色），对「轻装甲」造成 200% 克制伤害，对重装甲造成 100%，对特殊装甲造成 50%。"
+  },
+  {
+    ja: "貫通",
+    zh: "贯通",
+    romaji: "Kantsuu (Piercing)",
+    category: "系统机制",
+    note: "攻击属性（黄色），对「重装甲」造成 200% 克制伤害，对特殊装甲造成 100%，对轻装甲造成 50%。"
+  },
+  {
+    ja: "神秘",
+    zh: "神秘",
+    romaji: "Shinpi (Mystic)",
+    category: "系统机制",
+    note: "攻击属性（蓝色），对「特殊装甲」造成 200% 克制伤害，对轻装甲造成 100%，对重装甲造成 50%。"
+  },
+  {
+    ja: "振動",
+    zh: "振动",
+    romaji: "Shindou (Sonic)",
+    category: "系统机制",
+    note: "攻击属性（紫色），对「弹性装甲」造成 200% 克制伤害，对重装甲造成 100%，对特殊装甲造成 50%。"
+  },
+  {
+    ja: "軽装備",
+    zh: "轻装甲",
+    romaji: "Keisoubi (Light Armor)",
+    category: "系统机制",
+    note: "防御属性（红色），受到爆发属性 200% 暴击伤害，弱点为红色攻击。"
+  },
+  {
+    ja: "重装甲",
+    zh: "重装甲",
+    romaji: "Juusoukou (Heavy Armor)",
+    category: "系统机制",
+    note: "防御属性（黄色），受到贯通属性 200% 暴击伤害，弱点为黄色攻击。"
+  },
+  {
+    ja: "特殊装甲",
+    zh: "特殊装甲",
+    romaji: "Tokushu Soukou (Special Armor)",
+    category: "系统机制",
+    note: "防御属性（蓝色），受到神秘属性 200% 暴击伤害，弱点为蓝色攻击。"
+  },
+  {
+    ja: "弾力装甲",
+    zh: "弹性装甲",
+    romaji: "Danryoku Soukou (Elastic Armor)",
+    category: "系统机制",
+    note: "防御属性（紫色），受到振动属性 200% 暴击伤害，弱点为紫色攻击。"
+  },
+  {
+    ja: "市街地戦",
+    zh: "市街地战",
+    romaji: "Shigaichi-sen (Urban)",
+    category: "系统机制",
+    note: "战斗地形之一，适合具备建筑物隐蔽与巷战适应度的学生（地形适性 S/SS 提升伤害与掩体命中）。"
+  },
+  {
+    ja: "屋外戦",
+    zh: "户外战",
+    romaji: "Okugai-sen (Outdoors)",
+    category: "系统机制",
+    note: "战斗地形之一，野外旷野地带作战（亦称野外战）。"
+  },
+  {
+    ja: "屋内戦",
+    zh: "室内战",
+    romaji: "Okunai-sen (Indoors)",
+    category: "系统机制",
+    note: "战斗地形之一，地下遗迹或大楼走廊等狭窄室内空间作战。"
+  },
+  {
+    ja: "EXスキル",
+    zh: "EX技能",
+    romaji: "EX Skill",
+    category: "系统机制",
+    note: "消耗战术 COST 手动释放的核心主动战术必杀技，最高可升至 5 级。"
+  },
+  {
+    ja: "ノーマルスキル",
+    zh: "普通技能",
+    romaji: "Normal Skill (NS)",
+    category: "系统机制",
+    note: "战斗中每隔固定时间（通常20~40秒）或满足特定条件自动释放的技能，最高 10 级。"
+  },
+  {
+    ja: "パッシブスキル",
+    zh: "被动技能",
+    romaji: "Passive Skill (PS)",
+    category: "系统机制",
+    note: "常驻强化学生自身基础属性（攻击力/生命值/防御力/暴击等）的被动技能，最高 10 级。"
+  },
+  {
+    ja: "サブスキル",
+    zh: "辅助技能",
+    romaji: "Sub Skill (SS)",
+    category: "系统机制",
+    note: "全队光环增益或自身特定状态触发的辅助技能，最高 10 级。"
+  },
+  {
+    ja: "固有武器",
+    zh: "固有武器",
+    romaji: "Koyuu Buki (Unique Weapon)",
+    category: "系统机制",
+    note: "学生达到5星后解锁的专属枪械武装，升至二星可强化被动技能，三星强化地形适应性。"
+  },
+  {
+    ja: "愛用品",
+    zh: "爱用品",
+    romaji: "Aiyouhin (Unique Item)",
+    category: "系统机制",
+    note: "部分学生绊等级达到 20/25 级后可装备并强化的专属信物，大幅质变普通技能数值与机制。"
+  },
+  {
+    ja: "総力戦",
+    zh: "总力战",
+    romaji: "Souryoukusen (Total Assault)",
+    category: "系统机制",
+    note: "全服玩家限时挑战十诫使徒等世界级巨型 BOSS 的团队排位活动，产出大量总力战币与青辉石。"
+  },
+  {
+    ja: "大決戦",
+    zh: "大决战",
+    romaji: "Daikessen (Grand Assault)",
+    category: "系统机制",
+    note: "同一个 BOSS 轮番切换轻装甲、重装甲、特殊装甲三种防具属性的高难度综合讨伐战。"
+  },
+  {
+    ja: "制約解除決戦",
+    zh: "约束解除决战",
+    romaji: "Seiyaku Kaijo Kessen (Set)",
+    category: "系统机制",
+    note: "允许同时上场 10 名学生（6名前锋+4名支援）的深层超极限攻坚战模式。"
+  },
+  {
+    ja: "神名文字",
+    zh: "神名文字",
+    romaji: "Shinmei Moji (Eleph)",
+    category: "系统机制",
+    note: "学生进阶升星、神秘解放与专武升级所需的角色专属碎片素材。"
+  },
+  {
+    ja: "青輝石",
+    zh: "青辉石",
+    romaji: "Seikiseki (Pyroxene)",
+    category: "系统机制",
+    note: "奇沃托斯招募学生、重置体力与购买关键凭证的核心付费/游戏代币。"
+  },
+
+  // ==========================================
+  // 6. 全量学生中日名录 (Full Student Roster)
+  // ==========================================
+  // --- 阿拜多斯 ---
+  {
+    ja: "砂狼シロコ",
+    zh: "砂狼白子",
+    romaji: "Sunaookami Shiroko",
+    category: "角色名",
+    note: "阿拜多斯对策委员会突击队员。热爱晨跑与公路自行车运动，战术执行力极强，有着抢劫银行的大胆想法。"
+  },
+  {
+    ja: "小鳥遊ホシノ",
+    zh: "小鸟游星野",
+    romaji: "Takanashi Hoshino",
+    category: "角色名",
+    note: "阿拜多斯对策委员会会长，三年级前辈。表面上慵懒自称「大叔」，实则背负着学园惨痛往事的极强决战盾卫。"
+  },
+  {
+    ja: "十六夜ノノミ",
+    zh: "十六夜野乃美",
+    romaji: "Izayoi Nonomi",
+    category: "角色名",
+    note: "阿拜多斯对策委员会成员。性格温柔富裕的大小姐，手持加特林重机枪，总是随身携带清爽的湿纸巾。（民间旧译：野宫）"
+  },
+  {
+    ja: "黒見セリカ",
+    zh: "黑见芹香",
+    romaji: "Kuromi Serika",
+    category: "角色名",
+    note: "阿拜多斯对策委员会会计。口嫌体正直的猫耳傲娇少女，为了偿还学校债务常年四处兼职打工。"
+  },
+  {
+    ja: "奥空アヤネ",
+    zh: "奥空绫音",
+    romaji: "Okusora Ayane",
+    category: "角色名",
+    note: "阿拜多斯对策委员会书记。做事认真严谨，负责后方战况分析与通信支持的常识人。"
+  },
+
+  // --- 歌裴娜 / 格黑娜 ---
+  {
+    ja: "陸八魔アル",
+    zh: "陆八魔阿露",
+    romaji: "Rikuhachima Aru",
+    category: "角色名",
+    note: "便利屋68自封的冷酷法外狂徒社长。梦想成为究极恶人，实则极易慌乱吃瘪、心地善良纯朴。（名场面：吃惊脸）"
+  },
+  {
+    ja: "浅黄ムツキ",
+    zh: "浅黄睦月",
+    romaji: "Asagi Mutsuki",
+    category: "角色名",
+    note: "便利屋68爆破手。阿露的青梅竹马，喜欢恶作剧并投掷高爆地雷的享乐派小恶魔少女。"
+  },
+  {
+    ja: "鬼方カヨコ",
+    zh: "鬼方佳代子",
+    romaji: "Onikata Kayoko",
+    category: "角色名",
+    note: "便利屋68课长。外表看似凶恶不良少女，实则沉稳冷静且极度喜爱撸猫。（曾译：加代子）"
+  },
+  {
+    ja: "伊草ハルカ",
+    zh: "伊草遥香",
+    romaji: "Igusa Haruka",
+    category: "角色名",
+    note: "便利屋68平民员工。极度自卑怯弱，为了阿露社长认可会毫不犹豫使用巨量炸药铲除一切妨碍者。"
+  },
+  {
+    ja: "空崎ヒナ",
+    zh: "空崎日奈",
+    romaji: "Sorasaki Hina",
+    category: "角色名",
+    note: "歌裴娜风纪委员会委员长。奇沃托斯顶尖天花板战斗力之一，为了维持校园秩序每天过劳加班的可靠少女。"
+  },
+  {
+    ja: "天雨アコ",
+    zh: "天雨亚子",
+    romaji: "Amau Ako",
+    category: "角色名",
+    note: "歌裴娜风纪委员会行政官。对日奈极为忠诚与崇拜，性格高傲自信，战术暴击辅助的核心人选。"
+  },
+  {
+    ja: "銀鏡イオリ",
+    zh: "银镜伊织",
+    romaji: "Shiromi Iori",
+    category: "角色名",
+    note: "歌裴娜风纪委员会突击队长。性格冷酷耿直的狙击手，行动派，常因老师的捉弄而气急败坏。"
+  },
+  {
+    ja: "火宮チナツ",
+    zh: "火宫千夏",
+    romaji: "Hinomiya Chinatsu",
+    category: "角色名",
+    note: "歌裴娜风纪委员会救护担当。性格冷静体贴，随时准备为负伤干员与老师提供紧急理疗。"
+  },
+  {
+    ja: "黒舘ハルナ",
+    zh: "黑馆晴奈",
+    romaji: "Kurodate Haruna",
+    category: "角色名",
+    note: "歌裴娜美食研究会会长。举止高雅端庄的大小姐，一旦遇到怠慢料理的黑店会微笑着将其引爆。"
+  },
+  {
+    ja: "赤司ジュンコ",
+    zh: "赤司淳子",
+    romaji: "Akashi Junko",
+    category: "角色名",
+    note: "歌裴娜美食研究会成员。狂热喜爱美食但总是因为各种意外摔落或错过入口倒霉少女。"
+  },
+  {
+    ja: "獅子堂イズミ",
+    zh: "狮子堂泉",
+    romaji: "Shishido Izumi",
+    category: "角色名",
+    note: "歌裴娜美食研究会成员。喜欢尝试各种暗黑料理与怪异调味的天然吃货。（俗称：汉堡妹）"
+  },
+  {
+    ja: "鰐渕アカリ",
+    zh: "鳄渊明里",
+    romaji: "Wanibuchi Akari",
+    category: "角色名",
+    note: "歌裴娜美食研究会成员。食量如无底洞的大胃王美女，无论吃多少都面不改色。"
+  },
+  {
+    ja: "愛清フウカ",
+    zh: "爱清枫香",
+    romaji: "Aikiyo Fuuka",
+    category: "角色名",
+    note: "歌裴娜料理研究部部长。善良贤惠的厨娘，常年饱受美食会绑架与温泉开发部爆破的受害者。（旧译：风香）"
+  },
+  {
+    ja: "牛牧ジュリ",
+    zh: "牛牧茱莉",
+    romaji: "Ushimaki Juri",
+    category: "角色名",
+    note: "歌裴娜料理研究部部员。虽然用心做饭，但做出的任何食材都会不可思议地化为拥有生命的生化怪物。"
+  },
+  {
+    ja: "羽沼マコト",
+    zh: "羽沼真琴",
+    romaji: "Hanuma Makoto",
+    category: "角色名",
+    note: "歌裴娜万魔殿议长。狂妄自大的搞笑野心家，虽然总是策划宏大阴谋，却次次沦为闹剧收场。"
+  },
+  {
+    ja: "棗イロハ",
+    zh: "枣伊吕波",
+    romaji: "Natsume Iroha",
+    category: "角色名",
+    note: "歌裴娜万魔殿议长首席参谋。喜欢偷懒摸鱼看轻小说，呼叫主战坦克「虎丸」入场狂轰滥炸。（俗称：168）"
+  },
+  {
+    ja: "丹花イブキ",
+    zh: "丹花伊吹",
+    romaji: "Tanga Ibuki",
+    category: "角色名",
+    note: "歌裴娜万魔殿的团宠幼女吉祥物，深受日奈与真琴等全校上下的无比呵护与溺爱。"
+  },
+
+  // --- 崔尼蒂 / 三一 ---
+  {
+    ja: "桐藤ナギサ",
+    zh: "桐藤渚",
+    romaji: "Kiritofuji Nagisa",
+    category: "角色名",
+    note: "崔尼蒂茶会现任主事人。政治手腕高超，随身携带名贵红茶与专用茶具，曾因背叛恐惧而患得患失。"
+  },
+  {
+    ja: "聖園ミカ",
+    zh: "圣园未花",
+    romaji: "Misono Mika",
+    category: "角色名",
+    note: "崔尼蒂茶会前任领袖之一。性格天真烂漫，实力恐怖至极的超人女战神，为了保护老师化身不败之矛。（俗称：战神、大猩猩）"
+  },
+  {
+    ja: "百合園セイア",
+    zh: "百合园圣亚",
+    romaji: "Yurizono Seia",
+    category: "角色名",
+    note: "崔尼蒂茶会预言者派系领袖。拥有预知未来的梦境能力，言语充满哲思与谜题的神秘狐耳少女。"
+  },
+  {
+    ja: "白州アズサ",
+    zh: "白州梓",
+    romaji: "Shirasu Azusa",
+    category: "角色名",
+    note: "阿里乌斯转入补课部的少女。掌握残酷游击战与炸药陷阱技能，深信「凡事皆虚空」却逐渐体悟青春美好。"
+  },
+  {
+    ja: "阿慈谷ヒフミ",
+    zh: "阿慈谷日富美",
+    romaji: "Ajitani Hifumi",
+    category: "角色名",
+    note: "补课部部长。自称平平无奇的普通女高中生，极度狂热佩洛洛玩偶，关键时刻展现出绝境领导力。（代号：浮士德）"
+  },
+  {
+    ja: "浦和ハナコ",
+    zh: "浦和花子",
+    romaji: "Urawa Hanako",
+    category: "角色名",
+    note: "补课部成员。智商极高却故意考零分抗议体制，平时满口大胆擦边言论的粉发天才少女。（看板娘）"
+  },
+  {
+    ja: "下江コハル",
+    zh: "下江小春",
+    romaji: "Shimoe Koharu",
+    category: "角色名",
+    note: "正义实现委员会借调至补课部的红发傲娇少女，脑内常年充斥粉红妄想并大喊「死刑！色情死刑！」"
+  },
+  {
+    ja: "剣先ツルギ",
+    zh: "剑先鹤城",
+    romaji: "Kenzaki Tsurugi",
+    category: "角色名",
+    note: "崔尼蒂正义实现委员会委员长。战斗时狂暴嗜血如同怪物，面对老师时却瞬间变成纯情害羞的小女生。"
+  },
+  {
+    ja: "羽川ハスミ",
+    zh: "羽川莲见",
+    romaji: "Hanekawa Hasumi",
+    category: "角色名",
+    note: "正义实现委员会二号人物。身材极为惹眼的黑翼狙击手，总是在节食减肥与无法抗拒甜点间挣扎。"
+  },
+  {
+    ja: "仲正イチカ",
+    zh: "仲正一花",
+    romaji: "Nakamasa Ichika",
+    category: "角色名",
+    note: "正义实现委员会调解专员。眯眯眼常带微笑，性格看似随和，实则拔剑利落实力强横。"
+  },
+  {
+    ja: "歌住サクラコ",
+    zh: "歌住樱子",
+    romaji: "Utazumi Sakurako",
+    category: "角色名",
+    note: "崔尼蒂修女会最高统领。庄严神圣，虽然不谙世俗潮流却极力尝试理解年轻人流行文化的古风大修女。"
+  },
+  {
+    ja: "伊落マリー",
+    zh: "伊落玛丽",
+    romaji: "Iochi Marie",
+    category: "角色名",
+    note: "修女会虔诚温婉的修女少女。拥有治愈人心的温暖微笑，是无数老师的心灵避风港。"
+  },
+  {
+    ja: "若葉ヒナタ",
+    zh: "若叶日向",
+    romaji: "Wakaba Hinata",
+    category: "角色名",
+    note: "修女会后勤成员。单手能举起沉重弹药箱与重机枪的怪力修女，做事总是慌慌张张。"
+  },
+  {
+    ja: "古関ウイ",
+    zh: "古关忧",
+    romaji: "Koseki Ui",
+    category: "角色名",
+    note: "崔尼蒂古书馆馆长。极度社恐并长期闭门不出研究古文献，身上带有旧书芬芳，能大幅降低全队技能消耗。"
+  },
+  {
+    ja: "蒼森ミネ",
+    zh: "苍森美祢",
+    romaji: "Aomori Mine",
+    category: "角色名",
+    note: "救护骑士团团长。贯彻绝对救护主义，持盾与战锤突入火线，以压倒性武力强行拯救伤员的铁血团长。"
+  },
+  {
+    ja: "鷲見セリナ",
+    zh: "鹫见芹奈",
+    romaji: "Sumi Serina",
+    category: "角色名",
+    note: "救护骑士团核心护士。无论老师处于何种隐秘地点都会神出鬼没现身包扎治疗的白衣天使。"
+  },
+  {
+    ja: "朝顔ハナエ",
+    zh: "朝颜花绘",
+    romaji: "Asagao Hanae",
+    category: "角色名",
+    note: "救护骑士团开朗活泼的见习护士，随身携带电锯等硬核医疗器具以展现救治热情。"
+  },
+  {
+    ja: "杏山カズサ",
+    zh: "杏山和纱",
+    romaji: "Kyoyama Kazusa",
+    category: "角色名",
+    note: "放课后甜点部部员。过去曾是不良少女头目「凯茜」，如今只想平静享受马卡龙与咖啡的酷酷猫耳少女。"
+  },
+  {
+    ja: "柚鳥ナツ",
+    zh: "柚鸟夏",
+    romaji: "Yutori Natsu",
+    category: "角色名",
+    note: "放课后甜点部哲学家。喜欢在品尝甜品时发表充满诗意与形而上学深奥见解的坦率少女。"
+  },
+  {
+    ja: "栗村アイリ",
+    zh: "栗村爱莉",
+    romaji: "Kurimura Airi",
+    category: "角色名",
+    note: "放课后甜点部成员。喜欢研究薄荷巧克力等独特风味甜点的内向文静女孩。"
+  },
+  {
+    ja: "伊原ヨシミ",
+    zh: "伊原喜美",
+    romaji: "Ihara Yoshimi",
+    category: "角色名",
+    note: "放课后甜点部成员。娇小好强的金发双马尾少女，容易因为个子矮被逗恼。"
+  },
+  {
+    ja: "宇沢レイサ",
+    zh: "宇泽玲纱",
+    romaji: "Uzawa Reisa",
+    category: "角色名",
+    note: "崔尼蒂自封的自警团超级英雄少女。手持冲锋枪与散弹枪到处大声发起挑战书的热血笨蛋。"
+  },
+
+  // --- 千禧年 / 千年 ---
+  {
+    ja: "早瀬ユウカ",
+    zh: "早濑优香",
+    romaji: "Hayase Yuuka",
+    category: "角色名",
+    note: "千禧年研讨会财务负责人。数学计算能力无与伦比，常对老师乱花钱进行说教管账的心灵正宫。（社区梗：大头 / 100kg）"
+  },
+  {
+    ja: "生塩ノア",
+    zh: "生盐诺亚",
+    romaji: "Ushio Noa",
+    category: "角色名",
+    note: "千禧年研讨会书记。拥有完全记忆能力，说话轻柔温雅，喜欢用充满恶作剧意味的眼神记录一切。"
+  },
+  {
+    ja: "黒崎コユキ",
+    zh: "黑崎小雪",
+    romaji: "Kurosaki Koyuki",
+    category: "角色名",
+    note: "千禧年研讨会前在押犯。天生拥有惊人解密天赋与无厘头乐天派性格，动辄引发全校混乱。（口头禅：尼哈哈）"
+  },
+  {
+    ja: "調月リオ",
+    zh: "调月莉绪",
+    romaji: "Tsukatsuki Rio",
+    category: "角色名",
+    note: "千禧年学生会长「Big Sister」。崇尚绝对理性与未雨绸缪，曾独自秘密建造全自动防御要塞都市「埃里都」。"
+  },
+  {
+    ja: "美甘ネル",
+    zh: "美甘宁瑠",
+    romaji: "Mikamo Neru",
+    category: "角色名",
+    note: "C&C 队长（代号 00）。身材娇小火爆的暴躁红发双枪特工，千禧年单兵近战最强的不可撼动王者。（曾译：尼禄）"
+  },
+  {
+    ja: "一ノ瀬アスナ",
+    zh: "一之濑明日奈",
+    romaji: "Ichinose Asuna",
+    category: "角色名",
+    note: "C&C 特工（代号 01）。金发巨乳、凭直觉与超级好运纵横战场的乐天犬系女仆特工。"
+  },
+  {
+    ja: "角楯カリン",
+    zh: "角楯花凛",
+    romaji: "Kakudate Karin",
+    category: "角色名",
+    note: "C&C 狙击手（代号 02）。黑皮兔耳少女，装备大口径反器材穿甲狙击步枪，数学运算苦手。"
+  },
+  {
+    ja: "室笠アカネ",
+    zh: "室笠茜",
+    romaji: "Murokasa Akane",
+    category: "角色名",
+    note: "C&C 谍报员（代号 03）。负责爆破与潜入，总是面带礼貌微笑却熟练使用高烈度炸药。"
+  },
+  {
+    ja: "飛鳥馬トキ",
+    zh: "飞鸟马时",
+    romaji: "Asukama Toki",
+    category: "角色名",
+    note: "原调月莉绪直属专属秘密特工（代号 04），身穿动力装甲「阿比盖尔」，口癖为比出剪刀手的天然三无少女。"
+  },
+  {
+    ja: "天童アリス",
+    zh: "天童爱丽丝",
+    romaji: "Tendou Aris",
+    category: "角色名",
+    note: "游戏开发部在废墟捡回的机械少女。手持重型电磁炮「光之剑」，受复古游戏影响自称勇者。（曾译：爱丽丝）"
+  },
+  {
+    ja: "才羽モモイ",
+    zh: "才羽桃",
+    romaji: "Saiba Momoi",
+    category: "角色名",
+    note: "游戏开发部主剧本策划。绿的双胞胎姐姐，性格活泼冒失的猫耳少女。（曾译：桃井）"
+  },
+  {
+    ja: "才羽ミドリ",
+    zh: "才羽绿",
+    romaji: "Saiba Midori",
+    category: "角色名",
+    note: "游戏开发部原画师。桃的双胞胎妹妹，性格内向细腻，极度依恋老师。（曾译：绿）"
+  },
+  {
+    ja: "花岡ユズ",
+    zh: "花冈柚子",
+    romaji: "Hanaoka Yuzu",
+    category: "角色名",
+    note: "游戏开发部部长兼主程序。性格极度社恐，喜欢躲在储物柜里打游戏的编程高手。"
+  },
+  {
+    ja: "明星ヒマリ",
+    zh: "明星日鞠",
+    romaji: "Akeboshi Himari",
+    category: "角色名",
+    note: "特异现象特务部部长。自称「超天才清纯派病弱美少女黑客」，坐轮椅出入，拥有千禧年第一情报网。"
+  },
+  {
+    ja: "和泉元エイミ",
+    zh: "和泉元艾米",
+    romaji: "Izumimoto Eimi",
+    category: "角色名",
+    note: "特异现象特务部执行官。身穿特制拉链紧身散热战术服，对温度变化极为敏感的霰弹枪近战专家。"
+  },
+  {
+    ja: "小鉤マキ",
+    zh: "小钩真纪",
+    romaji: "Ogata Maki",
+    category: "角色名",
+    note: "贝利塔斯街头涂鸦大师。手持彩弹重机枪，总是在千禧年建筑物上留下艺术签名，总力战比纳特攻手。"
+  },
+  {
+    ja: "白石ウタハ",
+    zh: "白石咏叶",
+    romaji: "Shiraishi Utaha",
+    category: "角色名",
+    note: "工程部部长。沉迷自动化自律炮台「雷神」研发与战术改装的技术专家。"
+  },
+  {
+    ja: "猫塚ヒビキ",
+    zh: "猫冢响",
+    romaji: "Nekozuka Hibiki",
+    category: "角色名",
+    note: "工程部部员。性格内向的犬耳迫击炮少女，擅长超视距多段高爆迫击炮覆盖轰炸。"
+  },
+
+  // --- 百鬼夜行 ---
+  {
+    ja: "狐坂ワカモ",
+    zh: "狐坂若藻",
+    romaji: "Kosaka Wakamo",
+    category: "角色名",
+    note: "奇沃托斯七囚犯之一「灾厄之狐」。戴狐狸面具的破坏狂，对老师一见钟情并化身为忠诚恋爱脑。"
+  },
+  {
+    ja: "和楽チセ",
+    zh: "和乐千世",
+    romaji: "Waraku Chise",
+    category: "角色名",
+    note: "阴阳部部员。气质神秘飘逸的和风美少女，爱好随性写俳句，神秘属性榴弹大范围特化。（曾译：千世）"
+  },
+  {
+    ja: "出雲イズナ",
+    zh: "出云泉奈",
+    romaji: "Izumo Izuna",
+    category: "角色名",
+    note: "忍术研究部活泼犬耳忍者少女。立志成为老师专属贴身忍者护卫，动作极度敏捷。（口癖：忍忍）"
+  },
+  {
+    ja: "大野ツクヨ",
+    zh: "大野月咏",
+    romaji: "Ono Tsukuyo",
+    category: "角色名",
+    note: "忍术研究部大个子兔耳忍者。身形高大却极度害羞自卑，擅长变装木桩遁术。"
+  },
+  {
+    ja: "久田シズコ",
+    zh: "久田静子",
+    romaji: "Kuda Shizuko",
+    category: "角色名",
+    note: "节庆运营委员会兼百夜堂茶馆看板娘。精打细算、热情推销甜点炒面煎饼的猫耳美少女。"
+  },
+  {
+    ja: "水羽ミモリ",
+    zh: "水羽三森",
+    romaji: "Mizuha Mimori",
+    category: "角色名",
+    note: "修行部成员。温婉端庄的大和抚子代表，追求完美礼仪与新娘修行。"
+  },
+  {
+    ja: "勇美ツバキ",
+    zh: "勇美椿",
+    romaji: "Kasuga Tsubaki",
+    category: "角色名",
+    note: "修行部盾卫。随身携带木盾与瞌睡枕，在战场上也能随时入睡的闪避型最强开荒坦克。（俗称：神秘盾）"
+  },
+  {
+    ja: "御稜キキョウ",
+    zh: "御稜桔梗",
+    romaji: "Misasagi Kikyou",
+    category: "角色名",
+    note: "百花缭乱纷争调停委员会作战参谋。猫耳黑发，思维精密逻辑极强的战略军师。"
+  },
+  {
+    ja: "七倉レンゲ",
+    zh: "七仓莲华",
+    romaji: "Nanakura Renge",
+    category: "角色名",
+    note: "百花缭乱特攻突击队员。手持火焰喷射器与旗帜，性格豪爽直率的义气少女。"
+  },
+  {
+    ja: "勘解由小路ユカリ",
+    zh: "勘解由小路由香里",
+    romaji: "Kadenokouji Yukari",
+    category: "角色名",
+    note: "名门勘解由小路家名媛，百花缭乱见习生，手持大弓追求正义之道的纯真少女。"
+  },
+
+  // --- 山海经 ---
+  {
+    ja: "春原シュン",
+    zh: "春原瞬",
+    romaji: "Sunohara Shun",
+    category: "角色名",
+    note: "梅花园教官。散发成熟大姐姐魅力的旗袍美人，开局赋予队伍极高战术 COST 加速。（俗称：瞬）"
+  },
+  {
+    ja: "春原ココナ",
+    zh: "春原心奈",
+    romaji: "Sunohara Kokona",
+    category: "角色名",
+    note: "梅花园副教官。瞬的妹妹，性格认真严谨试图树立大人威信的小妹妹教官。（戳戳花丸印章）"
+  },
+  {
+    ja: "竜華キサキ",
+    zh: "龙华妃姬",
+    romaji: "Ryuka Kisaki",
+    category: "角色名",
+    note: "山海经最高统帅「玄龙门」门主。身形娇小却气场威严无双的旗袍黑发领袖。（俗称：妃姬）"
+  },
+  {
+    ja: "近衛ミナ",
+    zh: "近卫美奈",
+    romaji: "Konoe Mina",
+    category: "角色名",
+    note: "玄龙门执行官。热衷于香港警匪电影黑帮火并风范，说话常带硬汉台词与墨镜风范。"
+  },
+  {
+    ja: "京極ルミ",
+    zh: "京极琉美",
+    romaji: "Kyougoku Rumi",
+    category: "角色名",
+    note: "玄武商会会长。掌管全山海经酒楼商铺的大当家，擅长烹饪巨量绝味炒饭抚慰全军。（俗称：炒饭姐）"
+  },
+
+  // --- 赤冬 ---
+  {
+    ja: "連河チェリノ",
+    zh: "连河切里诺",
+    romaji: "Renkawa Cherino",
+    category: "角色名",
+    note: "赤冬联邦学园最高总书记。身材娇小佩戴假胡须，酷爱颁布肃反大清洗与铜像建造命令的傲慢小萝莉。"
+  },
+  {
+    ja: "佐城トモエ",
+    zh: "佐城智惠",
+    romaji: "Sajo Tomoe",
+    category: "角色名",
+    note: "赤冬事务局宣传部长。极度宠溺切里诺，负责在台前幕后美化总书记发言与舆论控制的白发参谋。"
+  },
+  {
+    ja: "池倉マリナ",
+    zh: "池仓玛利娜",
+    romaji: "Ikekura Marina",
+    category: "角色名",
+    note: "赤冬警卫队长。忠心耿耿但脑筋单纯容易迷路的冲锋近卫，濒死时能触发无敌锁血机制。"
+  },
+  {
+    ja: "天見シグレ",
+    zh: "天见时雨",
+    romaji: "Amami Shigure",
+    category: "角色名",
+    note: "227号特别班学员。随身携带装满发酵野果特调“酒”的金属酒壶，神情慵懒惬意的雪国少女。"
+  },
+  {
+    ja: "秋泉モミジ",
+    zh: "秋泉红叶",
+    romaji: "Akizumi Momiji",
+    category: "角色名",
+    note: "227号特别班学员。爱好阅读各类轻小说与通俗通鉴的振动属性重炮射手。"
+  },
+  {
+    ja: "安守ミノリ",
+    zh: "安守实里",
+    romaji: "Yasumori Minori",
+    category: "角色名",
+    note: "工农学生同盟领袖。头戴安全帽、高呼工人权利口号并投掷燃烧瓶的罢工专业户。"
+  },
+
+  // --- 女武神 ---
+  {
+    ja: "尾刃カンナ",
+    zh: "尾刃康娜",
+    romaji: "Ogata Kanna",
+    category: "角色名",
+    note: "女武神警察学校公安局长。常因繁琐公文与政治妥协身心俱疲但关键时刻坚决伸张正义的「疯犬」刑警。"
+  },
+  {
+    ja: "中務キリノ",
+    zh: "中务桐乃",
+    romaji: "Nakatsukasa Kirino",
+    category: "角色名",
+    note: "女武神生活安全局巡警。极富正义感但枪法奇准地避开所有敌人的脱线见习女警。"
+  },
+  {
+    ja: "合歓垣フブキ",
+    zh: "合欢垣吹雪",
+    romaji: "Nemugaki Fubuki",
+    category: "角色名",
+    note: "女武神生活安全局巡警。随身携带甜甜圈、极度奉行公务员按时打卡不加班原则的摸鱼专家。"
+  },
+
+  // --- SRT ---
+  {
+    ja: "月雪ミヤコ",
+    zh: "月雪宫子",
+    romaji: "Tsukiyuki Miyako",
+    category: "角色名",
+    note: "RABBIT小队小队长（RABBIT 1）。指挥严谨战术素养极强，从最初对大人的不信任逐渐成长为全身心依赖老师。（经典台词：我们不可信赖大人）"
+  },
+  {
+    ja: "空井サキ",
+    zh: "空井咲",
+    romaji: "Sorai Saki",
+    category: "角色名",
+    note: "RABBIT小队突击手（RABBIT 2）。严格遵循战术教条与求生规范的硬核短发假小子战士。"
+  },
+  {
+    ja: "霞沢ミユ",
+    zh: "霞泽美游",
+    romaji: "Kasumizawa Miyu",
+    category: "角色名",
+    note: "RABBIT小队狙击手（RABBIT 4）。存在感极度稀薄，喜欢藏在垃圾桶里哭泣自怜的超萌狙击手。"
+  },
+  {
+    ja: "風倉モエ",
+    zh: "风仓萌",
+    romaji: "Kazekura Moe",
+    category: "角色名",
+    note: "RABBIT小队后勤与电战手（RABBIT 3）。沉迷高爆炸弹与导弹空袭覆盖的狂暴火器技术宅。"
+  },
+
+  // --- 阿里乌斯 ---
+  {
+    ja: "錠前サオリ",
+    zh: "锭前纱织",
+    romaji: "Jomae Saori",
+    category: "角色名",
+    note: "阿里乌斯小队队长。长年在残酷仇恨训练中长大，曾开枪重创老师，后在救赎中为守护妹妹们坚毅前行。"
+  },
+  {
+    ja: "秤アツコ",
+    zh: "秤亚津子",
+    romaji: "Hakari Atsuko",
+    category: "角色名",
+    note: "阿里乌斯正统王室后裔「公主」。佩戴防毒面具，渴望见证真实世界花草的纯洁白发少女。"
+  },
+  {
+    ja: "今ノ間ミサキ",
+    zh: "今之间美咲",
+    romaji: "Imanoma Misaki",
+    category: "角色名",
+    note: "阿里乌斯小队重火器手。手臂缠满绷带、满眼厌世神情的火箭筒射手。"
+  },
+  {
+    ja: "槌永ヒヨリ",
+    zh: "槌永日和",
+    romaji: "Tsuchinaga Hiyori",
+    category: "角色名",
+    note: "阿里乌斯小队反器材狙击手。极度悲观常抱头哭泣，靠翻看八卦废旧杂志寻找微小慰藉。"
+  },
+
+  // --- 联邦学生会 ---
+  {
+    ja: "七神リン",
+    zh: "七神凛",
+    romaji: "Nanagami Rin",
+    category: "角色名",
+    note: "联邦学生会首席行政官。总会长失踪后挑起奇沃托斯行政运转大梁的精明严谨女官。"
+  },
+  {
+    ja: "扇喜アオイ",
+    zh: "扇喜葵",
+    romaji: "Oogiki Aoi",
+    category: "角色名",
+    note: "联邦学生会财务室负责人。主管全奇沃托斯信用点核算与圣所之塔预算审批的蓝发职员。"
+  },
+  {
+    ja: "不知火カヤ",
+    zh: "不知火香耶",
+    romaji: "Shiranui Kaya",
+    category: "角色名",
+    note: "联邦学生会防卫室负责人。暗中勾结凯撒集团策划军事政变的野心家。（俗称：超人）"
+  },
+
+  // ==========================================
+  // 7. 社区黑话与常用梗 (Community Slang & Culture)
+  // ==========================================
+  {
+    ja: "100kg",
+    zh: "100kg (早濑优香)",
+    romaji: "Hyakukiro",
+    category: "社区用语",
+    note: "源于主线第二章，游戏开发部在爱丽丝坠落时测算优香压在大腿上的惊人冲击力与计算力，成为玩家津津乐道的体重梗。"
+  },
+  {
+    ja: "ゴリラ",
+    zh: "大猩猩 (圣园未花)",
+    romaji: "Gorilla (Mika)",
+    category: "社区用语",
+    note: "源自圣园未花单手徒手砸碎强化混凝土坚固防壁的超绝怪力，被玩家尊称（爱称）为崔尼蒂战力大猩猩。"
+  },
+  {
+    ja: "ファウスト",
+    zh: "浮士德大人",
+    romaji: "Faust",
+    category: "社区用语",
+    note: "对策委员会在套头纸袋打劫凯撒贷款银行时阿富美戴上袋子化名「浮士德」，威名赫赫震慑便利屋68全员。"
+  },
+  {
+    ja: "憂鬱青藍",
+    zh: "忧郁蓝调",
+    romaji: "Melancholic Blue",
+    category: "社区用语",
+    note: "玩家社区对崔尼蒂「放课后甜点部」四名成员（和纱、夏、爱莉、喜美）早期角色出率高且偏冷门的幽默代称。"
+  },
+  {
+    ja: "カイテンジャー",
+    zh: "寿司战队 (回转无限者)",
+    romaji: "Kaitenger (KAITEN FX Mk.0)",
+    category: "社区用语",
+    note: "由五个寿司不良分子合体组装出百米巨型超级机器人的特摄整活战队，总力战高人气谐星 BOSS。"
+  },
+  {
+    ja: "柴関ラーメン",
+    zh: "柴关拉面",
+    romaji: "Shiba Seki Ramen",
+    category: "社区用语",
+    note: "阿拜多斯沙漠中由柴犬老板经营的老字号拉面馆，是对策委员会与老师最温暖的食堂避风港。"
+  },
+  {
+    ja: "銀行強盗",
+    zh: "抢银行 (水着覆面团)",
+    romaji: "Ginkou Goutou",
+    category: "社区用语",
+    note: "主线Vol.1中白子率领对策委员会头套纸袋抢劫凯撒高利贷金库的名场面，奠定了蔚蓝档案自由不羁的剧情基调。"
+  }
+];
+
+// Deduplicate and sort
+const uniqueMap = new Map();
+for (const t of terms) {
+  const key = `${t.ja}_${t.zh}`;
+  if (!uniqueMap.has(key)) {
+    uniqueMap.set(key, t);
+  }
+}
+
+const sortedList = Array.from(uniqueMap.values()).map((item, idx) => ({
+  id: `g-${String(idx + 1).padStart(3, '0')}`,
+  ja: item.ja,
+  zh: item.zh,
+  romaji: item.romaji,
+  category: item.category,
+  note: item.note,
+  createdAt: "2026-01-01T00:00:00.000Z"
+}));
+
+const output = { terms: sortedList };
+
+writeFileSync('server/data/glossary.json', JSON.stringify(output, null, 2), 'utf-8');
+writeFileSync('src/data/glossary.json', JSON.stringify(output, null, 2), 'utf-8');
+
+console.log(`Successfully compiled ${sortedList.length} terms into server/data/glossary.json and src/data/glossary.json!`);

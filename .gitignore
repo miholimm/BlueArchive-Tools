@@ -41,3 +41,4 @@ portable-file-storage/.env
 !vendor/ba-story-player/dist/**
 !server/data/
 !server/data/student-names.json
+!server/data/glossary.json

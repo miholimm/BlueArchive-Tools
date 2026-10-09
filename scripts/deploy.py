@@ -4,7 +4,7 @@ import time
 import hashlib
 import paramiko
 
-RELEASE_ID = "20261009T153800"
+RELEASE_ID = "20261009T172500"
 LOCAL_ARCHIVE = os.path.join(os.environ.get("TEMP", r"C:\Users\flhan\AppData\Local\Temp"), f"blue-archive-hh-release-{RELEASE_ID}.tar.gz")
 REMOTE_ARCHIVE = f"/tmp/blue-archive-hh-release-{RELEASE_ID}.tar.gz"
 REMOTE_RELEASE_DIR = f"/opt/blue-archive-hh/releases/{RELEASE_ID}"
@@ -38,6 +38,14 @@ def progress(transferred, total):
 
 sftp.put(LOCAL_ARCHIVE, REMOTE_ARCHIVE, callback=progress)
 print("\nUpload complete.")
+
+local_glossary = os.path.join(os.path.dirname(__file__), "..", "server", "data", "glossary.json")
+remote_glossary = "/opt/blue-archive-hh/shared/data/glossary.json"
+if os.path.exists(local_glossary):
+    print(f"Uploading {local_glossary} to {remote_glossary} ...")
+    sftp.put(local_glossary, remote_glossary)
+    print("Remote shared glossary.json updated successfully.")
+
 sftp.close()
 
 def run_cmd(cmd):
@@ -64,6 +72,7 @@ run_cmd(f"ln -sfn /opt/blue-archive-hh/shared/downloads {REMOTE_RELEASE_DIR}/dow
 run_cmd(f"ln -sfn /opt/blue-archive-hh/shared/downloads {REMOTE_RELEASE_DIR}/dist/downloads")
 run_cmd(f"chown -R bluearchive-hh:bluearchive-hh {REMOTE_RELEASE_DIR}")
 run_cmd(f"chmod -R 777 {REMOTE_RELEASE_DIR}")
+run_cmd("chown bluearchive-hh:bluearchive-hh /opt/blue-archive-hh/shared/data/glossary.json && chmod 666 /opt/blue-archive-hh/shared/data/glossary.json")
 
 print("Switching current symlink to new release...")
 run_cmd(f"ln -sfn {REMOTE_RELEASE_DIR} /opt/blue-archive-hh/current")
