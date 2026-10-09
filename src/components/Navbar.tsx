@@ -11,7 +11,7 @@ type DropdownItem = { to: string; label: string; module: SiteModuleId }
 type District = {
   en: string
   label: string
-  icon: React.ComponentType<{ size?: number }>
+  icon: React.ComponentType<{ size?: number; className?: string }>
   items: DropdownItem[]
 }
 
@@ -124,8 +124,29 @@ function NavDropdown({ en, label, icon: Icon, items, mobile, onClose }: {
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const closeMenu = () => setOpen(false)
-  const { settings } = useContent()
+  const navRef = useRef<HTMLElement>(null)
+  const { settings, download } = useContent()
   const admin = useAdminAccess()
+  const currentVersion = download.android[0]?.version || download.windows[0]?.version || '1.0.0'
+
+  // 点击外部收起移动端菜单 & 监听 ESC 键
+  useEffect(() => {
+    if (!open) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMenu()
+    }
+    const handleClickOutside = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        closeMenu()
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [open])
 
   // 按权限过滤，空城区自动隐藏
   const visibleDistricts = districts
@@ -136,53 +157,76 @@ export default function Navbar() {
     .filter(district => district.items.length > 0)
 
   return (
-    <header className="site-nav">
-      <div className="nav-inner">
-        <Link to="/" className="brand" onClick={closeMenu}>
-          <BrandMark />
-          <span><strong>蔚蓝档案</strong><small>本地化计划 / 2026</small></span>
-        </Link>
+    <>
+      {open && (
+        <div
+          className="mobile-nav-backdrop"
+          onClick={closeMenu}
+          aria-hidden="true"
+        />
+      )}
+      <header className="site-nav" ref={navRef}>
+        <div className="nav-inner">
+          <Link to="/" className="brand" onClick={closeMenu}>
+            <BrandMark />
+            <span className="brand-text"><strong>蔚蓝档案</strong><small>本地化计划 / 2026</small></span>
+          </Link>
 
-        {/* Desktop nav */}
-        <nav className="nav-links desktop-nav">
-          {visibleDistricts.map(district => (
-            <NavDropdown
-              key={district.en}
-              en={district.en}
-              label={district.label}
-              icon={district.icon}
-              items={district.items}
-            />
-          ))}
-        </nav>
+          {/* 桌面端导航 */}
+          <nav className="nav-links desktop-nav">
+            {visibleDistricts.map(district => (
+              <NavDropdown
+                key={district.en}
+                en={district.en}
+                label={district.label}
+                icon={district.icon}
+                items={district.items}
+              />
+            ))}
+          </nav>
 
-        {/* Mobile nav */}
-        <nav className={open ? 'nav-links mobile-nav is-open' : 'nav-links mobile-nav'}>
-          {visibleDistricts.map(district => (
-            <NavDropdown
-              key={district.en}
-              en={district.en}
-              label={district.label}
-              icon={district.icon}
-              items={district.items}
-              mobile
-              onClose={closeMenu}
-            />
-          ))}
-        </nav>
+          {/* 移动端全量垂直抽屉导航 (杜绝单框与横向滑动) */}
+          <nav className={open ? 'mobile-nav-drawer is-open' : 'mobile-nav-drawer'}>
+            <div className="mobile-nav-container">
+              {visibleDistricts.map(district => (
+                <div key={district.en} className="mobile-district-card">
+                  <div className="mobile-district-header">
+                    {district.icon && <district.icon size={16} className="district-icon" />}
+                    <span className="mobile-district-title">{district.label}</span>
+                    <span className="mobile-district-en">{district.en}</span>
+                  </div>
+                  <div className="mobile-district-grid">
+                    {district.items.map(item => (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        end={item.to === '/'}
+                        onClick={closeMenu}
+                        className="mobile-district-link"
+                      >
+                        {item.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </nav>
 
-        <div className="nav-meta">
-          <span className="live-dot" /> 自动校验 <span className="nav-version">v1.0.0</span>
+          <div className="nav-meta">
+            <span className="live-dot" /> 自动校验 <span className="nav-version">v{currentVersion}</span>
+          </div>
+          <ThemeToggle />
+          <button
+            className="menu-button"
+            aria-label={open ? '关闭菜单' : '打开菜单'}
+            aria-expanded={open}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
-        <ThemeToggle />
-        <button
-          className="menu-button"
-          aria-label="打开菜单"
-          onClick={() => setOpen(!open)}
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </div>
-    </header>
+      </header>
+    </>
   )
 }
