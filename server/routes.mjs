@@ -301,10 +301,48 @@ api.post('/admin/sessions/revoke-members', requireRoot, async (req, res) => {
 })
 api.get('/admin/visitors', requirePermission('visitors'), async (req, res) => {
   try {
-    const limit = Math.min(parseInt(req.query.limit) || 50, 200)
+    const limit = Math.min(parseInt(req.query.limit) || 50, 1000)
     const visitors = await getVisitors(limit)
     res.json(visitors)
   } catch { res.status(500).json({ message: '访问记录读取失败' }) }
+})
+
+api.get('/admin/visitors/export', requirePermission('visitors'), async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 1000, 5000)
+    const visitors = await getVisitors(limit)
+
+    const headers = ['IP地址', '访问路径', '设备标识/客户端User-Agent', '来源Referer', '访问时间']
+    const escapeCsv = (val) => {
+      if (val === null || val === undefined) return ''
+      let str = String(val)
+      if (/^[=+\-@\t\r]/.test(str)) {
+        str = "'" + str
+      }
+      if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes('\r')) {
+        return `"${str.replace(/"/g, '""')}"`
+      }
+      return str
+    }
+
+    const rows = visitors.map(v => [
+      escapeCsv(v.ip),
+      escapeCsv(v.path),
+      escapeCsv(v.ua),
+      escapeCsv(v.ref),
+      escapeCsv(v.time ? new Date(v.time).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) : '')
+    ].join(','))
+
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n')
+    const filename = `visitors_${new Date().toISOString().slice(0, 10)}.csv`
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8')
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)
+    res.send(csvContent)
+  } catch (err) {
+    console.error('Export visitors CSV failed:', err)
+    res.status(500).json({ message: '导出CSV失败' })
+  }
 })
 
 api.get('/archive', requireModuleAccess('archive'), async (req, res) => {

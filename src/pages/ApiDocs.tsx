@@ -13,6 +13,7 @@ const adminEndpoints = [
   ["PUT", "/api/admin/site-data/:module", "保存安装教程、常见问题或反作弊追踪数据"],
   ["PUT", "/api/admin/settings", "保存站点视觉设置"],
   ["GET", "/api/admin/visitors", "查看访客记录"],
+  ["GET", "/api/admin/visitors/export", "导出访客记录CSV"],
   ["GET", "/api/admin/comments/pending", "查看待审核评论"],
   ["PUT", "/api/admin/comments/:id", "审核评论"],
   ["GET", "/api/admin/feedback", "读取完整翻译反馈"],

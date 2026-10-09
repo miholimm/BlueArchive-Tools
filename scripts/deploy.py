@@ -4,7 +4,7 @@ import time
 import hashlib
 import paramiko
 
-RELEASE_ID = "20261009T195100"
+RELEASE_ID = "20261009T200600"
 LOCAL_ARCHIVE = os.path.join(os.environ.get("TEMP", r"C:\Users\flhan\AppData\Local\Temp"), f"blue-archive-hh-release-{RELEASE_ID}.tar.gz")
 REMOTE_ARCHIVE = f"/tmp/blue-archive-hh-release-{RELEASE_ID}.tar.gz"
 REMOTE_RELEASE_DIR = f"/opt/blue-archive-hh/releases/{RELEASE_ID}"

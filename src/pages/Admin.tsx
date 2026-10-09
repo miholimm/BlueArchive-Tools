@@ -3,6 +3,7 @@ import {
   BookOpen,
   Check,
   Copy,
+  Download,
   Eye,
   HelpCircle,
   Image,
@@ -353,7 +354,7 @@ export default function Admin() {
           />
         )}
         {tab === "overview" && <OverviewTab content={content} />}
-        {tab === "visitors" && <VisitorTab />}
+        {tab === "visitors" && <VisitorTab notify={notify} />}
         {tab === "comments" && <CommentReviewTab notify={notify} />}
         {tab === "feedback" && <FeedbackManageTab notify={notify} />}
         {tab === "apiKeys" && <ApiKeyTab notify={notify} />}
@@ -833,19 +834,26 @@ type VisitorEntry = {
   time: string;
 };
 
-function VisitorTab() {
+function VisitorTab({
+  notify,
+}: {
+  notify?: (message: string, type?: "success" | "error") => void;
+}) {
   const [visitors, setVisitors] = useState<VisitorEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const [limit, setLimit] = useState(100);
 
   useEffect(() => {
     fetchVisitors();
     const timer = setInterval(fetchVisitors, 30000);
     return () => clearInterval(timer);
-  }, []);
+  }, [limit]);
 
   const fetchVisitors = async () => {
+    setLoading(true);
     try {
-      const r = await authFetch("/api/admin/visitors?limit=100");
+      const r = await authFetch(`/api/admin/visitors?limit=${limit}`);
       if (r.ok) setVisitors(await r.json());
     } catch {
     } finally {
@@ -879,19 +887,116 @@ function VisitorTab() {
     }
   };
 
+  const handleExportCsv = async () => {
+    setExporting(true);
+    try {
+      const pad = (n: number) => String(n).padStart(2, "0");
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+      const filename = `visitors_${dateStr}.csv`;
+
+      // 优先请求后端导出端点以获取全量数据
+      let csvBlob: Blob | null = null;
+      try {
+        const res = await authFetch("/api/admin/visitors/export?limit=1000");
+        if (res.ok) {
+          csvBlob = await res.blob();
+        }
+      } catch (e) {
+        console.warn("Server export API failed, fallback to client generation", e);
+      }
+
+      // 兜底：客户端生成 CSV
+      if (!csvBlob) {
+        if (!visitors || visitors.length === 0) {
+          throw new Error("暂无访问记录可供导出");
+        }
+        const escapeCsv = (val: unknown) => {
+          if (val === null || val === undefined) return "";
+          let str = String(val);
+          if (/^[=+\-@\t\r]/.test(str)) {
+            str = "'" + str; // 防御 CSV 注入
+          }
+          if (str.includes('"') || str.includes(",") || str.includes("\n") || str.includes("\r")) {
+            return `"${str.replace(/"/g, '""')}"`;
+          }
+          return str;
+        };
+
+        const headers = ["IP地址", "访问路径", "设备概要", "完整User-Agent", "来源Referer", "访问时间"];
+        const rows = visitors.map((v) => [
+          escapeCsv(v.ip),
+          escapeCsv(v.path),
+          escapeCsv(uaShort(v.ua)),
+          escapeCsv(v.ua || ""),
+          escapeCsv(v.ref || ""),
+          escapeCsv(v.time ? new Date(v.time).toLocaleString("zh-CN") : ""),
+        ]);
+        const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((r) => r.join(","))].join("\r\n");
+        csvBlob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      }
+
+      const url = window.URL.createObjectURL(csvBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      notify?.("访问记录已成功导出为 CSV 文件");
+    } catch (err) {
+      notify?.(err instanceof Error ? err.message : "导出 CSV 失败", "error");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <section className="admin-panel">
       <div className="panel-heading">
         <div>
           <h2>访问记录</h2>
-          <p>最近 100 条页面访问记录，每 30 秒自动刷新。</p>
+          <p>最近 {limit} 条页面访问记录，每 30 秒自动刷新。</p>
         </div>
-        <div className="panel-actions">
+        <div className="panel-actions" style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <select
+            value={limit}
+            onChange={(e) => setLimit(Number(e.target.value))}
+            style={{
+              border: "1px solid var(--border-subtle)",
+              background: "var(--glass-input)",
+              color: "var(--ink)",
+              padding: "6px 10px",
+              borderRadius: "var(--r-sm, 10px)",
+              fontSize: 12,
+            }}
+          >
+            <option value={50}>50 条</option>
+            <option value={100}>100 条</option>
+            <option value={200}>200 条</option>
+            <option value={500}>500 条</option>
+          </select>
           <span className="saved-tip">
             {loading ? "加载中..." : `${visitors.length} 条记录`}
           </span>
-          <button className="button button-primary" onClick={fetchVisitors}>
-            <Save size={15} /> 刷新
+          <button
+            className="button button-ghost button-sm"
+            style={{ borderRadius: "var(--r-md, 12px)", display: "inline-flex", alignItems: "center", gap: 6 }}
+            onClick={handleExportCsv}
+            disabled={exporting || visitors.length === 0}
+            title="导出为 CSV 文件（包含 UTF-8 BOM，防止 Excel 乱码）"
+          >
+            <Download size={14} /> {exporting ? "导出中..." : "导出 CSV"}
+          </button>
+          <button
+            className="button button-primary button-sm"
+            style={{ borderRadius: "var(--r-md, 12px)", display: "inline-flex", alignItems: "center", gap: 6 }}
+            onClick={fetchVisitors}
+            disabled={loading}
+          >
+            <RefreshCw size={14} className={loading ? "spin" : ""} /> 刷新
           </button>
         </div>
       </div>
