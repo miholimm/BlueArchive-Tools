@@ -1064,7 +1064,7 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  border-radius: 0;
   background: var(--card-alt);
   color: var(--sky);
   margin-bottom: 6px;
@@ -1745,6 +1745,10 @@
     margin-bottom: 10px;
     padding-bottom: 6px;
     border-bottom: 1px solid var(--border-subtle, rgba(46, 169, 255, 0.1));
+  }
+
+  .mobile-district-header .district-icon {
+    border-radius: 0;
   }
 
   .mobile-district-title {
