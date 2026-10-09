@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import type { QAAnswer, QAQuestion } from '../types'
 import { authFetch, getAdminMe, getQqAuthStatus, logoutQq, startQqLogin, type QqIdentity } from '../lib/api'
 import MomoTalkThread from '../components/MomoTalkThread'
+import GoogleAd from '../components/GoogleAd'
 
 export default function QA() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -346,6 +347,7 @@ export default function QA() {
             ))}
           </div>
         )}
+        <GoogleAd slotKey="qaBanner" />
       </div>
 
       {/* Ask Modal */}

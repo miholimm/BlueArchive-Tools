@@ -4,6 +4,7 @@ import DownloadCard from "../components/DownloadCard";
 import DownloadModal from "../components/DownloadModal";
 import { EnvironmentCheck, InstallGuide } from "../components/DownloadExperience";
 import Reveal from "../components/Reveal";
+import GoogleAd from "../components/GoogleAd";
 import { useContent } from "../lib/ContentContext";
 import { useAdminAccess } from "../lib/moduleAccess";
 import type { DownloadData, DownloadItem } from "../types";
@@ -132,6 +133,7 @@ export default function Download() {
         {activeGroups.length === 0 && (
           <div className="empty-state">当前暂无可用资源。</div>
         )}
+        <GoogleAd slotKey="downloadBanner" />
       </section>
       <DownloadModal
         open={open}

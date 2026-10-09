@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import GlossaryText from '../components/GlossaryText'
 import Reveal from '../components/Reveal'
 import StoryPortrait from '../components/StoryPortrait'
+import GoogleAd from '../components/GoogleAd'
 import { trackEvent } from '../lib/tracking'
 import type { GlossaryTerm, StoryChapter, StorySegment } from '../types'
 import { authFetch } from '../lib/api'
@@ -198,6 +199,9 @@ export default function StoryReader() {
           ))}
         </div>
       </Reveal>
+
+      {/* Google Ads 预留位 */}
+      <GoogleAd slotKey="storyReaderBottom" />
 
       {/* Feedback floating button */}
       <Link to={feedbackUrl} className="story-feedback-fab" title="反馈翻译">

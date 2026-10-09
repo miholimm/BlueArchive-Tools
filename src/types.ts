@@ -35,6 +35,24 @@ export type VisibilityMode = 'public' | 'admin' | 'disabled'
 export type ThemePreference = 'light' | 'dark' | 'system'
 export type SiteModuleId = 'home' | 'team' | 'news' | 'downloads' | 'status' | 'changelog' | 'tutorial' | 'faq' | 'story' | 'feedback' | 'contributors' | 'antiCheat' | 'glossary' | 'qa' | 'apiDocs' | 'workspace' | 'archive'
 export type ModuleVisibility = Record<SiteModuleId, VisibilityMode>
+export type GoogleAdsSlots = {
+  homeBanner?: string
+  downloadBanner?: string
+  storyReaderBottom?: string
+  qaBanner?: string
+  footerBanner?: string
+}
+
+export type GoogleAdsConfig = {
+  enabled: boolean
+  clientId: string
+  autoAds: boolean
+  testMode: boolean
+  showPlaceholder: boolean
+  adsTxt?: string
+  slots: GoogleAdsSlots
+}
+
 export type SiteSettings = {
   siteTitle: string
   siteSubtitle: string
@@ -43,6 +61,7 @@ export type SiteSettings = {
   accent: string
   theme: ThemePreference
   moduleVisibility: ModuleVisibility
+  ads?: GoogleAdsConfig
 }
 
 // 剧情相关

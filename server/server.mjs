@@ -2,7 +2,7 @@ import express from "express";
 import path from "node:path";
 import { config } from "./config.mjs";
 import { initRepository, logVisitor } from "./repository.mjs";
-import { api } from "./routes.mjs";
+import { api, handleAdsTxt } from "./routes.mjs";
 import { apiV1 } from "./routes-api-v1.mjs";
 import { apiKeyRoutes } from "./routes-apikeys.mjs";
 import { taskRoutes } from "./routes-tasks.mjs";
@@ -70,6 +70,8 @@ app.use("/api", api);
 app.use("/api", (req, res) =>
   res.status(404).json({ error: "API endpoint not found" }),
 );
+
+app.get("/ads.txt", handleAdsTxt);
 
 app.use(express.static(path.join(config.root, "dist")));
 app.use((req, res) =>

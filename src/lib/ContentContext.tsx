@@ -23,6 +23,21 @@ const fallback: SiteContent = {
     accent: "cyan",
     theme: "system",
     moduleVisibility: defaultModuleVisibility,
+    ads: {
+      enabled: false,
+      clientId: "",
+      autoAds: false,
+      testMode: true,
+      showPlaceholder: true,
+      adsTxt: "",
+      slots: {
+        homeBanner: "",
+        downloadBanner: "",
+        storyReaderBottom: "",
+        qaBanner: "",
+        footerBanner: "",
+      },
+    },
   },
 };
 

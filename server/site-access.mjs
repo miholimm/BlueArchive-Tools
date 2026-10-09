@@ -75,10 +75,31 @@ export function requireModuleAccess(module) {
   }
 }
 
+export function normalizeAdsConfig(ads = {}) {
+  const isObj = ads && typeof ads === 'object'
+  const rawSlots = isObj && typeof ads.slots === 'object' && ads.slots !== null ? ads.slots : {}
+  return {
+    enabled: Boolean(isObj && ads.enabled),
+    clientId: String((isObj && ads.clientId) || '').trim().slice(0, 80),
+    autoAds: Boolean(isObj && ads.autoAds),
+    testMode: isObj && ads.testMode !== undefined ? Boolean(ads.testMode) : true,
+    showPlaceholder: isObj && ads.showPlaceholder !== undefined ? Boolean(ads.showPlaceholder) : true,
+    adsTxt: String((isObj && ads.adsTxt) || '').trim().slice(0, 2048),
+    slots: {
+      homeBanner: String(rawSlots.homeBanner || '').trim().slice(0, 80),
+      downloadBanner: String(rawSlots.downloadBanner || '').trim().slice(0, 80),
+      storyReaderBottom: String(rawSlots.storyReaderBottom || '').trim().slice(0, 80),
+      qaBanner: String(rawSlots.qaBanner || '').trim().slice(0, 80),
+      footerBanner: String(rawSlots.footerBanner || '').trim().slice(0, 80),
+    },
+  }
+}
+
 export function filterPublicContent(content, identity) {
   const visibility = getModuleVisibility(content.settings)
   const { discordWebhook: _discordWebhook, ...publicSettings } = content.settings || {}
   publicSettings.backgroundDim = normalizeBackgroundDim(publicSettings.backgroundDim)
+  publicSettings.ads = normalizeAdsConfig(publicSettings.ads)
   const publicDownload = Object.fromEntries(
     Object.entries(content.download || {}).map(([platform, items]) => [
       platform,
@@ -105,5 +126,6 @@ export function normalizeSettings(settings = {}) {
     accent: String(settings.accent || 'cyan').trim().slice(0, 40),
     theme: themeModes.has(settings.theme) ? settings.theme : 'system',
     moduleVisibility: getModuleVisibility(settings),
+    ads: normalizeAdsConfig(settings.ads),
   }
 }

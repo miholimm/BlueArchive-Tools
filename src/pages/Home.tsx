@@ -20,6 +20,7 @@ import { canAccessModule, useAdminAccess } from "../lib/moduleAccess";
 import { getResourceStatus, getStatusLabel, getStatusResource } from "../lib/status";
 import { trackEvent } from "../lib/tracking";
 import StatusValue from "../components/StatusValue";
+import GoogleAd from "../components/GoogleAd";
 
 export default function Home() {
   const { news, download, team, status, settings } = useContent();
@@ -303,6 +304,7 @@ export default function Home() {
             </Reveal>}
           </div>
         </section>}
+        <GoogleAd slotKey="homeBanner" />
       </main>
     </>
   );

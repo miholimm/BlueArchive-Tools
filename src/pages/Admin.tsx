@@ -29,6 +29,7 @@ import {
   SlidersHorizontal,
   ThumbsUp,
   Trash2,
+  Tv,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -45,6 +46,7 @@ import {
 } from "../lib/api";
 import CountUp from "../components/CountUp";
 import AdminUsersTab from "../components/AdminUsersTab";
+import AdminAdsTab from "../components/AdminAdsTab";
 import AdminStatusEditor from "../components/AdminStatusEditor";
 import AdminTutorialEditor from "../components/AdminTutorialEditor";
 import AdminFaqEditor from "../components/AdminFaqEditor";
@@ -95,6 +97,8 @@ const adminTabTitles: Record<string, string> = {
   admins: "组员账号",
   security: "安全中心",
   story: "剧情剧场",
+  mail: "邮件与备份",
+  ads: "广告管理",
 };
 
 export default function Admin() {
@@ -170,6 +174,7 @@ export default function Admin() {
     { id: "glossary", permission: "glossary" as AdminPermission, icon: BookOpen, label: "术语管理" },
     { id: "qa-admin", permission: "qa" as AdminPermission, icon: HelpCircle, label: "问答审核" },
     { id: "mail", permission: "settings" as AdminPermission, icon: Mail, label: "邮件与备份" },
+    { id: "ads", permission: "settings" as AdminPermission, icon: Tv, label: "广告管理" },
     ...(identity?.isRoot ? [{ id: "admins", permission: null, icon: ShieldCheck, label: "组员账号" }] : []),
     { id: "security", permission: "security" as AdminPermission, icon: ShieldAlert, label: "安全中心" },
   ].filter((item) => !item.permission || can(item.permission));
@@ -362,6 +367,7 @@ export default function Admin() {
         {tab === "overview" && <OverviewTab content={content} notify={notify} />}
         {tab === "visitors" && <VisitorTab notify={notify} />}
         {tab === "mail" && <MailAndBackupTab notify={notify} />}
+        {tab === "ads" && <AdminAdsTab notify={notify} refreshContent={refreshContent} />}
         {tab === "comments" && <CommentReviewTab notify={notify} />}
         {tab === "feedback" && <FeedbackManageTab notify={notify} />}
         {tab === "apiKeys" && <ApiKeyTab notify={notify} />}

@@ -16,7 +16,7 @@ import {
   revokeMemberSessions,
 } from './auth.mjs'
 import { readJSON, updateJSON, checkSensitiveWords } from './lib/json-store.mjs'
-import { filterPublicContent, getModuleAccess, normalizeSettings, requireModuleAccess } from './site-access.mjs'
+import { filterPublicContent, getModuleAccess, normalizeSettings, normalizeAdsConfig, requireModuleAccess } from './site-access.mjs'
 import { listAudit, recordAudit } from './audit.mjs'
 import { loginRateLimit } from './security.mjs'
 import { statusResourceDefinitions, statusResourceIds } from './status.mjs'
@@ -459,6 +459,62 @@ api.post('/admin/mail/send-report', requireAuth, async (req, res) => {
     res.status(400).json({ error: err instanceof Error ? err.message : '报告发送失败' })
   }
 })
+
+// ── Google Ads 广告管理与预留配置 API ──
+api.get('/ads', async (req, res) => {
+  try {
+    const settings = (await get('settings')) || {}
+    res.json(normalizeAdsConfig(settings.ads))
+  } catch (err) {
+    res.status(500).json({ error: '读取广告配置失败' })
+  }
+})
+
+api.get('/admin/ads', requirePermission('settings'), async (req, res) => {
+  try {
+    const settings = (await get('settings')) || {}
+    res.json(normalizeAdsConfig(settings.ads))
+  } catch (err) {
+    res.status(500).json({ error: '读取广告配置失败' })
+  }
+})
+
+api.post('/admin/ads', requirePermission('settings'), async (req, res) => {
+  try {
+    const current = (await getAll()).settings || {}
+    const adsConfig = normalizeAdsConfig(req.body)
+    await set('settings', {
+      ...current,
+      ads: adsConfig,
+    })
+    await recordAudit({ actor: req.admin, action: 'ads.save', target: 'google-ads-config' })
+    res.json({ success: true, ads: adsConfig })
+  } catch (err) {
+    res.status(400).json({ error: err instanceof Error ? err.message : '保存广告配置失败' })
+  }
+})
+
+export async function handleAdsTxt(req, res) {
+  try {
+    const settings = (await get('settings')) || {}
+    const ads = normalizeAdsConfig(settings.ads)
+    if (ads.adsTxt && ads.adsTxt.trim()) {
+      res.type('text/plain; charset=utf-8').send(ads.adsTxt.trim() + '\n')
+      return
+    }
+    if (ads.clientId) {
+      const cleanPub = ads.clientId.replace(/^ca-/, '').trim()
+      const autoContent = `# Google AdSense ads.txt - Blue Archive Localization\ngoogle.com, ${cleanPub}, DIRECT, f08c47fec0942fa0\n`
+      res.type('text/plain; charset=utf-8').send(autoContent)
+      return
+    }
+    res.type('text/plain; charset=utf-8').send('# Google AdSense ads.txt placeholder\n# Configure Publisher ID in Admin panel to activate.\n')
+  } catch {
+    res.status(500).type('text/plain; charset=utf-8').send('# Error reading ads.txt\n')
+  }
+}
+
+api.get('/ads.txt', handleAdsTxt)
 
 api.get('/archive', requireModuleAccess('archive'), async (req, res) => {
   try {

@@ -4,18 +4,33 @@ import time
 import hashlib
 import paramiko
 
-RELEASE_ID = "20261009T201700"
+import tarfile
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+RELEASE_ID = sys.argv[1] if len(sys.argv) > 1 else time.strftime("%Y%m%dT%H%M%S")
 LOCAL_ARCHIVE = os.path.join(os.environ.get("TEMP", r"C:\Users\flhan\AppData\Local\Temp"), f"blue-archive-hh-release-{RELEASE_ID}.tar.gz")
 REMOTE_ARCHIVE = f"/tmp/blue-archive-hh-release-{RELEASE_ID}.tar.gz"
 REMOTE_RELEASE_DIR = f"/opt/blue-archive-hh/releases/{RELEASE_ID}"
 
-print(f"Checking local archive: {LOCAL_ARCHIVE}")
-if not os.path.exists(LOCAL_ARCHIVE):
-    print("Error: local archive does not exist!")
-    sys.exit(1)
+def filter_fn(tarinfo):
+    parts = tarinfo.name.split('/')
+    if any(p in ['node_modules', '.git', 'downloads', 'temp', 'tools', '__pycache__', '.playwright-cli'] for p in parts):
+        return None
+    if tarinfo.name.endswith('.log') or tarinfo.name.endswith('.tmp'):
+        return None
+    return tarinfo
+
+print(f"Release ID: {RELEASE_ID}")
+print("Packaging release archive...")
+t0 = time.time()
+with tarfile.open(LOCAL_ARCHIVE, "w:gz") as tar:
+    for item in ['dist', 'package.json', 'pnpm-lock.yaml', 'server', 'src', 'vendor']:
+        p = os.path.join(BASE_DIR, item)
+        if os.path.exists(p):
+            tar.add(p, arcname=f"./{item}", filter=filter_fn)
 
 size = os.path.getsize(LOCAL_ARCHIVE)
-print(f"Archive size: {size / (1024*1024):.2f} MB")
+print(f"Archive packaged: {LOCAL_ARCHIVE} ({size / (1024*1024):.2f} MB) in {time.time()-t0:.2f}s")
 
 client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
