@@ -1,21 +1,35 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
 
 export default function RouteViewport({ children }: { children: ReactNode }) {
   const location = useLocation()
-  const [bouncing, setBouncing] = useState(false)
+  const prevPathRef = useRef(location.pathname)
+  const [isTransitioning, setIsTransitioning] = useState(false)
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 640px) and (prefers-reduced-motion: no-preference)')
-    if (!mediaQuery.matches) return
-    setBouncing(false)
-    const frame = window.requestAnimationFrame(() => setBouncing(true))
-    const timeout = window.setTimeout(() => setBouncing(false), 520)
-    return () => {
-      window.cancelAnimationFrame(frame)
-      window.clearTimeout(timeout)
+    // Scroll restoration on route change
+    if (prevPathRef.current !== location.pathname) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+      prevPathRef.current = location.pathname
     }
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reducedMotion) return
+
+    setIsTransitioning(true)
+    const timer = window.setTimeout(() => {
+      setIsTransitioning(false)
+    }, 380)
+
+    return () => window.clearTimeout(timer)
   }, [location.pathname, location.search])
 
-  return <div className={bouncing ? 'route-viewport route-viewport-bounce' : 'route-viewport'}>{children}</div>
+  return (
+    <div
+      key={location.pathname}
+      className={`route-viewport ${isTransitioning ? 'route-transition-enter' : 'route-transition-idle'}`}
+    >
+      {children}
+    </div>
+  )
 }

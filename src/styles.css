@@ -3146,27 +3146,43 @@ button { cursor: pointer; appearance: none }
   }
 }
 
-/* ===== Reveal Spring Animations ===== */
+/* ===== Reveal Spring Animations & Blue Archive Motion System ===== */
 .reveal {
   opacity: 0;
   will-change: opacity, transform;
 }
 
-.reveal-up { transform: translateY(24px) scale(0.97) }
-.reveal-scale { transform: scale(0.92) }
-.reveal-right { transform: translateX(30px) }
-.reveal-left { transform: translateX(-30px) }
+.reveal-up { transform: translateY(24px) scale(0.97); }
+.reveal-down { transform: translateY(-24px); }
+.reveal-scale { transform: scale(0.92); }
+.reveal-pop { transform: scale(0.85); }
+.reveal-right { transform: translateX(30px); }
+.reveal-left { transform: translateX(-30px); }
+.reveal-fade,
+.reveal-none { transform: none; }
 
 .reveal-in.reveal-up {
   opacity: 1;
   transform: translateY(0) scale(1);
-  transition: opacity .6s var(--spring-soft), transform .65s var(--spring-soft);
+  transition: opacity .55s var(--spring-soft), transform .62s var(--spring-soft);
+}
+
+.reveal-in.reveal-down {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .5s cubic-bezier(0.16, 1, 0.3, 1), transform .58s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal-in.reveal-scale {
   opacity: 1;
   transform: scale(1);
   transition: opacity .5s var(--spring-bounce), transform .55s var(--spring-bounce);
+}
+
+.reveal-in.reveal-pop {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity .45s cubic-bezier(0.34, 1.56, 0.64, 1), transform .52s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .reveal-in.reveal-right,
@@ -3176,8 +3192,32 @@ button { cursor: pointer; appearance: none }
   transition: opacity .5s var(--spring-snappy), transform .6s var(--spring-snappy);
 }
 
+.reveal-in.reveal-fade,
+.reveal-in.reveal-none {
+  opacity: 1;
+  transform: none;
+  transition: opacity .45s ease;
+}
+
+/* Route transition animation */
+.route-transition-enter {
+  animation: baRouteEnter 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes baRouteEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media(prefers-reduced-motion:reduce) {
-  .reveal { opacity: 1; transform: none; transition: none }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .route-transition-enter { animation: none; opacity: 1; transform: none; }
 }
 
 /* ===== BA-Style Bounce Cards ===== */

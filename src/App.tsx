@@ -7,6 +7,7 @@ import BackToTop from "./components/BackToTop";
 import Loading from "./components/Loading";
 import ModuleGate from "./components/ModuleGate";
 import RouteViewport from "./components/RouteViewport";
+import GameCursor from "./components/GameCursor";
 import Home from "./pages/Home";
 import Team from "./pages/Team";
 import News from "./pages/News";
@@ -84,6 +85,7 @@ function SiteFrame() {
         } as React.CSSProperties
       }
     >
+      <GameCursor />
       {!isAdminRoute && <Navbar />}
       {!isAdminRoute && <Banner />}
       <Suspense fallback={<Loading />}>
