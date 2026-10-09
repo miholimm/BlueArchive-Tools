@@ -20,6 +20,10 @@ import { filterPublicContent, getModuleAccess, normalizeSettings, requireModuleA
 import { listAudit, recordAudit } from './audit.mjs'
 import { loginRateLimit } from './security.mjs'
 import { statusResourceDefinitions, statusResourceIds } from './status.mjs'
+import { aggregateGeoStats } from './ipGeo.mjs'
+import { getDiskSpace, cleanupServerDisk } from './diskProtection.mjs'
+import { getMailConfig, saveMailConfig, sendSmtpMail, sendBackupViaEmail, sendDailyReportEmail } from './mailer.mjs'
+import { scheduleNextDailyReport, getNextReportSchedule } from './scheduler.mjs'
 
 export const api = Router()
 
@@ -342,6 +346,117 @@ api.get('/admin/visitors/export', requirePermission('visitors'), async (req, res
   } catch (err) {
     console.error('Export visitors CSV failed:', err)
     res.status(500).json({ message: '导出CSV失败' })
+  }
+})
+
+// ── 数据概览与统计（含 IP 地区统计与磁盘空间） ──
+api.get('/admin/overview-stats', requireAuth, async (req, res) => {
+  try {
+    const allContent = await getAll()
+    const visitors = await getVisitors(300)
+    const geo = await aggregateGeoStats(visitors)
+    const disk = await getDiskSpace()
+
+    res.json({
+      contentCounts: {
+        news: Array.isArray(allContent.news) ? allContent.news.length : 0,
+        download: allContent.download ? Object.values(allContent.download).flat().length : 0,
+        team: Array.isArray(allContent.team) ? allContent.team.length : 0,
+      },
+      geo,
+      disk,
+    })
+  } catch (err) {
+    console.error('Failed to get overview stats:', err)
+    res.status(500).json({ error: '获取概览统计数据失败' })
+  }
+})
+
+// ── 磁盘状态与清理 ──
+api.get('/admin/system/disk-status', requireAuth, async (req, res) => {
+  try {
+    const disk = await getDiskSpace()
+    res.json(disk)
+  } catch (err) {
+    res.status(500).json({ error: '获取磁盘状态失败' })
+  }
+})
+
+api.post('/admin/system/disk-cleanup', requireAuth, async (req, res) => {
+  try {
+    const result = await cleanupServerDisk({ manual: true })
+    await recordAudit({ actor: req.admin, action: 'system.disk-cleanup', target: 'releases-and-tmp' })
+    res.json({ success: true, ...result })
+  } catch (err) {
+    console.error('Disk cleanup error:', err)
+    res.status(500).json({ error: '磁盘清理执行失败' })
+  }
+})
+
+// ── 邮件服务与报告外发 ──
+api.get('/admin/mail/config', requireAuth, async (req, res) => {
+  try {
+    const conf = await getMailConfig(true)
+    const nextSchedule = getNextReportSchedule()
+    res.json({ ...conf, nextSchedule })
+  } catch (err) {
+    res.status(500).json({ error: '读取邮件配置失败' })
+  }
+})
+
+api.post('/admin/mail/config', requireAuth, async (req, res) => {
+  try {
+    const updated = await saveMailConfig(req.body || {})
+    await scheduleNextDailyReport()
+    await recordAudit({ actor: req.admin, action: 'mail.update-config', target: 'smtp-settings' })
+    const nextSchedule = getNextReportSchedule()
+    res.json({ success: true, config: { ...updated, nextSchedule } })
+  } catch (err) {
+    res.status(400).json({ error: err instanceof Error ? err.message : '保存邮件配置失败' })
+  }
+})
+
+api.post('/admin/mail/test', requireAuth, async (req, res) => {
+  try {
+    const to = (req.body?.to || '').trim()
+    const customConfig = req.body?.config || null
+    await sendSmtpMail({
+      to,
+      subject: '【测试邮件】蔚蓝档案民间汉化站 SMTP 联通测试',
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; border-radius: 12px; background: #f0f9ff; border: 1px solid #bae6fd;">
+          <h2 style="color: #0284c7; margin-top: 0;">🎉 SMTP 邮件服务配置成功</h2>
+          <p style="color: #334155; font-size: 14px;">这是一封由蔚蓝档案汉化站系统发出的测试邮件，证明您的 SMTP 账号及授权码配置完全正常。</p>
+          <p style="color: #64748b; font-size: 12px;">发送时间：${new Date().toLocaleString('zh-CN')}</p>
+        </div>
+      `,
+      customConfig,
+    })
+    res.json({ success: true, message: '测试邮件已成功发送' })
+  } catch (err) {
+    res.status(400).json({ error: err instanceof Error ? err.message : '测试邮件发送失败' })
+  }
+})
+
+api.post('/admin/mail/send-backup', requireAuth, async (req, res) => {
+  try {
+    const targetEmail = req.body?.targetEmail
+    const sendRes = await sendBackupViaEmail(targetEmail)
+    await recordAudit({ actor: req.admin, action: 'mail.send-backup', target: targetEmail || 'defaultTo' })
+    res.json({ success: true, ...sendRes })
+  } catch (err) {
+    res.status(400).json({ error: err instanceof Error ? err.message : '备份发送失败' })
+  }
+})
+
+api.post('/admin/mail/send-report', requireAuth, async (req, res) => {
+  try {
+    const targetEmail = req.body?.targetEmail
+    const sendRes = await sendDailyReportEmail(targetEmail)
+    await recordAudit({ actor: req.admin, action: 'mail.send-report', target: targetEmail || 'defaultTo' })
+    res.json({ success: true, ...sendRes })
+  } catch (err) {
+    res.status(400).json({ error: err instanceof Error ? err.message : '报告发送失败' })
   }
 })
 

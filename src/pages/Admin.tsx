@@ -1,10 +1,12 @@
 import {
   Activity,
+  AlertTriangle,
   BookOpen,
   Check,
   Copy,
   Download,
   Eye,
+  HardDrive,
   HelpCircle,
   Image,
   Key,
@@ -13,12 +15,15 @@ import {
   ListTodo,
   LogIn,
   LogOut,
+  Mail,
+  MapPin,
   Megaphone,
   MessageSquare,
   LockKeyhole,
   Plus,
   RefreshCw,
   Save,
+  Send,
   ShieldCheck,
   ShieldAlert,
   SlidersHorizontal,
@@ -164,6 +169,7 @@ export default function Admin() {
     { id: "tasks", permission: "tasks" as AdminPermission, icon: ListTodo, label: "任务管理" },
     { id: "glossary", permission: "glossary" as AdminPermission, icon: BookOpen, label: "术语管理" },
     { id: "qa-admin", permission: "qa" as AdminPermission, icon: HelpCircle, label: "问答审核" },
+    { id: "mail", permission: "settings" as AdminPermission, icon: Mail, label: "邮件与备份" },
     ...(identity?.isRoot ? [{ id: "admins", permission: null, icon: ShieldCheck, label: "组员账号" }] : []),
     { id: "security", permission: "security" as AdminPermission, icon: ShieldAlert, label: "安全中心" },
   ].filter((item) => !item.permission || can(item.permission));
@@ -353,8 +359,9 @@ export default function Admin() {
             setSettingsDraft={setSettingsDraft}
           />
         )}
-        {tab === "overview" && <OverviewTab content={content} />}
+        {tab === "overview" && <OverviewTab content={content} notify={notify} />}
         {tab === "visitors" && <VisitorTab notify={notify} />}
+        {tab === "mail" && <MailAndBackupTab notify={notify} />}
         {tab === "comments" && <CommentReviewTab notify={notify} />}
         {tab === "feedback" && <FeedbackManageTab notify={notify} />}
         {tab === "apiKeys" && <ApiKeyTab notify={notify} />}
@@ -798,32 +805,717 @@ function SettingsEditor({
 }
 
 // ── Overview Tab ──
-function OverviewTab({ content }: { content: SiteContent }) {
+type GeoStatItem = {
+  name: string;
+  count: number;
+  percent: number;
+};
+
+type GeoData = {
+  total: number;
+  sampleSize: number;
+  uniqueIps: number;
+  topProvinces: GeoStatItem[];
+  topCities: GeoStatItem[];
+  topIsps: GeoStatItem[];
+  recentList: Array<{
+    ip: string;
+    region: string;
+    province: string;
+    city: string;
+    path: string;
+    time: string;
+  }>;
+};
+
+type DiskData = {
+  totalGb: number;
+  usedGb: number;
+  freeGb: number;
+  usagePercent: number;
+  status: "normal" | "warning" | "critical";
+  filesystem?: string;
+};
+
+function OverviewTab({
+  content,
+  notify,
+}: {
+  content: SiteContent;
+  notify?: (message: string, type?: "success" | "error") => void;
+}) {
+  const [geo, setGeo] = useState<GeoData | null>(null);
+  const [disk, setDisk] = useState<DiskData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [cleaningDisk, setCleaningDisk] = useState(false);
+  const [geoMode, setGeoMode] = useState<"province" | "city">("province");
+
+  const fetchStats = async () => {
+    try {
+      const res = await authFetch("/api/admin/overview-stats");
+      if (res.ok) {
+        const data = await res.json();
+        setGeo(data.geo);
+        setDisk(data.disk);
+      }
+    } catch (e) {
+      console.warn("Failed to fetch overview stats", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+    const timer = setInterval(fetchStats, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleCleanDisk = async () => {
+    if (!confirm("确认立即执行服务器磁盘空间清理？将安全删除已过期的历史 Release 版本与临时归档。")) return;
+    setCleaningDisk(true);
+    try {
+      const res = await authFetch("/api/admin/system/disk-cleanup", { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        const freed = data.freedEstimatedMb ? `${(data.freedEstimatedMb / 1024).toFixed(1)} GB` : "数 GB";
+        const relCount = data.cleanedReleases ? data.cleanedReleases.length : 0;
+        notify?.(`磁盘清理完成！已清理 ${relCount} 个历史发布版本，预计释放约 ${freed} 空间。`);
+        await fetchStats();
+      } else {
+        notify?.(data.error || "清理执行失败", "error");
+      }
+    } catch (err) {
+      notify?.(err instanceof Error ? err.message : "清理失败", "error");
+    } finally {
+      setCleaningDisk(false);
+    }
+  };
+
+  const getDiskColor = (pct: number) => {
+    if (pct >= 90) return "#ef4444"; // 红色
+    if (pct >= 80) return "#f59e0b"; // 琥珀黄
+    return "#0ea5e9"; // Schale 蔚蓝
+  };
+
+  const geoList = geoMode === "province" ? geo?.topProvinces || [] : geo?.topCities || [];
+
   return (
-    <section className="admin-stats">
-      <div>
-        <span>公告总数</span>
-        <strong>
-          <CountUp value={content.news.length} />
-        </strong>
-      </div>
-      <div>
-        <span>下载资源</span>
-        <strong>
-          <CountUp value={Object.values(content.download).flat().length} />
-        </strong>
-      </div>
-      <div>
-        <span>团队成员</span>
-        <strong>
-          <CountUp
-            value={Array.isArray(content.team) ? content.team.length : 0}
-          />
-        </strong>
-      </div>
-    </section>
+    <div style={{ display: "grid", gap: 24 }}>
+      {/* 顶部指标卡片 */}
+      <section className="admin-stats" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
+        <div>
+          <span>公告总数</span>
+          <strong><CountUp value={content.news.length} /></strong>
+        </div>
+        <div>
+          <span>下载资源</span>
+          <strong><CountUp value={Object.values(content.download).flat().length} /></strong>
+        </div>
+        <div>
+          <span>团队成员</span>
+          <strong><CountUp value={Array.isArray(content.team) ? content.team.length : 0} /></strong>
+        </div>
+        <div>
+          <span>累计访问人次</span>
+          <strong><CountUp value={geo?.total || 0} /></strong>
+        </div>
+        <div>
+          <span>独立访客 IP</span>
+          <strong><CountUp value={geo?.uniqueIps || 0} /></strong>
+        </div>
+      </section>
+
+      {/* 服务器磁盘健康与保护清理卡片 */}
+      <section
+        style={{
+          background: "var(--glass-card)",
+          border: "1px solid var(--border-subtle)",
+          borderRadius: "var(--r-lg, 18px)",
+          padding: 24,
+          backdropFilter: "blur(16px)",
+          boxShadow: "var(--shadow-sm)",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 14, marginBottom: 18 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: "var(--r-sm, 10px)",
+                background: "rgba(14, 165, 233, 0.12)",
+                color: "var(--cyan-strong)",
+                display: "grid",
+                placeItems: "center",
+              }}
+            >
+              <HardDrive size={22} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>服务器硬盘健康与容量防护</h3>
+              <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--ink-muted)" }}>
+                实时监控服务器挂载磁盘使用状态，自动防御与定时清理机制已常驻生效
+              </p>
+            </div>
+          </div>
+          <button
+            className="button button-primary button-sm"
+            style={{ borderRadius: "var(--r-md, 12px)", display: "inline-flex", alignItems: "center", gap: 6 }}
+            onClick={handleCleanDisk}
+            disabled={cleaningDisk}
+            title="安全清除已废弃的历史 Release 目录与临时归档，释放数 GB 磁盘空间"
+          >
+            <Trash2 size={14} className={cleaningDisk ? "spin" : ""} />
+            {cleaningDisk ? "正在清理中..." : "立即清理过期版本"}
+          </button>
+        </div>
+
+        {/* 磁盘指标与进度条 */}
+        <div style={{ background: "rgba(0,0,0,0.02)", padding: 16, borderRadius: "var(--r-md, 14px)", border: "1px solid var(--border-subtle)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, fontSize: 13, flexWrap: "wrap", gap: 8 }}>
+            <span style={{ color: "var(--ink-soft)" }}>
+              已用空间：<strong>{disk?.usedGb ?? "--"} GB</strong> / {disk?.totalGb ?? "--"} GB
+            </span>
+            <span style={{ color: "var(--ink-soft)" }}>
+              可用剩余：<strong style={{ color: disk && disk.freeGb < 3 ? "#ef4444" : "var(--teal)" }}>{disk?.freeGb ?? "--"} GB</strong>
+              &nbsp;（使用率 {disk?.usagePercent ?? 0}%）
+            </span>
+          </div>
+
+          {/* 圆角进度条 */}
+          <div style={{ height: 10, borderRadius: 999, background: "rgba(0,0,0,0.06)", overflow: "hidden", position: "relative" }}>
+            <div
+              style={{
+                width: `${disk?.usagePercent ?? 0}%`,
+                height: "100%",
+                borderRadius: 999,
+                background: `linear-gradient(90deg, #38bdf8, ${getDiskColor(disk?.usagePercent ?? 0)})`,
+                transition: "width 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            />
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, fontSize: 11, color: "var(--ink-muted)" }}>
+            <span
+              style={{
+                display: "inline-block",
+                width: 7,
+                height: 7,
+                borderRadius: "50%",
+                background: disk?.status === "normal" ? "#22c55e" : disk?.status === "warning" ? "#f59e0b" : "#ef4444",
+              }}
+            />
+            <span>
+              {disk?.usagePercent && disk.usagePercent >= 85
+                ? "⚠️ 磁盘使用率达到预警水位（>=85%），后台守护进程会自动修剪旧 Release 与临时文件"
+                : "🛡️ 磁盘容量状态良好。自动清理程序处于常驻待命状态，防止历史构建挤占空间"}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* IP 地区分布统计卡片 */}
+      <section
+        style={{
+          background: "var(--glass-card)",
+          border: "1px solid var(--border-subtle)",
+          borderRadius: "var(--r-lg, 18px)",
+          padding: 24,
+          backdropFilter: "blur(16px)",
+          boxShadow: "var(--shadow-sm)",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: "var(--r-sm, 10px)",
+                background: "rgba(14, 165, 233, 0.12)",
+                color: "var(--cyan-strong)",
+                display: "grid",
+                placeItems: "center",
+              }}
+            >
+              <MapPin size={22} />
+            </div>
+            <div>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "var(--ink)" }}>访客 IP 地区分布统计</h3>
+              <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--ink-muted)" }}>
+                基于近期访客网络地址解析并聚合的地域来源
+              </p>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button
+              className={`button button-sm ${geoMode === "province" ? "button-primary" : "button-ghost"}`}
+              style={{ borderRadius: "var(--r-sm, 10px)", padding: "4px 12px", fontSize: 12 }}
+              onClick={() => setGeoMode("province")}
+            >
+              按省份/大区
+            </button>
+            <button
+              className={`button button-sm ${geoMode === "city" ? "button-primary" : "button-ghost"}`}
+              style={{ borderRadius: "var(--r-sm, 10px)", padding: "4px 12px", fontSize: 12 }}
+              onClick={() => setGeoMode("city")}
+            >
+              按城市
+            </button>
+          </div>
+        </div>
+
+        {/* 地区柱状图列表 */}
+        {loading ? (
+          <p style={{ color: "var(--ink-dim)", fontSize: 13, padding: "20px 0", textAlign: "center" }}>正在解析并汇总地区数据...</p>
+        ) : geoList.length === 0 ? (
+          <p style={{ color: "var(--ink-dim)", fontSize: 13, padding: "20px 0", textAlign: "center" }}>暂无足够访客 IP 样本</p>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14 }}>
+            {geoList.map((item, idx) => (
+              <div
+                key={item.name}
+                style={{
+                  background: "rgba(0,0,0,0.02)",
+                  padding: "12px 14px",
+                  borderRadius: "var(--r-md, 12px)",
+                  border: "1px solid var(--border-subtle)",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)", display: "flex", alignItems: "center", gap: 6 }}>
+                    <span
+                      style={{
+                        display: "inline-grid",
+                        placeItems: "center",
+                        width: 18,
+                        height: 18,
+                        borderRadius: "50%",
+                        fontSize: 10,
+                        background: idx < 3 ? "var(--cyan-strong)" : "rgba(0,0,0,0.08)",
+                        color: idx < 3 ? "#fff" : "var(--ink-dim)",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {idx + 1}
+                    </span>
+                    {item.name}
+                  </span>
+                  <span style={{ fontSize: 12, color: "var(--cyan-strong)", fontWeight: 700 }}>
+                    {item.count} 次 ({item.percent}%)
+                  </span>
+                </div>
+                <div style={{ height: 6, borderRadius: 999, background: "rgba(0,0,0,0.06)", overflow: "hidden" }}>
+                  <div
+                    style={{
+                      width: `${Math.max(item.percent, 4)}%`,
+                      height: "100%",
+                      borderRadius: 999,
+                      background: "linear-gradient(90deg, #38bdf8, #0ea5e9)",
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* 运营商与网络标签 */}
+        {geo?.topIsps && geo.topIsps.length > 0 && (
+          <div style={{ marginTop: 18, paddingTop: 16, borderTop: "1px solid var(--border-subtle)", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>常用运营商与网络:</span>
+            {geo.topIsps.map((isp) => (
+              <span
+                key={isp.name}
+                style={{
+                  fontSize: 11,
+                  padding: "3px 10px",
+                  borderRadius: "var(--r-pill, 999px)",
+                  background: "rgba(14, 165, 233, 0.08)",
+                  color: "var(--cyan-strong)",
+                  border: "1px solid rgba(14, 165, 233, 0.18)",
+                  fontWeight: 600,
+                }}
+              >
+                {isp.name}: {isp.count} 次
+              </span>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
+
+// ── Mail & Backup Tab ──
+function MailAndBackupTab({
+  notify,
+}: {
+  notify?: (message: string, type?: "success" | "error") => void;
+}) {
+  const [mailForm, setMailForm] = useState({
+    enabled: true,
+    host: "smtp.qq.com",
+    port: 465,
+    secure: true,
+    user: "",
+    pass: "",
+    fromName: "蔚蓝档案汉化站系统",
+    defaultTo: "",
+    scheduleEnabled: true,
+    scheduleTime: "08:00",
+    includeBackup: true,
+    lastSentAt: "",
+    lastStatus: "",
+    nextSchedule: "",
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [sendingBackup, setSendingBackup] = useState(false);
+  const [sendingReport, setSendingReport] = useState(false);
+  const [testEmail, setTestEmail] = useState("");
+
+  const fetchConfig = async () => {
+    try {
+      const res = await authFetch("/api/admin/mail/config");
+      if (res.ok) {
+        const data = await res.json();
+        setMailForm((prev) => ({ ...prev, ...data }));
+        if (data.defaultTo && !testEmail) {
+          setTestEmail(data.defaultTo);
+        }
+      }
+    } catch {}
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchConfig();
+  }, []);
+
+  const handleSave = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setSaving(true);
+    try {
+      const res = await authFetch("/api/admin/mail/config", {
+        method: "POST",
+        body: JSON.stringify(mailForm),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        notify?.("邮件与定时报告设置已成功保存");
+        setMailForm((prev) => ({ ...prev, ...data.config }));
+      } else {
+        notify?.(data.error || "保存失败", "error");
+      }
+    } catch (err) {
+      notify?.(err instanceof Error ? err.message : "保存失败", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleTestMail = async () => {
+    const target = testEmail || mailForm.defaultTo;
+    if (!target) {
+      notify?.("请填写测试收件人邮箱", "error");
+      return;
+    }
+    setTesting(true);
+    try {
+      const res = await authFetch("/api/admin/mail/test", {
+        method: "POST",
+        body: JSON.stringify({ to: target, config: mailForm }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        notify?.(`测试邮件已成功发送至 ${target}，请查收！`);
+      } else {
+        notify?.(data.error || "测试发送失败，请核对 SMTP 授权码与主机", "error");
+      }
+    } catch (err) {
+      notify?.(err instanceof Error ? err.message : "测试失败", "error");
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  const handleSendBackupNow = async () => {
+    const target = testEmail || mailForm.defaultTo;
+    if (!target) {
+      notify?.("请先配置默认收件邮箱或测试邮箱", "error");
+      return;
+    }
+    setSendingBackup(true);
+    try {
+      const res = await authFetch("/api/admin/mail/send-backup", {
+        method: "POST",
+        body: JSON.stringify({ targetEmail: target }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        notify?.(`全量数据备份包已成功作为附件发送至 ${target}！`);
+        await fetchConfig();
+      } else {
+        notify?.(data.error || "备份邮件发送失败", "error");
+      }
+    } catch (err) {
+      notify?.(err instanceof Error ? err.message : "备份外发失败", "error");
+    } finally {
+      setSendingBackup(false);
+    }
+  };
+
+  const handleSendReportNow = async () => {
+    const target = testEmail || mailForm.defaultTo;
+    if (!target) {
+      notify?.("请先配置收件邮箱", "error");
+      return;
+    }
+    setSendingReport(true);
+    try {
+      const res = await authFetch("/api/admin/mail/send-report", {
+        method: "POST",
+        body: JSON.stringify({ targetEmail: target }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        notify?.(`今日运行报告与访问统计已成功发送至 ${target}！`);
+        await fetchConfig();
+      } else {
+        notify?.(data.error || "报告发送失败", "error");
+      }
+    } catch (err) {
+      notify?.(err instanceof Error ? err.message : "报告发送失败", "error");
+    } finally {
+      setSendingReport(false);
+    }
+  };
+
+  return (
+    <div style={{ display: "grid", gap: 24 }}>
+      {/* 1. 邮件外发核心设置 */}
+      <section className="admin-panel" style={{ borderRadius: "var(--r-lg, 18px)" }}>
+        <div className="panel-heading">
+          <div>
+            <h2>邮件服务配置 (SMTP)</h2>
+            <p>配置网站邮件发送服务器，用于定时发送运行报告及安全备份文件。</p>
+          </div>
+          <button
+            className="button button-primary"
+            style={{ borderRadius: "var(--r-md, 12px)", display: "inline-flex", alignItems: "center", gap: 6 }}
+            onClick={handleSave}
+            disabled={saving}
+          >
+            <Save size={14} /> {saving ? "保存中..." : "保存邮件设置"}
+          </button>
+        </div>
+
+        <form onSubmit={handleSave} style={{ display: "grid", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-soft)", marginBottom: 6 }}>
+                SMTP 服务器地址
+              </label>
+              <input
+                type="text"
+                placeholder="例如 smtp.qq.com 或 smtp.163.com"
+                value={mailForm.host}
+                onChange={(e) => setMailForm({ ...mailForm, host: e.target.value })}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--r-sm, 10px)", border: "1px solid var(--border-subtle)", background: "var(--glass-input)", color: "var(--ink)" }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-soft)", marginBottom: 6 }}>
+                SMTP 端口 (SSL/TLS 推荐 465)
+              </label>
+              <input
+                type="number"
+                placeholder="465"
+                value={mailForm.port}
+                onChange={(e) => setMailForm({ ...mailForm, port: Number(e.target.value) })}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--r-sm, 10px)", border: "1px solid var(--border-subtle)", background: "var(--glass-input)", color: "var(--ink)" }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-soft)", marginBottom: 6 }}>
+                发信邮箱账号
+              </label>
+              <input
+                type="email"
+                placeholder="例如 schale@qq.com"
+                value={mailForm.user}
+                onChange={(e) => setMailForm({ ...mailForm, user: e.target.value })}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--r-sm, 10px)", border: "1px solid var(--border-subtle)", background: "var(--glass-input)", color: "var(--ink)" }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-soft)", marginBottom: 6 }}>
+                邮箱授权码 / 密码
+              </label>
+              <input
+                type="password"
+                placeholder="QQ/163 邮箱请填写生成的 SMTP 授权码"
+                value={mailForm.pass}
+                onChange={(e) => setMailForm({ ...mailForm, pass: e.target.value })}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--r-sm, 10px)", border: "1px solid var(--border-subtle)", background: "var(--glass-input)", color: "var(--ink)" }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-soft)", marginBottom: 6 }}>
+                发件人显示昵称
+              </label>
+              <input
+                type="text"
+                placeholder="蔚蓝档案汉化站系统"
+                value={mailForm.fromName}
+                onChange={(e) => setMailForm({ ...mailForm, fromName: e.target.value })}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--r-sm, 10px)", border: "1px solid var(--border-subtle)", background: "var(--glass-input)", color: "var(--ink)" }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-soft)", marginBottom: 6 }}>
+                默认接收通知邮箱
+              </label>
+              <input
+                type="email"
+                placeholder="admin@example.com"
+                value={mailForm.defaultTo}
+                onChange={(e) => setMailForm({ ...mailForm, defaultTo: e.target.value })}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--r-sm, 10px)", border: "1px solid var(--border-subtle)", background: "var(--glass-input)", color: "var(--ink)" }}
+              />
+            </div>
+          </div>
+
+          {/* 发送测试邮件工具 */}
+          <div style={{ marginTop: 8, padding: 14, background: "rgba(0,0,0,0.02)", borderRadius: "var(--r-md, 12px)", border: "1px solid var(--border-subtle)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "1 1 300px" }}>
+              <span style={{ fontSize: 12, color: "var(--ink-soft)", whiteSpace: "nowrap" }}>测试收件邮箱:</span>
+              <input
+                type="email"
+                placeholder="输入收件邮箱以验证"
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                style={{ flex: 1, padding: "8px 10px", borderRadius: "var(--r-sm, 10px)", border: "1px solid var(--border-subtle)", background: "var(--glass-input)", fontSize: 12, color: "var(--ink)" }}
+              />
+            </div>
+            <button
+              type="button"
+              className="button button-ghost button-sm"
+              style={{ borderRadius: "var(--r-md, 12px)", display: "inline-flex", alignItems: "center", gap: 6 }}
+              onClick={handleTestMail}
+              disabled={testing}
+            >
+              <Send size={14} className={testing ? "spin" : ""} /> {testing ? "发送中..." : "发送测试邮件"}
+            </button>
+          </div>
+        </form>
+      </section>
+
+      {/* 2. 网站备份外发与定时自动化报告 */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 20 }}>
+        {/* 网站数据备份外发卡片 */}
+        <section className="admin-panel" style={{ borderRadius: "var(--r-lg, 18px)" }}>
+          <div className="panel-heading">
+            <div>
+              <h3>网站完整备份外发</h3>
+              <p>将公告、下载、团队、FAQ、术语库等全部数据打包作为邮件附件外发，防止服务器灾难性丢失。</p>
+            </div>
+          </div>
+          <div style={{ background: "rgba(0,0,0,0.02)", padding: 16, borderRadius: "var(--r-md, 12px)", border: "1px solid var(--border-subtle)", marginBottom: 16 }}>
+            <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12, color: "var(--ink-soft)", lineHeight: 1.8 }}>
+              <li>包含公告与文章数据 (news.json)</li>
+              <li>包含下载资源与分流版本 (download.json)</li>
+              <li>包含全量 208 条中日术语库 (glossary.json)</li>
+              <li>包含安装教程、常见问题、反作弊规则及站点视觉设置</li>
+            </ul>
+          </div>
+          <button
+            className="button button-primary"
+            style={{ width: "100%", borderRadius: "var(--r-md, 12px)", display: "inline-flex", justifyContent: "center", alignItems: "center", gap: 8 }}
+            onClick={handleSendBackupNow}
+            disabled={sendingBackup}
+          >
+            <Download size={15} className={sendingBackup ? "spin" : ""} />
+            {sendingBackup ? "正在打包并发送中..." : "立即备份并通过邮件发送附件"}
+          </button>
+        </section>
+
+        {/* 定时向指定邮箱发送报告与备份 */}
+        <section className="admin-panel" style={{ borderRadius: "var(--r-lg, 18px)" }}>
+          <div className="panel-heading">
+            <div>
+              <h3>定时自动化报告与归档</h3>
+              <p>可按设定的时间每日自动汇总访客 IP 地区、服务器磁盘健康并随信携带数据备份包。</p>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gap: 14 }}>
+            <label style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "var(--ink)", cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={mailForm.scheduleEnabled}
+                onChange={(e) => setMailForm({ ...mailForm, scheduleEnabled: e.target.checked })}
+                style={{ width: 16, height: 16, borderRadius: 4 }}
+              />
+              启用每日定时发送运行报告邮件
+            </label>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span style={{ fontSize: 12, color: "var(--ink-soft)", whiteSpace: "nowrap" }}>每日发送时间:</span>
+              <input
+                type="time"
+                value={mailForm.scheduleTime}
+                onChange={(e) => setMailForm({ ...mailForm, scheduleTime: e.target.value })}
+                style={{ padding: "6px 12px", borderRadius: "var(--r-sm, 10px)", border: "1px solid var(--border-subtle)", background: "var(--glass-input)", color: "var(--ink)", fontSize: 13 }}
+              />
+            </div>
+
+            <label style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "var(--ink-soft)", cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={mailForm.includeBackup}
+                onChange={(e) => setMailForm({ ...mailForm, includeBackup: e.target.checked })}
+                style={{ width: 16, height: 16, borderRadius: 4 }}
+              />
+              每日报告同时附带全量数据备份附件 (自动灾备)
+            </label>
+
+            {mailForm.nextSchedule && (
+              <div style={{ fontSize: 11, color: "var(--cyan-strong)", background: "rgba(14, 165, 233, 0.08)", padding: "8px 12px", borderRadius: "var(--r-sm, 8px)" }}>
+                ⏰ 下次自动发送时间: {new Date(mailForm.nextSchedule).toLocaleString("zh-CN")}
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+              <button
+                className="button button-primary button-sm"
+                style={{ flex: 1, borderRadius: "var(--r-md, 12px)" }}
+                onClick={handleSave}
+                disabled={saving}
+              >
+                保存定时策略
+              </button>
+              <button
+                className="button button-ghost button-sm"
+                style={{ flex: 1, borderRadius: "var(--r-md, 12px)" }}
+                onClick={handleSendReportNow}
+                disabled={sendingReport}
+                title="立即生成一份今日报告并发送"
+              >
+                {sendingReport ? "发送中..." : "立即发送一次报告"}
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
 
 // ── Visitor Tab ──
 type VisitorEntry = {

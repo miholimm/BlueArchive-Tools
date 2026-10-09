@@ -4,7 +4,7 @@ import time
 import hashlib
 import paramiko
 
-RELEASE_ID = "20261009T200600"
+RELEASE_ID = "20261009T201700"
 LOCAL_ARCHIVE = os.path.join(os.environ.get("TEMP", r"C:\Users\flhan\AppData\Local\Temp"), f"blue-archive-hh-release-{RELEASE_ID}.tar.gz")
 REMOTE_ARCHIVE = f"/tmp/blue-archive-hh-release-{RELEASE_ID}.tar.gz"
 REMOTE_RELEASE_DIR = f"/opt/blue-archive-hh/releases/{RELEASE_ID}"
@@ -84,6 +84,25 @@ print(f"Service status: {status}")
 
 print("Cleaning up remote archive...")
 run_cmd(f"rm -f {REMOTE_ARCHIVE}")
+
+print("Auto cleaning up old releases to protect server disk space...")
+run_cmd('''python3 -c "
+import os, shutil
+releases_dir = '/opt/blue-archive-hh/releases'
+current_link = '/opt/blue-archive-hh/current'
+curr = os.path.basename(os.path.realpath(current_link))
+all_rels = sorted([d for d in os.listdir(releases_dir) if os.path.isdir(os.path.join(releases_dir, d))], reverse=True)
+protected = {curr, '20260914T024649'}
+for r in all_rels[:2]:
+    protected.add(r)
+for r in all_rels:
+    if r not in protected:
+        p = os.path.join(releases_dir, r)
+        print('Pruning old release:', p)
+        shutil.rmtree(p, ignore_errors=True)
+"''')
+print("Current server disk status:")
+run_cmd("df -h /")
 
 print("Checking remote HTTP response...")
 http_check = run_cmd("curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4173/")

@@ -13,8 +13,10 @@ import { staticDataRoutes, storyDataRoutes } from "./routes-static.mjs";
 import { handleStoryProxy } from "./routes-story-proxy.mjs";
 import { storyCatalogRoutes } from "./routes-story-catalog.mjs";
 import { rateLimit, securityHeaders, getRequestIp } from "./security.mjs";
+import { initScheduler } from "./scheduler.mjs";
 
 await initRepository(config.root);
+initScheduler();
 const app = express();
 app.set("trust proxy", config.trustProxy ? 1 : false);
 app.use(express.json({ limit: "2mb" }));
