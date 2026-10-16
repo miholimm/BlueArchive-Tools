@@ -1,0 +1,118 @@
+{
+  "android": [
+    {
+      "name": "安卓免Root一键汉化工具箱 (推荐·零风险)",
+      "version": "1.73.459696",
+      "description": "适用于所有安卓设备。官方正版游戏免改包，手机连接电脑后双击脚本，一键自动推送最新 TableBundles 汉化数据，100% 免 Root、免核心破解、彻底避开反作弊拦截！",
+      "updated": "2026-10-08",
+      "url": "/downloads/jp/BA_Android_OneKey_Patcher_v1.73.459696.zip",
+      "size": "56.4 MB",
+      "checksum": {
+        "md5": "f85258ff330e3ac3fc62692f934f36a6",
+        "sha256": "e2bb396f822b932382c7af4094de4e10d44306f96960c307625d0fab569af49c"
+      }
+    },
+    {
+      "name": "TableBundles 快速替换包 (手动覆盖/代理注入)",
+      "version": "1.73.459696",
+      "description": "官方格式 TableCatalog.bytes 与 Excel.zip 数据包。适合通过电脑文件传输(MTP)、Shizuku 或小火箭/Clash 重写规则直连下发，零封号风险。",
+      "updated": "2026-10-08",
+      "url": "/downloads/jp/TableBundles_JP_Localized_JP1.73.459696.zip",
+      "size": "52.4 MB",
+      "checksum": {
+        "md5": "3bd87ade5ffb64a62439452ecada093a",
+        "sha256": "c77cd2d3928775e2a98c99f28f6e6885c276c55e46432cb16da450ba7d6b9718"
+      }
+    },
+    {
+      "name": "蔚蓝档案日服完整汉化客户端 (APK·需核心破解)",
+      "version": "1.73.459696",
+      "description": "基于官方原包深度重构单包，内置最新全文本汉化与中文字体。注意：由于日服反作弊强校验签名，请在电脑模拟器或已 Root 设备中配合 LSPosed「核心破解 (CorePatch)」模块使用。",
+      "updated": "2026-10-08",
+      "url": "/downloads/jp/BlueArchive_JP_CN_v1.73.459696.apk",
+      "size": "174.2 MB",
+      "checksum": {
+        "md5": "3b633ef63e81e80fc970ffee8fa2b9ab",
+        "sha256": "0d48c60f3168017b79513a2e389e4f9b65f4d94b9ae816938701d1c3a5c8666f"
+      }
+    }
+  ],
+  "windows": [
+    {
+      "name": "蔚蓝档案 PC 汉化启动器 (Windows 桌面版)",
+      "version": "1.0.1",
+      "description": "全新架构重构版！基于官方 PC 引导机制深度适配，内置中文字体补全与动态云端路由注入，彻底解决启动资源报错与日文覆盖问题。支持一键汉化校验、官方原版双向还原与高清壁纸切换。",
+      "updated": "2026-10-16",
+      "url": "/downloads/jp/BlueArchive_PC_CN_Launcher.exe",
+      "size": "63.3 MB",
+      "checksum": {
+        "md5": "ad20b9a989b6bcd95b6090dee3bf66c6",
+        "sha256": "8cf3c713c3b82214cdb6f4e7528808c9eb8118904135df50d35e6ae3acc1fa68"
+      }
+    },
+    {
+      "name": "Windows (DMM/Steam) 日服全量汉化补丁包",
+      "version": "1.73.459696",
+      "description": "适用于 Windows 10/11 DMM Game Player 与 Steam 客户端，解压覆盖即可享受全文本中文体验。",
+      "updated": "2026-10-08",
+      "url": "/downloads/jp/BlueArchive_JP_CN_Patch_JP1.73.459696.zip",
+      "size": "80.6 MB",
+      "checksum": {
+        "md5": "176440f06e156594c57c42d30d671a63",
+        "sha256": "49d1ee4e738b4815ad51aaf3f57ef399ca2bc77189e38f624728ba733f78add6"
+      },
+      "diff": {
+        "url": "/downloads/jp/TableBundles_JP_Localized_JP1.73.459696.zip",
+        "size": "52.4 MB"
+      }
+    },
+    {
+      "name": "TableBundles 快速替换包",
+      "version": "1.73.459696",
+      "description": "包含更新后的 TableCatalog.bytes 与加密 Excel 数据表，支持通过本地代理或直接复制使用。",
+      "updated": "2026-10-08",
+      "url": "/downloads/jp/TableBundles_JP_Localized_JP1.73.459696.zip",
+      "size": "52.4 MB",
+      "checksum": {
+        "md5": "3bd87ade5ffb64a62439452ecada093a",
+        "sha256": "c77cd2d3928775e2a98c99f28f6e6885c276c55e46432cb16da450ba7d6b9718"
+      }
+    }
+  ],
+  "ios": [
+    {
+      "name": "iOS 日服汉化资源包 (IPA / TrollStore / Sideload)",
+      "version": "1.73.459696",
+      "description": "适用于巨魔 TrollStore、AltStore 或 SideStore 注入安装，内置最新全文本汉化。",
+      "updated": "2026-10-08",
+      "url": "/downloads/jp/BlueArchive_JP_CN_Patch_JP1.73.459696.zip",
+      "size": "80.6 MB",
+      "checksum": {
+        "md5": "176440f06e156594c57c42d30d671a63",
+        "sha256": "49d1ee4e738b4815ad51aaf3f57ef399ca2bc77189e38f624728ba733f78add6"
+      },
+      "diff": {
+        "url": "/downloads/jp/TableBundles_JP_Localized_JP1.73.459696.zip",
+        "size": "52.4 MB"
+      }
+    }
+  ],
+  "macos": [
+    {
+      "name": "macOS PlayCover 汉化资源包",
+      "version": "1.73.459696",
+      "description": "适用于 Apple Silicon (M1/M2/M3/M4) 设备 PlayCover 侧载运行，提供原生日服汉化支持。",
+      "updated": "2026-10-08",
+      "url": "/downloads/jp/BlueArchive_JP_CN_Patch_JP1.73.459696.zip",
+      "size": "80.6 MB",
+      "checksum": {
+        "md5": "176440f06e156594c57c42d30d671a63",
+        "sha256": "49d1ee4e738b4815ad51aaf3f57ef399ca2bc77189e38f624728ba733f78add6"
+      },
+      "diff": {
+        "url": "/downloads/jp/TableBundles_JP_Localized_JP1.73.459696.zip",
+        "size": "52.4 MB"
+      }
+    }
+  ]
+}
