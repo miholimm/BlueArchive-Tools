@@ -7,7 +7,9 @@ import type { ArchiveItem } from '../types'
 import { authFetch } from '../lib/api'
 
 function isDownloadUrl(url: string) {
-  return /^https?:\/\//i.test(url)
+  if (!url || typeof url !== 'string') return false
+  const trimmed = url.trim()
+  return /^https?:\/\//i.test(trimmed) || /^\/(?!\/)/.test(trimmed)
 }
 
 function isInternalPath(value: string) {

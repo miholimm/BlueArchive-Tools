@@ -5,7 +5,9 @@ import { trackEvent } from "../lib/tracking";
 import { ChecksumBadge } from "./ChecksumBadge";
 
 function isDownloadUrl(url: string) {
-  return /^https?:\/\//i.test(url);
+  if (!url || typeof url !== "string") return false;
+  const trimmed = url.trim();
+  return /^https?:\/\//i.test(trimmed) || /^\/(?!\/)/.test(trimmed);
 }
 
 export default function DownloadModal({
@@ -62,7 +64,8 @@ export default function DownloadModal({
           {targetAvailable ? (
             <a
               href={selected.url}
-              target="_blank"
+              target={selected.url.startsWith("http") ? "_blank" : undefined}
+              download={selected.url.startsWith("/") ? true : undefined}
               rel="noreferrer"
               className="button button-primary"
               onClick={() =>
@@ -73,7 +76,7 @@ export default function DownloadModal({
                 })
               }
             >
-              前往下载 <ArrowUpRight size={16} />
+              立即下载 <ArrowUpRight size={16} />
             </a>
           ) : (
             <div className="download-unavailable">

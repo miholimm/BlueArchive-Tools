@@ -35,7 +35,17 @@ print(f"Archive packaged: {LOCAL_ARCHIVE} ({size / (1024*1024):.2f} MB) in {time
 client = paramiko.SSHClient()
 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 print("Connecting to 218.11.5.75...")
-client.connect('218.11.5.75', username='root', password='wZzhJ9Q.zFBc8@5')
+for attempt in range(5):
+    try:
+        time.sleep(2)
+        client.connect('218.11.5.75', username='root', password='wZzhJ9Q.zFBc8@5', look_for_keys=False, allow_agent=False, banner_timeout=15)
+        print("Connected to 218.11.5.75!")
+        break
+    except Exception as e:
+        if attempt == 4:
+            raise
+        print(f"SSH connect attempt {attempt+1} failed ({e}), retrying in 3s...")
+        time.sleep(3)
 
 print("Uploading archive via SFTP...")
 sftp = client.open_sftp()
@@ -60,6 +70,13 @@ if os.path.exists(local_glossary):
     print(f"Uploading {local_glossary} to {remote_glossary} ...")
     sftp.put(local_glossary, remote_glossary)
     print("Remote shared glossary.json updated successfully.")
+
+local_launcher = os.path.join(os.path.dirname(__file__), "..", "downloads", "jp", "BlueArchive_PC_CN_Launcher.exe")
+remote_launcher = "/opt/blue-archive-hh/shared/downloads/jp/BlueArchive_PC_CN_Launcher.exe"
+if os.path.exists(local_launcher):
+    print(f"Uploading {local_launcher} to {remote_launcher} ...")
+    sftp.put(local_launcher, remote_launcher)
+    print("Remote shared BlueArchive_PC_CN_Launcher.exe updated successfully.")
 
 sftp.close()
 

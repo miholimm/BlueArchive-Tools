@@ -19,7 +19,9 @@ const groups: { key: keyof DownloadData; label: string; note: string }[] = [
 const platformIcons = { android: Bot, windows: Monitor, ios: Smartphone, macos: Apple };
 
 function isDownloadUrl(url: string) {
-  return /^https?:\/\//i.test(url);
+  if (!url || typeof url !== "string") return false;
+  const trimmed = url.trim();
+  return /^https?:\/\//i.test(trimmed) || /^\/(?!\/)/.test(trimmed);
 }
 
 export default function Download() {
