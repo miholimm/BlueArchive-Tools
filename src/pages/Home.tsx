@@ -67,6 +67,7 @@ export default function Home() {
       links: [
         { to: "/story", label: "剧情库", show: canAccessModule(settings, "story", admin) },
         { to: "/story-player", label: "原版播放器", show: canAccessModule(settings, "story", admin) },
+        { to: "/player/", label: "独立全屏播放器", show: canAccessModule(settings, "story", admin), external: true },
         { to: "/glossary", label: "术语库", show: canAccessModule(settings, "glossary", admin) },
       ],
     },
@@ -157,7 +158,11 @@ export default function Home() {
                         {district.links
                           .filter((link) => link.show)
                           .map((link) => (
-                            <Link key={link.to} to={link.to}>{link.label}</Link>
+                            link.external ? (
+                              <a key={link.to} href={link.to} target="_blank" rel="noopener noreferrer">{link.label}</a>
+                            ) : (
+                              <Link key={link.to} to={link.to}>{link.label}</Link>
+                            )
                           ))}
                       </div>
                     </article>

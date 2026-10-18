@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, ChevronDown, FileJson, ListTree, Loader2, Maximize2, Minimize2, Play, UploadCloud } from 'lucide-react'
+import { AlertTriangle, ChevronDown, ExternalLink, FileJson, ListTree, Loader2, Maximize2, Minimize2, Play, Sparkles, UploadCloud } from 'lucide-react'
 import BaStoryPlayerBridge, { type StoryLanguage } from '../components/story/BaStoryPlayerBridge'
 import { trackEvent } from '../lib/tracking'
 import ModuleGate from '../components/ModuleGate'
@@ -230,8 +230,20 @@ function StoryPlayerInner() {
         <span className="eyebrow">STORY / PLAYER</span>
         <h1>原版剧情播放器</h1>
         <p>
-          基于社区 <code>ba-story-player</code> 引擎，还原游戏内立绘、语音与特效的沉浸式剧情体验。
+          基于 <code>ba-story-player</code> 独立核心引擎，还原游戏内立绘、语音与特效的沉浸式剧情体验。
         </p>
+        <div style={{ marginTop: '14px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <a
+            href={storyUrl ? `/player/?story=${encodeURIComponent(storyUrl)}` : '/player/'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="button button-primary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            <Sparkles size={15} /> 打开独立全屏播放器 (原生体验)
+            <ExternalLink size={13} style={{ opacity: 0.8 }} />
+          </a>
+        </div>
       </div>
 
       <section className="section">

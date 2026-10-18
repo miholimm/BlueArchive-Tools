@@ -7,7 +7,7 @@ import BrandMark from './BrandMark'
 import ThemeToggle from './ThemeToggle'
 import type { SiteModuleId } from '../types'
 
-type DropdownItem = { to: string; label: string; module: SiteModuleId }
+type DropdownItem = { to: string; label: string; module: SiteModuleId; external?: boolean }
 type District = {
   en: string
   label: string
@@ -36,6 +36,7 @@ const districts: District[] = [
     items: [
       { to: '/story', label: '剧情库', module: 'story' },
       { to: '/story-player', label: '原版播放器', module: 'story' },
+      { to: '/player/', label: '独立播放器', module: 'story', external: true },
       { to: '/glossary', label: '术语库', module: 'glossary' },
       { to: '/archive', label: '档案库', module: 'archive' },
     ],
@@ -106,16 +107,28 @@ function NavDropdown({ en, label, icon: Icon, items, mobile, onClose }: {
         <ChevronDown size={13} className="nav-caret" />
       </button>
       <div className={`nav-dropdown-menu ${open ? 'is-visible' : ''}`}>
-        {items.map(item => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/'}
-            onClick={() => { setOpen(false); onClose?.() }}
-          >
-            {item.label}
-          </NavLink>
-        ))}
+        {items.map(item =>
+          item.external ? (
+            <a
+              key={item.to}
+              href={item.to}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => { setOpen(false); onClose?.() }}
+            >
+              {item.label}
+            </a>
+          ) : (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              onClick={() => { setOpen(false); onClose?.() }}
+            >
+              {item.label}
+            </NavLink>
+          )
+        )}
       </div>
     </div>
   )
@@ -196,17 +209,30 @@ export default function Navbar() {
                     <span className="mobile-district-en">{district.en}</span>
                   </div>
                   <div className="mobile-district-grid">
-                    {district.items.map(item => (
-                      <NavLink
-                        key={item.to}
-                        to={item.to}
-                        end={item.to === '/'}
-                        onClick={closeMenu}
-                        className="mobile-district-link"
-                      >
-                        {item.label}
-                      </NavLink>
-                    ))}
+                    {district.items.map(item =>
+                      item.external ? (
+                        <a
+                          key={item.to}
+                          href={item.to}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={closeMenu}
+                          className="mobile-district-link"
+                        >
+                          {item.label}
+                        </a>
+                      ) : (
+                        <NavLink
+                          key={item.to}
+                          to={item.to}
+                          end={item.to === '/'}
+                          onClick={closeMenu}
+                          className="mobile-district-link"
+                        >
+                          {item.label}
+                        </NavLink>
+                      )
+                    )}
                   </div>
                 </div>
               ))}
