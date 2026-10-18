@@ -18,6 +18,9 @@ export interface BaStoryPlayerBridgeProps {
   storySummary?: { chapterName: string; summary: string }
   /** 玩家称谓，播放器会把 summary 里的 [USERNAME] 替换为该值 */
   userName?: string
+  onInitiated?: () => void
+  onEnd?: () => void
+  onError?: (err?: unknown) => void
 }
 
 const DEFAULT_DATA_URL = 'https://yuuka.cdn.diyigemt.com/image/ba-all-data'
@@ -63,12 +66,16 @@ export default function BaStoryPlayerBridge(props: BaStoryPlayerBridgeProps) {
           useSuperSampling: props.useSuperSampling ?? false,
           storySummary: props.storySummary ?? { chapterName: '蔚蓝档案', summary: '汉化组剧情演示' },
           userName: props.userName ?? '老师',
+          onInitiated: props.onInitiated,
+          onEnd: props.onEnd,
+          onError: props.onError,
         })
         app.mount(el)
         appRef.current = app
       })
       .catch((error) => {
         console.error('[BaStoryPlayer] failed to load engine', error)
+        props.onError?.(error)
       })
 
     return () => {
@@ -81,7 +88,7 @@ export default function BaStoryPlayerBridge(props: BaStoryPlayerBridgeProps) {
       }
     }
     // 关键修复：绝对不将 props.width、props.height 放入依赖数组，防止全屏或尺寸微变时不断 unmount/remount 导致崩溃重载
-  }, [props.story, props.dataUrl, props.language, props.useMp3, props.useSuperSampling])
+  }, [props.story, props.dataUrl, props.language, props.useMp3, props.useSuperSampling, props.userName])
 
   return <div ref={containerRef} className="ba-story-player-mount" />
 }

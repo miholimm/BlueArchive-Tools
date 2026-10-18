@@ -42,8 +42,23 @@ export default function Home() {
     (items) => items.length > 0,
   ).length;
 
+  interface DistrictLink {
+    to: string;
+    label: string;
+    show: boolean;
+    external?: boolean;
+  }
+
   // 城区导览：与导航栏的四个城区一一对应，给新访客清晰的落脚点
-  const districtCards = [
+  const districtCards: Array<{
+    key: string;
+    label: string;
+    en: string;
+    icon: any;
+    desc: string;
+    gate: boolean;
+    links: DistrictLink[];
+  }> = [
     {
       key: "schale",
       label: "夏莱",
@@ -66,8 +81,7 @@ export default function Home() {
       gate: canAccessModule(settings, "story", admin),
       links: [
         { to: "/story", label: "剧情库", show: canAccessModule(settings, "story", admin) },
-        { to: "/story-player", label: "原版播放器", show: canAccessModule(settings, "story", admin) },
-        { to: "/player/", label: "独立全屏播放器", show: canAccessModule(settings, "story", admin), external: true },
+        { to: "/story-player", label: "剧情播放器", show: canAccessModule(settings, "story", admin) },
         { to: "/glossary", label: "术语库", show: canAccessModule(settings, "glossary", admin) },
       ],
     },

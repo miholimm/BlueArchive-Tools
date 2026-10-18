@@ -1,6 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, ChevronDown, ExternalLink, FileJson, ListTree, Loader2, Maximize2, Minimize2, Play, Sparkles, UploadCloud } from 'lucide-react'
+import {
+  AlertTriangle,
+  ChevronDown,
+  FileJson,
+  ListTree,
+  Loader2,
+  Maximize2,
+  Minimize2,
+  Play,
+  RotateCw,
+  Sparkles,
+  UploadCloud,
+} from 'lucide-react'
 import BaStoryPlayerBridge, { type StoryLanguage } from '../components/story/BaStoryPlayerBridge'
 import { trackEvent } from '../lib/tracking'
 import ModuleGate from '../components/ModuleGate'
@@ -9,16 +21,22 @@ const SAMPLES: Record<string, string> = {
   yuuka: '/ba-stories/yuuka.json',
   prologue: '/ba-stories/prologue.json',
 }
-const CDN = 'https://yuuka.cdn.diyigemt.com/image/ba-all-data'
+
+const CDN_PRESETS = [
+  { label: '国内高速加速源 (推荐)', value: 'https://yuuka.cdn.diyigemt.com/image/ba-all-data' },
+  { label: '社区官方资源源', value: 'https://res.bluearchive.help/image/ba-all-data' },
+  { label: '自定义 CDN', value: 'custom' },
+]
 
 // 这些源已开放 CORS（Access-Control-Allow-Origin: *），浏览器可直接拉取，无需经本站代理
 const CORS_OPEN_HOSTS = new Set([
   'yuuka.cdn.diyigemt.com',
+  'res.bluearchive.help',
   'raw.githubusercontent.com',
   'cdn.jsdelivr.net',
   'api.github.com',
 ])
-const CORS_OPEN_SUFFIXES = ['.githubusercontent.com']
+const CORS_OPEN_SUFFIXES = ['.githubusercontent.com', '.bluearchive.help']
 function isCorsOpen(url: string): boolean {
   try {
     const u = new URL(url)
@@ -47,14 +65,43 @@ const typeLabel = (key: string) => STORY_TYPES.find((t) => t.key === key)?.label
 const STORY_REPO_CDN = 'https://cdn.jsdelivr.net/gh/ba-archive/blue-archive@main/apps/blue-archive-story-viewer/public/story/'
 
 function StoryPlayerInner() {
+  const searchParams = useMemo(() => new URLSearchParams(window.location.search), [])
+  const initialStoryParam = searchParams.get('story') || ''
+  const initialIdParam = searchParams.get('id') || ''
+  const initialLangParam = (searchParams.get('lang') as StoryLanguage) || 'Cn'
+  const initialCdnParam = searchParams.get('cdn') || 'https://yuuka.cdn.diyigemt.com/image/ba-all-data'
+  const initialNameParam = searchParams.get('name') || '老师'
+
   const [story, setStory] = useState<unknown>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [language, setLanguage] = useState<StoryLanguage>('Cn')
-  const [storyId, setStoryId] = useState('')
-  const [storyUrl, setStoryUrl] = useState('')
+  const [language, setLanguage] = useState<StoryLanguage>(initialLangParam)
+  const [storyId, setStoryId] = useState(initialIdParam)
+  const [storyUrl, setStoryUrl] = useState(initialStoryParam)
   const [mountWidth, setMountWidth] = useState(1000)
   const wrapRef = useRef<HTMLDivElement | null>(null)
+
+  // BA-Story 核心控制参数
+  const [useSuperSampling, setUseSuperSampling] = useState(searchParams.get('super') === 'true')
+  const [useMp3, setUseMp3] = useState(searchParams.get('mp3') !== 'false')
+  const [userName, setUserName] = useState(initialNameParam)
+  const [cdnPreset, setCdnPreset] = useState(() => {
+    return CDN_PRESETS.some((p) => p.value === initialCdnParam) ? initialCdnParam : 'custom'
+  })
+  const [customCdn, setCustomCdn] = useState(initialCdnParam)
+  const [playStatus, setPlayStatus] = useState<'待开始' | '播放中' | '已播放完毕' | '发生错误'>('待开始')
+
+  const activeCdn = useMemo(() => {
+    return cdnPreset === 'custom' ? (customCdn.trim() || 'https://yuuka.cdn.diyigemt.com/image/ba-all-data') : cdnPreset
+  }, [cdnPreset, customCdn])
+
+  const storySummary = useMemo(() => {
+    const s = story as { chapterName?: string; summary?: string } | null
+    return {
+      chapterName: s?.chapterName || '蔚蓝档案',
+      summary: s?.summary || '蔚蓝档案剧情播放中',
+    }
+  }, [story])
 
   // 本地文件上传
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -154,6 +201,7 @@ function StoryPlayerInner() {
     if (!url) return
     setLoading(true)
     setError('')
+    setPlayStatus('待开始')
     try {
       // 同源静态示例（/ba-stories/*）直接拉取；已开放 CORS 的源（CDN / GitHub raw / jsdelivr）也直连；
       // 其余跨域源经本站代理绕过 CORS（SSRF 白名单保护）。
@@ -169,26 +217,33 @@ function StoryPlayerInner() {
       }
       const data = await res.json()
       setStory(data)
+      setStoryUrl(url)
       const catalogTitle = catalog?.items.find((i) => `${catalog.cdn}${i.path}` === url)?.title
       recordRecent(url, catalogTitle ?? (data.chapterName as string | undefined))
       trackEvent('story_player_load', { source: url.startsWith('http') ? 'remote' : 'sample', url })
     } catch (e) {
       setError(e instanceof Error ? `加载失败：${e.message}` : '加载失败')
       setStory(null)
+      setPlayStatus('发生错误')
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    loadFromUrl(SAMPLES.yuuka)
+    if (initialStoryParam) {
+      loadFromUrl(initialStoryParam)
+    } else if (initialIdParam) {
+      loadFromUrl(`${STORY_REPO_CDN}favor/${initialIdParam.slice(0, 5)}/${initialIdParam}.json`)
+    } else {
+      loadFromUrl(SAMPLES.yuuka)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadById = () => {
     const id = storyId.trim()
     if (!id) return
-    // 剧情站仓库静态目录：story/favor/{学生前5位}/{剧情编号}.json（jsDelivr 直连，CORS 开放）
     loadFromUrl(`${STORY_REPO_CDN}favor/${id.slice(0, 5)}/${id}.json`)
   }
 
@@ -198,6 +253,7 @@ function StoryPlayerInner() {
     setUploadName(file.name)
     setLoading(true)
     setError('')
+    setPlayStatus('待开始')
     try {
       const text = await file.text()
       const data = JSON.parse(text)
@@ -206,6 +262,7 @@ function StoryPlayerInner() {
     } catch (err) {
       setError(err instanceof Error ? `文件解析失败：${err.message}` : '文件解析失败')
       setStory(null)
+      setPlayStatus('发生错误')
     } finally {
       setLoading(false)
     }
@@ -228,25 +285,99 @@ function StoryPlayerInner() {
     <main className="page-shell ba-story-player-page">
       <div className="page-hero">
         <span className="eyebrow">STORY / PLAYER</span>
-        <h1>原版剧情播放器</h1>
+        <h1>剧情播放器</h1>
         <p>
-          基于 <code>ba-story-player</code> 独立核心引擎，还原游戏内立绘、语音与特效的沉浸式剧情体验。
+          基于 <code>ba-story-player</code> 独立核心引擎（Vue 3 + PixiJS 7 + Spine 4.2），还原游戏内立绘、语音、特效与分支选择的原版剧情体验。
         </p>
-        <div style={{ marginTop: '14px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          <a
-            href={storyUrl ? `/player/?story=${encodeURIComponent(storyUrl)}` : '/player/'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="button button-primary"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-          >
-            <Sparkles size={15} /> 打开独立全屏播放器 (原生体验)
-            <ExternalLink size={13} style={{ opacity: 0.8 }} />
-          </a>
-        </div>
       </div>
 
       <section className="section">
+        {/* BA-Story 核心设置与播放控制条 */}
+        <div className="ba-sp-controls-strip">
+          <div className="ba-sp-control-item" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: 'var(--ink-muted)', fontSize: '12px', fontWeight: 600 }}>语言</span>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as StoryLanguage)}
+              style={{ minHeight: '34px', padding: '0 10px', fontSize: '13px' }}
+            >
+              <option value="Cn">简体中文</option>
+              <option value="Jp">日本語</option>
+              <option value="En">English</option>
+              <option value="Tw">繁體中文</option>
+            </select>
+          </div>
+
+          <label className="ba-sp-toggle-pill" title="开启 2 倍画质超分（需设备性能支持）">
+            <input
+              type="checkbox"
+              checked={useSuperSampling}
+              onChange={(e) => setUseSuperSampling(e.target.checked)}
+            />
+            <span>2倍超分</span>
+          </label>
+
+          <label className="ba-sp-toggle-pill" title="启用 MP3 音频转码格式，解决 iOS / Safari 浏览器音频解码无声问题">
+            <input
+              type="checkbox"
+              checked={useMp3}
+              onChange={(e) => setUseMp3(e.target.checked)}
+            />
+            <span>MP3兼容 (Safari)</span>
+          </label>
+
+          <div className="ba-sp-control-item" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: 'var(--ink-muted)', fontSize: '12px', fontWeight: 600 }}>老师称谓</span>
+            <input
+              type="text"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="老师"
+              style={{ minHeight: '34px', width: '80px', padding: '0 8px', fontSize: '13px' }}
+            />
+          </div>
+
+          <div className="ba-sp-control-item" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flex: '1 1 260px' }}>
+            <span style={{ color: 'var(--ink-muted)', fontSize: '12px', fontWeight: 600 }}>资源服务器</span>
+            <select
+              value={cdnPreset}
+              onChange={(e) => setCdnPreset(e.target.value)}
+              style={{ minHeight: '34px', padding: '0 10px', fontSize: '13px', flex: '1 1 auto' }}
+            >
+              {CDN_PRESETS.map((p) => (
+                <option key={p.value} value={p.value}>
+                  {p.label}
+                </option>
+              ))}
+            </select>
+            {cdnPreset === 'custom' && (
+              <input
+                type="text"
+                value={customCdn}
+                onChange={(e) => setCustomCdn(e.target.value)}
+                placeholder="https://.../ba-all-data"
+                style={{ minHeight: '34px', width: '220px', padding: '0 10px', fontSize: '13px' }}
+              />
+            )}
+          </div>
+
+          <button
+            type="button"
+            className="button button-ghost"
+            style={{ padding: '4px 12px', minHeight: '34px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+            onClick={() => loadFromUrl(storyUrl || SAMPLES.yuuka)}
+            title="重新加载当前剧情"
+          >
+            <RotateCw size={13} /> 刷新
+          </button>
+
+          <div className={`ba-sp-status-badge status-${playStatus === '播放中' ? 'playing' : playStatus === '已播放完毕' ? 'done' : playStatus === '发生错误' ? 'error' : 'ready'}`}>
+            <span className="ba-sp-status-dot" />
+            <span>状态：{playStatus}</span>
+          </div>
+        </div>
+
+        {/* 载入源控制栏 */}
         <div className="ba-sp-toolbar">
           <div className="ba-sp-field">
             <label>剧情 ID（favor，实验性）</label>
@@ -278,15 +409,6 @@ function StoryPlayerInner() {
                 加载
               </button>
             </div>
-          </div>
-          <div className="ba-sp-field ba-sp-lang">
-            <label>语言</label>
-            <select value={language} onChange={(e) => setLanguage(e.target.value as StoryLanguage)}>
-              <option value="Cn">简体中文</option>
-              <option value="Jp">日本語</option>
-              <option value="En">English</option>
-              <option value="Tw">繁體中文</option>
-            </select>
           </div>
           <div className="ba-sp-field ba-sp-upload-field">
             <label>或上传本地剧情 JSON</label>
@@ -467,14 +589,24 @@ function StoryPlayerInner() {
           {!loading && !!story && (
             <BaStoryPlayerBridge
               story={story}
-              dataUrl={CDN}
+              dataUrl={activeCdn}
               language={language}
               width={mountWidth}
               height={Math.round((mountWidth * 9) / 16)}
-              useMp3
+              useMp3={useMp3}
+              useSuperSampling={useSuperSampling ? '2' : false}
+              userName={userName}
+              storySummary={storySummary}
+              onInitiated={() => setPlayStatus('播放中')}
+              onEnd={() => setPlayStatus('已播放完毕')}
+              onError={() => setPlayStatus('发生错误')}
             />
           )}
           {!loading && !story && !error && <div className="empty-state">暂无剧情数据</div>}
+        </div>
+
+        <div className="ba-sp-guide">
+          操作指南：点击画面或按空格键推进剧情 · 右上角支持进入全屏沉浸播放 · 内置音量与文本控制面板 · ESC 退出全屏
         </div>
       </section>
     </main>

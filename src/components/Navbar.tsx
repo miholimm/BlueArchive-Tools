@@ -35,8 +35,7 @@ const districts: District[] = [
     icon: BookOpen,
     items: [
       { to: '/story', label: '剧情库', module: 'story' },
-      { to: '/story-player', label: '原版播放器', module: 'story' },
-      { to: '/player/', label: '独立播放器', module: 'story', external: true },
+      { to: '/story-player', label: '剧情播放器', module: 'story' },
       { to: '/glossary', label: '术语库', module: 'glossary' },
       { to: '/archive', label: '档案库', module: 'archive' },
     ],
