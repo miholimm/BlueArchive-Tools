@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { ArrowDownToLine, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useContent } from "../lib/ContentContext";
 import { getResourceStatus, getStatusLabel, getStatusResource } from "../lib/status";
 import { trackEvent } from "../lib/tracking";
 import SchaleRadar from "./SchaleRadar";
+
+const HanakoLive2D = lazy(() => import("./HanakoLive2D"));
 
 export interface HeroStudentConfig {
   id: string;
@@ -96,6 +98,24 @@ export default function Hero({
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [bubbleVisible, setBubbleVisible] = useState(true);
 
+  // 花子 Live2D 回忆大厅模式（默认开启）
+  const [isLive2D, setIsLive2D] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem("ba_hanako_live2d");
+      return saved !== null ? saved === "true" : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const handleToggleLive2D = (enabled: boolean) => {
+    setIsLive2D(enabled);
+    try {
+      localStorage.setItem("ba_hanako_live2d", String(enabled));
+    } catch {}
+    trackEvent("hero_hanako_live2d_toggle", { mode: enabled ? "live2d" : "static" });
+  };
+
   const currentStudent =
     HERO_STUDENTS.find((s) => s.id === selectedStudentId) || HERO_STUDENTS[0];
 
@@ -131,48 +151,72 @@ export default function Hero({
           <span className="hero-halo-ring hero-halo-ring-2" />
         </div>
 
-        {/* 顶部看板娘切换胶囊（轻量、清爽、绝不遮挡角色身躯） */}
-        <div className="hero-student-switcher" role="tablist" aria-label="看板娘选择">
-          {HERO_STUDENTS.map((st) => {
-            const isActive = st.id === currentStudent.id;
-            return (
-              <button
-                key={st.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                className={`student-switch-btn ${isActive ? "is-active" : ""}`}
-                style={
-                  isActive
-                    ? {
-                        borderColor: st.themeColor,
-                        boxShadow: `0 2px 14px ${st.glowColor}`,
-                      }
-                    : undefined
-                }
-                onClick={() => handleSelectStudent(st.id)}
-                title={`看板娘：${st.name}`}
-              >
-                <img
-                  src={st.avatar}
-                  alt={st.name}
-                  className="student-switch-avatar"
-                  loading="lazy"
-                />
-                <span className="student-switch-name">{st.name}</span>
-                {isActive && (
-                  <span
-                    className="student-switch-dot"
-                    style={{ background: st.themeColor }}
+        {/* 顶部看板娘切换与模式控制（微动与轻质毛玻璃悬浮，绝不遮挡角色身躯） */}
+        <div className="hero-switcher-group">
+          <div className="hero-student-switcher" role="tablist" aria-label="看板娘选择">
+            {HERO_STUDENTS.map((st) => {
+              const isActive = st.id === currentStudent.id;
+              return (
+                <button
+                  key={st.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  className={`student-switch-btn ${isActive ? "is-active" : ""}`}
+                  style={
+                    isActive
+                      ? {
+                          borderColor: st.themeColor,
+                          boxShadow: `0 2px 14px ${st.glowColor}`,
+                        }
+                      : undefined
+                  }
+                  onClick={() => handleSelectStudent(st.id)}
+                  title={`看板娘：${st.name}`}
+                >
+                  <img
+                    src={st.avatar}
+                    alt={st.name}
+                    className="student-switch-avatar"
+                    loading="lazy"
                   />
-                )}
+                  <span className="student-switch-name">{st.name}</span>
+                  {isActive && (
+                    <span
+                      className="student-switch-dot"
+                      style={{ background: st.themeColor }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {currentStudent.id === "hanako" && (
+            <div className="hero-l2d-toggle-bar" role="group" aria-label="立绘展示模式">
+              <button
+                type="button"
+                className={`hero-l2d-pill-btn ${isLive2D ? "is-active" : ""}`}
+                onClick={() => handleToggleLive2D(true)}
+                title="开启 3D回忆大厅 (Live2D微动与视差互动)"
+              >
+                <Sparkles size={12} className="hero-l2d-pill-icon" />
+                <span>3D回忆大厅 (Live2D)</span>
               </button>
-            );
-          })}
+              <button
+                type="button"
+                className={`hero-l2d-pill-btn ${!isLive2D ? "is-active" : ""}`}
+                onClick={() => handleToggleLive2D(false)}
+                title="切换为静态泳装立绘"
+              >
+                <span>🖼️ 泳装立绘</span>
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* 互动羁绊语音气泡（位于左侧空气层，与立绘分立，杜绝遮挡面庞） */}
-        {bubbleVisible && (
+        {/* 互动羁绊语音气泡（在静态立绘模式或白子时展示，花子Live2D时由组件自带气泡呈现） */}
+        {bubbleVisible && !(currentStudent.id === "hanako" && isLive2D) && (
           <div
             className="hero-speech-bubble"
             onClick={handleNextQuote}
@@ -196,20 +240,33 @@ export default function Hero({
           </div>
         )}
 
-        {/* 看板娘立绘展示（主角大立绘，清爽通透，绝对零遮挡） */}
+        {/* 看板娘展示舞台（花子支持 Spine 4.2 WebGL 动态大厅，白子与静态模式展示高清立绘） */}
         <div
-          className="hero-character-stage"
-          onClick={handleNextQuote}
-          title={`点击与${currentStudent.name}互动`}
+          className={`hero-character-stage ${isLive2D && currentStudent.id === "hanako" ? "is-l2d" : ""}`}
+          onClick={isLive2D && currentStudent.id === "hanako" ? undefined : handleNextQuote}
+          title={isLive2D && currentStudent.id === "hanako" ? undefined : `点击与${currentStudent.name}互动`}
         >
-          <img
-            key={currentStudent.id}
-            className={`hero-shiroko hero-character-portrait hero-portrait-${currentStudent.id}`}
-            src={currentStudent.portrait}
-            alt={currentStudent.name}
-            loading="eager"
-            decoding="async"
-          />
+          {currentStudent.id === "hanako" && isLive2D ? (
+            <Suspense
+              fallback={
+                <div className="hero-l2d-loading">
+                  <div className="hero-l2d-spinner" />
+                  <span>载入花子回忆大厅...</span>
+                </div>
+              }
+            >
+              <HanakoLive2D />
+            </Suspense>
+          ) : (
+            <img
+              key={currentStudent.id}
+              className={`hero-shiroko hero-character-portrait hero-portrait-${currentStudent.id}`}
+              src={currentStudent.portrait}
+              alt={currentStudent.name}
+              loading="eager"
+              decoding="async"
+            />
+          )}
         </div>
 
         <div className="hero-particles" aria-hidden="true">

@@ -1900,11 +1900,20 @@
   }
 }
 
-/* ── 看板娘切换与互动系统（浦和花子 & 砂狼白子） ── */
-.hero-student-switcher {
+/* ── 看板娘切换与互动系统（浦和花子 & 砂狼白子 & Live2D） ── */
+.hero-switcher-group {
   position: absolute;
   top: 24px;
   right: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  z-index: 10;
+}
+
+.hero-student-switcher {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1915,13 +1924,92 @@
   border: 1px solid rgba(46, 169, 255, 0.28);
   border-radius: var(--r-pill, 999px);
   box-shadow: 0 8px 24px rgba(0, 48, 100, 0.12);
-  z-index: 10;
 }
 
 .app-shell[data-theme='dark'] .hero-student-switcher {
   background: rgba(8, 22, 42, 0.82);
   border-color: rgba(46, 169, 255, 0.35);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+}
+
+.hero-l2d-toggle-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 92, 138, 0.35);
+  border-radius: var(--r-pill, 999px);
+  box-shadow: 0 6px 20px rgba(255, 92, 138, 0.15);
+  animation: bubbleFloat 0.25s ease-out;
+}
+
+.app-shell[data-theme='dark'] .hero-l2d-toggle-bar {
+  background: rgba(18, 28, 48, 0.88);
+  border-color: rgba(255, 92, 138, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.hero-l2d-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  font-family: var(--font-ui, sans-serif);
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: var(--r-pill, 999px);
+  color: var(--ink-soft, #475569);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  white-space: nowrap;
+}
+
+.hero-l2d-pill-btn:hover {
+  color: #ff5c8a;
+  background: rgba(255, 92, 138, 0.1);
+}
+
+.hero-l2d-pill-btn.is-active {
+  background: linear-gradient(135deg, #ff5c8a, #ff7ba3);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(255, 92, 138, 0.45);
+}
+
+.hero-l2d-pill-icon {
+  animation: schalePulse 2s infinite ease-in-out;
+}
+
+.hero-character-stage.is-l2d {
+  cursor: default;
+}
+
+.hero-l2d-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #ff5c8a;
+  font-family: var(--font-ui, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  z-index: 5;
+}
+
+.hero-l2d-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 92, 138, 0.2);
+  border-top-color: #ff5c8a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 .student-switch-btn {
@@ -2165,13 +2253,27 @@
 
 /* 响应式适配：移动端 */
 @media (max-width: 900px) {
-  .hero-student-switcher {
+  .hero-switcher-group {
     position: absolute;
-    top: 14px;
-    right: 14px;
-    padding: 4px 6px;
+    top: 10px;
+    right: 10px;
     gap: 5px;
     z-index: 12;
+  }
+
+  .hero-student-switcher {
+    padding: 4px 6px;
+    gap: 5px;
+  }
+
+  .hero-l2d-toggle-bar {
+    padding: 2px 4px;
+    gap: 3px;
+  }
+
+  .hero-l2d-pill-btn {
+    padding: 3px 8px;
+    font-size: 10.5px;
   }
 
   .student-switch-btn {

@@ -16,11 +16,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@esotericsoftware/spine-pixi-v7": "~4.2.70",
     "@vitejs/plugin-react": "latest",
     "ba-story-player": "file:vendor/ba-story-player",
     "express": "^5.1.0",
     "lucide-react": "^0.468.0",
     "pg": "^8.16.3",
+    "pixi.js": "^7.4.3",
     "react": "latest",
     "react-dom": "latest",
     "react-markdown": "^9.0.1",
