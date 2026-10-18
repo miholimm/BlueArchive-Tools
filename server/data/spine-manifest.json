@@ -1,6 +1,6 @@
 {
  "_meta": {
-  "source": "https://yuuka.cdn.diyigemt.com/image/（蓝色档案剧情站 CDN）",
+  "source": "https://res.bluearchive.help/image/（官方资源站 CDN）",
   "cdn": {
    "main": "ba-all-data（主资源）",
    "spine42": "ba-all-data-spine42（Spine 4.2 专用；ch*/np* 代码角色走这里）"

@@ -23,7 +23,7 @@ export interface BaStoryPlayerBridgeProps {
   onError?: (err?: unknown) => void
 }
 
-const DEFAULT_DATA_URL = 'https://yuuka.cdn.diyigemt.com/image/ba-all-data'
+const DEFAULT_DATA_URL = 'https://res.bluearchive.help/image/ba-all-data'
 
 /**
  * Mounts the community Vue 3 + PixiJS `ba-story-player` inside a React tree.

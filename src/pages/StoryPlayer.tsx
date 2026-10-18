@@ -23,14 +23,12 @@ const SAMPLES: Record<string, string> = {
 }
 
 const CDN_PRESETS = [
-  { label: '国内高速加速源 (推荐)', value: 'https://yuuka.cdn.diyigemt.com/image/ba-all-data' },
-  { label: '社区官方资源源', value: 'https://res.bluearchive.help/image/ba-all-data' },
+  { label: '官方资源源 (推荐)', value: 'https://res.bluearchive.help/image/ba-all-data' },
   { label: '自定义 CDN', value: 'custom' },
 ]
 
 // 这些源已开放 CORS（Access-Control-Allow-Origin: *），浏览器可直接拉取，无需经本站代理
 const CORS_OPEN_HOSTS = new Set([
-  'yuuka.cdn.diyigemt.com',
   'res.bluearchive.help',
   'raw.githubusercontent.com',
   'cdn.jsdelivr.net',
@@ -69,7 +67,7 @@ function StoryPlayerInner() {
   const initialStoryParam = searchParams.get('story') || ''
   const initialIdParam = searchParams.get('id') || ''
   const initialLangParam = (searchParams.get('lang') as StoryLanguage) || 'Cn'
-  const initialCdnParam = searchParams.get('cdn') || 'https://yuuka.cdn.diyigemt.com/image/ba-all-data'
+  const initialCdnParam = searchParams.get('cdn') || 'https://res.bluearchive.help/image/ba-all-data'
   const initialNameParam = searchParams.get('name') || '老师'
 
   const [story, setStory] = useState<unknown>(null)
@@ -92,7 +90,7 @@ function StoryPlayerInner() {
   const [playStatus, setPlayStatus] = useState<'待开始' | '播放中' | '已播放完毕' | '发生错误'>('待开始')
 
   const activeCdn = useMemo(() => {
-    return cdnPreset === 'custom' ? (customCdn.trim() || 'https://yuuka.cdn.diyigemt.com/image/ba-all-data') : cdnPreset
+    return cdnPreset === 'custom' ? (customCdn.trim() || 'https://res.bluearchive.help/image/ba-all-data') : cdnPreset
   }, [cdnPreset, customCdn])
 
   const storySummary = useMemo(() => {

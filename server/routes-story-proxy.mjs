@@ -8,12 +8,12 @@ export const storyProxyRoutes = Router()
 
 const ALLOWED_HOSTS = new Set([
   'preview.blue-archive.io',
-  'yuuka.cdn.diyigemt.com',
+  'res.bluearchive.help',
   'raw.githubusercontent.com',
   'cdn.jsdelivr.net',
   'api.github.com',
 ])
-const ALLOWED_SUFFIXES = ['.blue-archive.io', '.githubusercontent.com']
+const ALLOWED_SUFFIXES = ['.blue-archive.io', '.githubusercontent.com', '.bluearchive.help']
 const MAX_BYTES = 8 * 1024 * 1024
 const TIMEOUT_MS = 12000
 
