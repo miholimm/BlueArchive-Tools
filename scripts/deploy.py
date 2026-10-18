@@ -71,19 +71,37 @@ if os.path.exists(local_glossary):
     sftp.put(local_glossary, remote_glossary)
     print("Remote shared glossary.json updated successfully.")
 
+def put_with_progress(local_p, remote_p, name):
+    try:
+        r_stat = sftp.stat(remote_p)
+        if r_stat.st_size == os.path.getsize(local_p):
+            print(f"Remote {name} is already up to date ({r_stat.st_size} bytes). Skipping.")
+            return
+    except IOError:
+        pass
+    print(f"Uploading {name} ({os.path.getsize(local_p) / (1024*1024):.1f} MB) to {remote_p} ...")
+    p_start = time.time()
+    def p_cb(transferred, total):
+        pct = (transferred / total) * 100
+        if transferred == total or (int(pct) % 20 == 0 and int(pct) > 0):
+            mb = transferred / (1024*1024)
+            total_mb = total / (1024*1024)
+            el = time.time() - p_start
+            sp = mb / el if el > 0 else 0
+            sys.stdout.write(f"\r{name}: {pct:.1f}% ({mb:.1f}/{total_mb:.1f} MB) @ {sp:.2f} MB/s")
+            sys.stdout.flush()
+    sftp.put(local_p, remote_p, callback=p_cb)
+    print(f"\n{name} updated successfully in {time.time()-p_start:.1f}s.")
+
 local_launcher = os.path.join(os.path.dirname(__file__), "..", "downloads", "jp", "BlueArchive_PC_CN_Launcher.exe")
 remote_launcher = "/opt/blue-archive-hh/shared/downloads/jp/BlueArchive_PC_CN_Launcher.exe"
 if os.path.exists(local_launcher):
-    print(f"Uploading {local_launcher} to {remote_launcher} ...")
-    sftp.put(local_launcher, remote_launcher)
-    print("Remote shared BlueArchive_PC_CN_Launcher.exe updated successfully.")
+    put_with_progress(local_launcher, remote_launcher, "BlueArchive_PC_CN_Launcher.exe")
 
 local_patch = os.path.join(os.path.dirname(__file__), "..", "downloads", "jp", "BlueArchive_JP_CN_Patch_JP1.73.459696.zip")
 remote_patch = "/opt/blue-archive-hh/shared/downloads/jp/BlueArchive_JP_CN_Patch_JP1.73.459696.zip"
 if os.path.exists(local_patch):
-    print(f"Uploading {local_patch} to {remote_patch} ...")
-    sftp.put(local_patch, remote_patch)
-    print("Remote shared BlueArchive_JP_CN_Patch_JP1.73.459696.zip updated successfully.")
+    put_with_progress(local_patch, remote_patch, "BlueArchive_JP_CN_Patch_JP1.73.459696.zip")
 
 sftp.close()
 
