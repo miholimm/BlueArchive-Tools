@@ -6,10 +6,10 @@
       "description": "适用于所有安卓设备。官方正版游戏免改包，手机连接电脑后双击脚本，一键自动推送最新 TableBundles 汉化数据，100% 免 Root、免核心破解、彻底避开反作弊拦截！",
       "updated": "2026-10-08",
       "url": "/downloads/jp/BA_Android_OneKey_Patcher_v1.73.459696.zip",
-      "size": "56.4 MB",
+      "size": "236.2 MB",
       "checksum": {
-        "md5": "f85258ff330e3ac3fc62692f934f36a6",
-        "sha256": "e2bb396f822b932382c7af4094de4e10d44306f96960c307625d0fab569af49c"
+        "md5": "76d4f53e0a8184e8efe6587d040247f9",
+        "sha256": "0fc69f20033df56a09a084936555b321f0f5d668b431bfb454a811cb578bf633"
       }
     },
     {
@@ -18,10 +18,10 @@
       "description": "官方格式 TableCatalog.bytes 与 Excel.zip 数据包。适合通过电脑文件传输(MTP)、Shizuku 或小火箭/Clash 重写规则直连下发，零封号风险。",
       "updated": "2026-10-08",
       "url": "/downloads/jp/TableBundles_JP_Localized_JP1.73.459696.zip",
-      "size": "52.4 MB",
+      "size": "232.2 MB",
       "checksum": {
-        "md5": "3bd87ade5ffb64a62439452ecada093a",
-        "sha256": "c77cd2d3928775e2a98c99f28f6e6885c276c55e46432cb16da450ba7d6b9718"
+        "md5": "6d32c3266d62e20ac7b1457ea2457a3a",
+        "sha256": "5e24cede845cafc6aebaabbd96210a6ca347326191f3d40429c72384e91cc213"
       }
     },
     {
@@ -32,8 +32,8 @@
       "url": "/downloads/jp/BlueArchive_JP_CN_v1.73.459696.apk",
       "size": "174.2 MB",
       "checksum": {
-        "md5": "3b633ef63e81e80fc970ffee8fa2b9ab",
-        "sha256": "0d48c60f3168017b79513a2e389e4f9b65f4d94b9ae816938701d1c3a5c8666f"
+        "md5": "92f0dc1b39e204899d8308df4b67382b",
+        "sha256": "97ffc9b66b83203caab354e251cfc3060e8db9b22679c7a2ce754258f97b4707"
       }
     }
   ],
@@ -44,10 +44,10 @@
       "description": "全新架构重构版！基于官方 PC 引导机制深度适配，内置中文字体补全与动态云端路由注入，彻底解决启动资源报错与日文覆盖问题。支持一键汉化校验、官方原版双向还原与高清壁纸切换。",
       "updated": "2026-10-16",
       "url": "/downloads/jp/BlueArchive_PC_CN_Launcher.exe",
-      "size": "63.3 MB",
+      "size": "67.7 MB",
       "checksum": {
-        "md5": "ad20b9a989b6bcd95b6090dee3bf66c6",
-        "sha256": "8cf3c713c3b82214cdb6f4e7528808c9eb8118904135df50d35e6ae3acc1fa68"
+        "md5": "bea0f557e83b0eaec6b580f2b3d0f875",
+        "sha256": "86ec88b07d0a54bb3b8b46dc7283ddc88ef33d4b61f88a8ef9fa7d3c647574b6"
       }
     },
     {
@@ -56,10 +56,10 @@
       "description": "适用于 Windows 10/11 DMM Game Player 与 Steam 客户端，解压覆盖即可享受全文本中文体验。",
       "updated": "2026-10-08",
       "url": "/downloads/jp/BlueArchive_JP_CN_Patch_JP1.73.459696.zip",
-      "size": "80.6 MB",
+      "size": "80.1 MB",
       "checksum": {
-        "md5": "176440f06e156594c57c42d30d671a63",
-        "sha256": "49d1ee4e738b4815ad51aaf3f57ef399ca2bc77189e38f624728ba733f78add6"
+        "md5": "fb3d2e788b5f9fd6de7e670e50e75836",
+        "sha256": "02304045e0096020e52ff49fee1e933407e4096459696d09e82dcf15ff7c4a33"
       },
       "diff": {
         "url": "/downloads/jp/TableBundles_JP_Localized_JP1.73.459696.zip",
@@ -72,10 +72,10 @@
       "description": "包含更新后的 TableCatalog.bytes 与加密 Excel 数据表，支持通过本地代理或直接复制使用。",
       "updated": "2026-10-08",
       "url": "/downloads/jp/TableBundles_JP_Localized_JP1.73.459696.zip",
-      "size": "52.4 MB",
+      "size": "232.2 MB",
       "checksum": {
-        "md5": "3bd87ade5ffb64a62439452ecada093a",
-        "sha256": "c77cd2d3928775e2a98c99f28f6e6885c276c55e46432cb16da450ba7d6b9718"
+        "md5": "6d32c3266d62e20ac7b1457ea2457a3a",
+        "sha256": "5e24cede845cafc6aebaabbd96210a6ca347326191f3d40429c72384e91cc213"
       }
     }
   ],
@@ -86,10 +86,10 @@
       "description": "适用于巨魔 TrollStore、AltStore 或 SideStore 注入安装，内置最新全文本汉化。",
       "updated": "2026-10-08",
       "url": "/downloads/jp/BlueArchive_JP_CN_Patch_JP1.73.459696.zip",
-      "size": "80.6 MB",
+      "size": "80.1 MB",
       "checksum": {
-        "md5": "176440f06e156594c57c42d30d671a63",
-        "sha256": "49d1ee4e738b4815ad51aaf3f57ef399ca2bc77189e38f624728ba733f78add6"
+        "md5": "fb3d2e788b5f9fd6de7e670e50e75836",
+        "sha256": "02304045e0096020e52ff49fee1e933407e4096459696d09e82dcf15ff7c4a33"
       },
       "diff": {
         "url": "/downloads/jp/TableBundles_JP_Localized_JP1.73.459696.zip",
@@ -104,10 +104,10 @@
       "description": "适用于 Apple Silicon (M1/M2/M3/M4) 设备 PlayCover 侧载运行，提供原生日服汉化支持。",
       "updated": "2026-10-08",
       "url": "/downloads/jp/BlueArchive_JP_CN_Patch_JP1.73.459696.zip",
-      "size": "80.6 MB",
+      "size": "80.1 MB",
       "checksum": {
-        "md5": "176440f06e156594c57c42d30d671a63",
-        "sha256": "49d1ee4e738b4815ad51aaf3f57ef399ca2bc77189e38f624728ba733f78add6"
+        "md5": "fb3d2e788b5f9fd6de7e670e50e75836",
+        "sha256": "02304045e0096020e52ff49fee1e933407e4096459696d09e82dcf15ff7c4a33"
       },
       "diff": {
         "url": "/downloads/jp/TableBundles_JP_Localized_JP1.73.459696.zip",
