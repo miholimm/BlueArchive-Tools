@@ -78,6 +78,13 @@ if os.path.exists(local_launcher):
     sftp.put(local_launcher, remote_launcher)
     print("Remote shared BlueArchive_PC_CN_Launcher.exe updated successfully.")
 
+local_patch = os.path.join(os.path.dirname(__file__), "..", "downloads", "jp", "BlueArchive_JP_CN_Patch_JP1.73.459696.zip")
+remote_patch = "/opt/blue-archive-hh/shared/downloads/jp/BlueArchive_JP_CN_Patch_JP1.73.459696.zip"
+if os.path.exists(local_patch):
+    print(f"Uploading {local_patch} to {remote_patch} ...")
+    sftp.put(local_patch, remote_patch)
+    print("Remote shared BlueArchive_JP_CN_Patch_JP1.73.459696.zip updated successfully.")
+
 sftp.close()
 
 def run_cmd(cmd):
