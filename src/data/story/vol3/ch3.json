@@ -1,0 +1,15 @@
+{
+  "volume": 3,
+  "chapter": 3,
+  "title": "灯火试炼",
+  "titleJa": "灯火の試練",
+  "characters": ["白子", "老师", "星野", "野宫"],
+  "segments": [
+    { "id": "v3c3-001", "speaker": "白子", "speakerJa": "シロコ", "ja": "この部屋、仕掛けがありそうです。同時に、三つの灯火を灯さないと扉が開きません。", "zh": "这间密室似乎设有机关。必须同时点亮三盏灯火，门才会开启。", "context": "白子观察墙上的纹路，得出结论", "portraitSide": "right" },
+    { "id": "v3c3-002", "speaker": "星野", "speakerJa": "ホシノ", "ja": "同時って…ぼく一人じゃ無理だよー", "zh": "同时……就我一个人可办不到哇~", "context": "星野挠挠头，赖在原地", "portraitSide": "left" },
+    { "id": "v3c3-003", "speaker": "野宫", "speakerJa": "ノノミ", "ja": "それなら、私、白子ちゃん、先生で三人いますよ。声を合わせましょう！", "zh": "那我、白子同学，再加上老师，正好三个人呢。来，一起数拍子吧！", "context": "野宫站到灯台前，回头比了个大拇指", "portraitSide": "right" },
+    { "id": "v3c3-004", "speaker": "老师", "speakerJa": "先生", "ja": "せーの、で火をつけましょう。いいですね？", "zh": "说好「一、二」就一起点火。可以吗？", "context": "老师伸出手，与两人互相确认眼神", "portraitSide": "left" },
+    { "id": "v3c3-005", "speaker": "白子", "speakerJa": "シロコ", "ja": "…せーの。", "zh": "……一、二。", "context": "三盏灯火同时亮起，石门缓缓开启", "portraitSide": "right" },
+    { "id": "v3c3-006", "speaker": "星野", "speakerJa": "ホシノ", "ja": "開いた！みんなでやると、意外とできるもんだね〜", "zh": "打开了！大家齐心协力，意外地还挺行嘛~", "context": "星野看着敞开的门，语气里带着小小的骄傲", "portraitSide": "left" }
+  ]
+}

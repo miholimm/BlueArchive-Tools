@@ -1,10 +1,12 @@
-import { BookOpen, Play, Search, X } from 'lucide-react'
+import { BookOpen, Play, Search, X, Sparkles, ScrollText, Music, LayoutGrid } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Reveal from '../components/Reveal'
+import StoryChapterGrid from '../components/story/StoryChapterGrid'
 import { trackEvent } from '../lib/tracking'
 import type { ChapterIndexEntry } from '../types'
 import { authFetch } from '../lib/api'
+import '../styles/story-enhancements.css'
 
 const volumeTitles: Record<number, { zh: string; ja: string }> = {
   1: { zh: '对策委员会篇', ja: '対策委員会編' },
@@ -32,12 +34,14 @@ function fuzzyMatch(target: string, query: string): number {
 type SearchResult = { volume: number; chapter: number; segmentId: string; text: string; speaker: string }
 
 export default function Story() {
+  const navigate = useNavigate()
   const [chapterIndex, setChapterIndex] = useState<ChapterIndexEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [searching, setSearching] = useState(false)
+  const [viewMode, setViewMode] = useState<'showcase' | 'volumes'>('showcase')
 
   // Preload all segments for search
   const [allSegments, setAllSegments] = useState<SearchResult[] | null>(null)
@@ -104,6 +108,10 @@ export default function Story() {
 
   const clearSearch = () => { setSearch(''); setResults([]) }
 
+  const handlePlayFromGrid = (url: string) => {
+    navigate(`/story-player?story=${encodeURIComponent(url)}`)
+  }
+
   if (loading) return <main className="page-shell"><div className="empty-state">正在读取剧情索引…</div></main>
   if (error) return <main className="page-shell"><div className="empty-state">{error}</div></main>
 
@@ -113,33 +121,115 @@ export default function Story() {
         <div className="page-hero">
           <span className="eyebrow">STORY / LIBRARY</span>
           <h1>剧情库</h1>
-          <p>中日对照阅读，沉浸体验主线故事。</p>
-          <Link to="/story-player" className="button button-primary" style={{ marginTop: '18px' }}>
-            打开原版剧情播放器 <Play size={16} />
+          <p>中日对照阅读，沉浸体验主线故事与各学园学生羁绊。</p>
+          <div style={{ display: 'flex', gap: '12px', marginTop: '18px', flexWrap: 'wrap' }}>
+            <Link to="/story-player" className="button button-primary">
+              打开原版剧情播放器 <Play size={16} />
+            </Link>
+          </div>
+        </div>
+      </Reveal>
+
+      {/* 增强功能特性横幅 */}
+      <Reveal delay={40}>
+        <div
+          style={{
+            margin: '0 0 28px',
+            padding: '16px 20px',
+            borderRadius: 'var(--r-md, 16px)',
+            background: 'linear-gradient(135deg, rgba(0, 163, 255, 0.12), rgba(14, 165, 233, 0.05))',
+            border: '1px solid rgba(46, 169, 255, 0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '50%',
+                background: 'rgba(0, 163, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#38bdf8',
+              }}
+            >
+              <Sparkles size={18} />
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '14px', color: '#fff' }}>
+                全新剧情影院增强已上线
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--ink-muted, #94a3b8)', marginTop: '2px' }}>
+                包含完整的对话回溯 (Backlog) · 原版 BGM 试听清单 · 登场学生与日文 CV 声优名单
+              </div>
+            </div>
+          </div>
+          <Link
+            to="/story-player"
+            className="button button-ghost"
+            style={{ fontSize: '12px', padding: '6px 14px' }}
+          >
+            立即前往试用
           </Link>
         </div>
       </Reveal>
 
       <section className="section story-section">
-        {/* Search bar */}
+        {/* 搜索栏与模式切换 */}
         <Reveal delay={60}>
-          <div className="changelog-search" style={{ maxWidth: '520px', marginBottom: '36px' }}>
-            <Search size={16} className="changelog-search-icon" />
-            <input
-              className="changelog-search-input"
-              placeholder="搜索剧情内容、角色名…"
-              value={search}
-              onChange={e => handleSearch(e.target.value)}
-            />
-            {search && (
-              <button className="changelog-search-clear" onClick={clearSearch}>
-                <X size={14} />
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '16px',
+              marginBottom: '28px',
+            }}
+          >
+            <div className="changelog-search" style={{ maxWidth: '420px', margin: 0 }}>
+              <Search size={16} className="changelog-search-icon" />
+              <input
+                className="changelog-search-input"
+                placeholder="搜索剧情内容、角色名…"
+                value={search}
+                onChange={e => handleSearch(e.target.value)}
+              />
+              {search && (
+                <button className="changelog-search-clear" onClick={clearSearch}>
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
+            <div className="ba-soundtrack-tabs" style={{ margin: 0 }}>
+              <button
+                type="button"
+                className={`ba-soundtrack-tab ${viewMode === 'showcase' ? 'is-active' : ''}`}
+                onClick={() => setViewMode('showcase')}
+              >
+                <LayoutGrid size={14} />
+                <span>精选名篇索引</span>
               </button>
-            )}
+              <button
+                type="button"
+                className={`ba-soundtrack-tab ${viewMode === 'volumes' ? 'is-active' : ''}`}
+                onClick={() => setViewMode('volumes')}
+              >
+                <BookOpen size={14} />
+                <span>全卷主线 ({chapterIndex.length})</span>
+              </button>
+            </div>
           </div>
         </Reveal>
 
-        {/* Search results */}
+        {/* 搜索结果 */}
         {results.length > 0 && (
           <Reveal delay={80}>
             <div className="story-search-results">
@@ -167,8 +257,15 @@ export default function Story() {
           </Reveal>
         )}
 
-        {/* Volume cards */}
-        {results.length === 0 && !search && (
+        {/* 精选名篇卡片展柜模式 */}
+        {results.length === 0 && !search && viewMode === 'showcase' && (
+          <Reveal delay={80}>
+            <StoryChapterGrid onPlayChapter={handlePlayFromGrid} />
+          </Reveal>
+        )}
+
+        {/* 传统主线卷册模式 */}
+        {results.length === 0 && !search && viewMode === 'volumes' && (
           <div className="story-volumes-grid">
             {chapterIndex.map((entry: ChapterIndexEntry, vi: number) => {
               const info = volumeTitles[entry.volume]

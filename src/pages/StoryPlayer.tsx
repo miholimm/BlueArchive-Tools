@@ -12,10 +12,18 @@ import {
   RotateCw,
   Sparkles,
   UploadCloud,
+  ScrollText,
+  Music,
+  LayoutGrid,
 } from 'lucide-react'
 import BaStoryPlayerBridge, { type StoryLanguage } from '../components/story/BaStoryPlayerBridge'
+import StoryBacklogDrawer from '../components/story/StoryBacklogDrawer'
+import StorySoundTrack from '../components/story/StorySoundTrack'
+import StoryChapterGrid from '../components/story/StoryChapterGrid'
+import { extractStoryAnalysis, type BgmTrackInfo } from '../lib/storyAudio'
 import { trackEvent } from '../lib/tracking'
 import ModuleGate from '../components/ModuleGate'
+import '../styles/story-enhancements.css'
 
 const SAMPLES: Record<string, string> = {
   yuuka: '/ba-stories/yuuka.json',
@@ -89,6 +97,17 @@ function StoryPlayerInner() {
   const [customCdn, setCustomCdn] = useState(initialCdnParam)
   const [playStatus, setPlayStatus] = useState<'待开始' | '播放中' | '已播放完毕' | '发生错误'>('待开始')
 
+  // 剧情分析结果：对话回溯、BGM 播放清单、登场声优
+  const storyAnalysis = useMemo(() => {
+    return extractStoryAnalysis(story, userName)
+  }, [story, userName])
+
+  // 回溯抽屉与原声带面板开关
+  const [isBacklogOpen, setIsBacklogOpen] = useState(false)
+  const [isSoundtrackOpen, setIsSoundtrackOpen] = useState(false)
+  const [showChapterShowcase, setShowChapterShowcase] = useState(true)
+  const [activeBgm, setActiveBgm] = useState<BgmTrackInfo | undefined>(undefined)
+
   const activeCdn = useMemo(() => {
     return cdnPreset === 'custom' ? (customCdn.trim() || 'https://res.bluearchive.help/image/ba-all-data') : cdnPreset
   }, [cdnPreset, customCdn])
@@ -124,6 +143,22 @@ function StoryPlayerInner() {
       document.exitFullscreen().catch(() => {})
     }
   }
+
+  // 快捷键支持：L 键打开回溯，M 键打开原声与声优
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase()
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return
+
+      if (e.key === 'l' || e.key === 'L') {
+        setIsBacklogOpen((o) => !o)
+      } else if (e.key === 'm' || e.key === 'M') {
+        setIsSoundtrackOpen((o) => !o)
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [])
 
   // 剧情目录
   const [catalog, setCatalog] = useState<Catalog | null>(null)
@@ -201,8 +236,6 @@ function StoryPlayerInner() {
     setError('')
     setPlayStatus('待开始')
     try {
-      // 同源静态示例（/ba-stories/*）直接拉取；已开放 CORS 的源（CDN / GitHub raw / jsdelivr）也直连；
-      // 其余跨域源经本站代理绕过 CORS（SSRF 白名单保护）。
       const target = !url.startsWith('http')
         ? url
         : isCorsOpen(url)
@@ -245,7 +278,7 @@ function StoryPlayerInner() {
     loadFromUrl(`${STORY_REPO_CDN}favor/${id.slice(0, 5)}/${id}.json`)
   }
 
-  // 本地 JSON 上传：完全离线、无 CORS / 代理依赖，最适合汉化组直接载入提取好的剧情单元
+  // 本地 JSON 上传
   const handleFile = async (file: File) => {
     if (!file) return
     setUploadName(file.name)
@@ -269,7 +302,7 @@ function StoryPlayerInner() {
   const onFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) handleFile(file)
-    e.target.value = '' // 允许重复选择同一文件
+    e.target.value = ''
   }
 
   const onDrop = (e: React.DragEvent) => {
@@ -277,6 +310,12 @@ function StoryPlayerInner() {
     setDragActive(false)
     const file = e.dataTransfer.files?.[0]
     if (file) handleFile(file)
+  }
+
+  const handlePlayFromShowcase = (url: string, title?: string) => {
+    loadFromUrl(url)
+    if (title) recordRecent(url, title)
+    window.scrollTo({ top: 120, behavior: 'smooth' })
   }
 
   return (
@@ -441,6 +480,7 @@ function StoryPlayerInner() {
           </div>
         </div>
 
+        {/* 快速预设与跳转 */}
         <div className="ba-sp-presets">
           <button className="button button-ghost" onClick={() => loadFromUrl(SAMPLES.yuuka)}>
             示例：优香
@@ -453,6 +493,7 @@ function StoryPlayerInner() {
           </Link>
         </div>
 
+        {/* 最近播放记录 */}
         {recent.length > 0 && (
           <div className="ba-recent">
             <span className="ba-recent-label">最近播放</span>
@@ -475,14 +516,65 @@ function StoryPlayerInner() {
           </div>
         )}
 
-        {/* 全量剧情目录：来自碧蓝档案剧情站仓库，按需从 jsDelivr 拉取播放 */}
-        <div className="ba-catalog">
-          <button className="ba-catalog-toggle" onClick={() => setCatalogOpen((o) => !o)}>
-            <ListTree size={15} />
-            剧情目录{catalog ? `（${catalog.total} 个剧情）` : '（全站 1300+）'}
-            <ChevronDown size={14} className={catalogOpen ? 'is-open' : ''} />
-          </button>
-          {catalogOpen && (
+        {/* 剧情增强快捷操作条 (Backlog / Soundtrack & Cast) */}
+        <div className="ba-sp-action-strip">
+          <div className="ba-sp-action-left">
+            <button
+              type="button"
+              className={`ba-sp-action-btn ${isBacklogOpen ? 'is-active' : ''}`}
+              onClick={() => setIsBacklogOpen(true)}
+              title="查看剧情文本回溯、中日对照与单句语音试听（快捷键 L）"
+            >
+              <ScrollText size={15} />
+              <span>对话回溯 (LOG)</span>
+              {storyAnalysis.totalLines > 0 && (
+                <span className="ba-sp-badge-count">{storyAnalysis.totalLines}</span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              className={`ba-sp-action-btn ${isSoundtrackOpen ? 'is-active' : ''}`}
+              onClick={() => setIsSoundtrackOpen(!isSoundtrackOpen)}
+              title="查看当前章节背景音乐试听与登场声优列表（快捷键 M）"
+            >
+              <Music size={15} />
+              <span>原声与声优 (BGM/CV)</span>
+              {storyAnalysis.playlist.length > 0 && (
+                <span className="ba-sp-badge-count">
+                  {storyAnalysis.playlist.length}首 / {storyAnalysis.cast.length}位
+                </span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              className={`ba-sp-action-btn ${showChapterShowcase ? 'is-active' : ''}`}
+              onClick={() => setShowChapterShowcase(!showChapterShowcase)}
+              title="展开/收起精选章节展柜卡片"
+            >
+              <LayoutGrid size={15} />
+              <span>精选名章节展柜</span>
+            </button>
+          </div>
+
+          <div className="ba-sp-action-right">
+            <button
+              type="button"
+              className="ba-catalog-toggle"
+              style={{ margin: 0, padding: '7px 14px' }}
+              onClick={() => setCatalogOpen((o) => !o)}
+            >
+              <ListTree size={14} />
+              全量剧情目录
+              <ChevronDown size={14} className={catalogOpen ? 'is-open' : ''} />
+            </button>
+          </div>
+        </div>
+
+        {/* 全量剧情目录抽屉 */}
+        {catalogOpen && (
+          <div className="ba-catalog" style={{ marginBottom: '16px' }}>
             <div className="ba-catalog-panel">
               {catalogError && (
                 <div className="ba-catalog-error">
@@ -533,7 +625,7 @@ function StoryPlayerInner() {
                           className="ba-catalog-play"
                           onClick={() => {
                             loadFromUrl(`${STORY_REPO_CDN}${item.path}`)
-                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                            window.scrollTo({ top: 120, behavior: 'smooth' })
                           }}
                         >
                           <Play size={13} /> 播放
@@ -555,8 +647,8 @@ function StoryPlayerInner() {
                 </>
               )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {error && (
           <div className="ba-sp-error">
@@ -565,8 +657,9 @@ function StoryPlayerInner() {
           </div>
         )}
 
+        {/* 播放器终端舞台 */}
         <div className="ba-sp-stage-header">
-          <span className="ba-sp-stage-title">剧情播放终端</span>
+          <span className="ba-sp-stage-title">剧情播放终端 · {storySummary.chapterName}</span>
           <button
             type="button"
             className="ba-sp-fullscreen-btn"
@@ -604,8 +697,40 @@ function StoryPlayerInner() {
         </div>
 
         <div className="ba-sp-guide">
-          操作指南：点击画面或按空格键推进剧情 · 右上角支持进入全屏沉浸播放 · 内置音量与文本控制面板 · ESC 退出全屏
+          操作指南：点击画面或按空格键推进剧情 · 按 <b>L</b> 打开对话回溯 · 按 <b>M</b> 打开原声与声优 · ESC 退出全屏或弹窗
         </div>
+
+        {/* 原声带与声优 (BGM / Cast) 可折叠面板 */}
+        {isSoundtrackOpen && (
+          <StorySoundTrack
+            playlist={storyAnalysis.playlist}
+            cast={storyAnalysis.cast}
+            chapterTitle={storySummary.chapterName}
+            activeBgmId={activeBgm?.id}
+            onSelectBgm={(bgm) => setActiveBgm(bgm)}
+          />
+        )}
+
+        {/* 精选名篇卡片展柜 */}
+        {showChapterShowcase && (
+          <StoryChapterGrid
+            onPlayChapter={handlePlayFromShowcase}
+            currentPlayingUrl={storyUrl}
+          />
+        )}
+
+        {/* 对话回溯抽屉组件 */}
+        <StoryBacklogDrawer
+          isOpen={isBacklogOpen}
+          onClose={() => setIsBacklogOpen(false)}
+          backlog={storyAnalysis.backlog}
+          chapterTitle={storySummary.chapterName}
+          activeBgmId={activeBgm?.id}
+          onPlayBgm={(bgm) => {
+            setActiveBgm(bgm)
+            setIsSoundtrackOpen(true)
+          }}
+        />
       </section>
     </main>
   )

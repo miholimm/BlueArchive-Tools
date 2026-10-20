@@ -1,0 +1,15 @@
+{
+  "volume": 1,
+  "chapter": 2,
+  "title": "对策委员会的大家",
+  "titleJa": "対策委員会のみんな",
+  "characters": ["老师", "白子", "绫音", "野宫", "星野"],
+  "segments": [
+    { "id": "v1c2-001", "speaker": "白子", "speakerJa": "シロコ", "ja": "ここが対策委員会の部室です。", "zh": "这里就是对策委员会的社团活动室了。", "context": "带老师参观校舍一角的部室", "portraitSide": "right" },
+    { "id": "v1c2-002", "speaker": "绫音", "speakerJa": "アヤネ", "ja": "あっ、先生ですか！ようこそ！私、綾音といいます。普段は帳簿を預かっています。", "zh": "啊，是老师！欢迎您！我叫绫音，平时负责保管账本和文书。", "context": "绫音急忙放下文件起身", "portraitSide": "left" },
+    { "id": "v1c2-003", "speaker": "野宫", "speakerJa": "ノノミ", "ja": "やっほー、先生！私、ノノミです。よかったら紅茶を淹れますよ？", "zh": "哈喽，老师！我是野宫。要不要我泡杯红茶给您呀？", "context": "野宫晃着茶壶笑眯眯地凑近", "portraitSide": "right" },
+    { "id": "v1c2-004", "speaker": "星野", "speakerJa": "ホシノ", "ja": "え〜、先生、ぼくも褒めてくれないの？", "zh": "诶——老师，人家也想要被夸奖嘛~", "context": "星野趴在桌上拖长了声音", "portraitSide": "left" },
+    { "id": "v1c2-005", "speaker": "老师", "speakerJa": "先生", "ja": "みんな仲が良いんですね、安心しました。", "zh": "大家感情真好呢，我也放心了。", "context": "看着热热闹闹的部室，老师微笑", "portraitSide": "right" },
+    { "id": "v1c2-006", "speaker": "白子", "speakerJa": "シロコ", "ja": "まだ一人足りません。セリカは遅刻です。", "zh": "还差一个人。芹香又迟到了。", "context": "白子看向门口，平静地补了一句", "portraitSide": "left" }
+  ]
+}
