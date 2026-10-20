@@ -3,9 +3,10 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const resourceApiOrigin = env.RESOURCE_API_ORIGIN || "https://api.bluearchive.help";
+  const resourceApiOrigin = env.RESOURCE_API_ORIGIN || "https://hh.flha.ru";
 
   return {
+    base: "/console/",
     plugins: [react()],
     server: {
       port: 5186,

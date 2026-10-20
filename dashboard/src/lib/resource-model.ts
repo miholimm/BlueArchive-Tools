@@ -14,16 +14,21 @@ export function normalizeTextLocale(value: unknown, field: "text" | "media"): Te
   if (value === true) return "CN";
   if (value === false) return "JP";
   if (value === "" || value === null || value === undefined) return "JP";
-  if (typeof value === "string" && textLocales.has(value as TextLocale)) {
-    return value as TextLocale;
+  if (typeof value === "string") {
+    const upper = value.trim().toUpperCase();
+    if (upper === "CN") return "CN";
+    if (upper === "JP") return "JP";
   }
   throw new ResourceConfigValidationError(`${field} 的资源值无法识别。`);
 }
 
 export function normalizeVoiceLocale(value: unknown): VoiceLocale {
   if (value === "" || value === null || value === undefined) return "Default";
-  if (typeof value === "string" && voiceLocales.has(value as VoiceLocale)) {
-    return value as VoiceLocale;
+  if (typeof value === "string") {
+    const upper = value.trim().toUpperCase();
+    if (upper === "CN") return "CN";
+    if (upper === "KR") return "KR";
+    if (upper === "DEFAULT" || upper === "JP") return "Default";
   }
   throw new ResourceConfigValidationError("voice 的资源值无法识别。");
 }

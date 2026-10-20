@@ -12,6 +12,8 @@ import { qqOAuthRoutes } from "./routes-qq-oauth.mjs";
 import { staticDataRoutes, storyDataRoutes } from "./routes-static.mjs";
 import { handleStoryProxy } from "./routes-story-proxy.mjs";
 import { storyCatalogRoutes } from "./routes-story-catalog.mjs";
+import { consoleRoutes } from "./routes-console.mjs";
+
 import { rateLimit, securityHeaders, getRequestIp } from "./security.mjs";
 import { initScheduler } from "./scheduler.mjs";
 
@@ -72,6 +74,17 @@ app.use("/api", (req, res) =>
 );
 
 app.get("/ads.txt", handleAdsTxt);
+
+// ── 本地化控制台 & 公告路由 ──
+app.use(consoleRoutes);
+app.use("/console", consoleRoutes);
+const consoleDistPath = path.join(config.root, "dashboard", "dist");
+app.use("/console", express.static(consoleDistPath));
+app.use("/console", (req, res) => {
+  res.sendFile(path.join(consoleDistPath, "index.html"));
+});
+
+
 
 app.use(express.static(path.join(config.root, "dist")));
 app.use((req, res) =>

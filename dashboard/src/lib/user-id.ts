@@ -54,15 +54,34 @@ export function parseServerInfoUserId(rawValue: string | null): string | null {
   return directValue && !/[=:{[\]}]/.test(directValue) ? directValue : null;
 }
 
-export function resolveInitialUserId(locationSearch = window.location.search, cookieString = document.cookie): UserIdResolution {
-  const params = new URLSearchParams(locationSearch);
-  const urlParameter = params.get("user");
+export function resolveInitialUserId(
+  locationSearch = window.location.search,
+  cookieString = document.cookie,
+  locationPathname = window.location.pathname
+): UserIdResolution {
+  // 1. Pathname: /console/:uid
+  const pathMatch = locationPathname.match(/\/console\/([A-Za-z0-9_-]{3,64})(?:\/|$)/);
+  if (pathMatch?.[1]) {
+    const userId = normalizeUserId(pathMatch[1]);
+    if (userId) {
+      return { userId, source: "url", detail: "已使用路径中的用户 ID。" };
+    }
+  }
 
-  if (urlParameter !== null) {
-    const userId = normalizeUserId(urlParameter);
-    return userId
-      ? { userId, source: "url", detail: "已使用 URL 参数中的 user。" }
-      : { userId: null, source: "unavailable", detail: "URL 中的 user 参数无效，请重新输入。" };
+  // 2. Query param: ?uid=... or ?user=...
+  const params = new URLSearchParams(locationSearch);
+  const candidateParam = params.get("uid") ?? params.get("user") ?? params.get("userId");
+  if (candidateParam !== null) {
+    const userId = normalizeUserId(candidateParam);
+    if (userId) {
+      return { userId, source: "url", detail: "已使用 URL 参数中的用户 ID。" };
+    }
+  }
+
+  // 3. Cookie: uid or serverinfo
+  const cookieUid = normalizeUserId(getCookieValue("uid", cookieString));
+  if (cookieUid) {
+    return { userId: cookieUid, source: "cookie", detail: "已从客户端 uid Cookie 读取用户 ID。" };
   }
 
   const cookieUserId = parseServerInfoUserId(getCookieValue("serverinfo", cookieString));
@@ -70,10 +89,11 @@ export function resolveInitialUserId(locationSearch = window.location.search, co
     return { userId: cookieUserId, source: "cookie", detail: "已从 serverinfo Cookie 读取用户 ID。" };
   }
 
+  // 4. Default fallback: BAONLINE
   return {
-    userId: null,
-    source: "unavailable",
-    detail: "未发现 URL 参数或可读取的 serverinfo Cookie。",
+    userId: "BAONLINE",
+    source: "url",
+    detail: "已载入默认客户端配置 (BAONLINE)。",
   };
 }
 

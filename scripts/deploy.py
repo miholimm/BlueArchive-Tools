@@ -24,7 +24,7 @@ print(f"Release ID: {RELEASE_ID}")
 print("Packaging release archive...")
 t0 = time.time()
 with tarfile.open(LOCAL_ARCHIVE, "w:gz") as tar:
-    for item in ['dist', 'package.json', 'pnpm-lock.yaml', 'server', 'src', 'vendor']:
+    for item in ['dist', 'dashboard', 'package.json', 'pnpm-lock.yaml', 'server', 'src', 'vendor']:
         p = os.path.join(BASE_DIR, item)
         if os.path.exists(p):
             tar.add(p, arcname=f"./{item}", filter=filter_fn)
@@ -103,6 +103,11 @@ remote_patch = "/opt/blue-archive-hh/shared/downloads/jp/BlueArchive_JP_CN_Patch
 if os.path.exists(local_patch):
     put_with_progress(local_patch, remote_patch, "BlueArchive_JP_CN_Patch_JP1.73.459696.zip")
 
+local_res = os.path.join(os.path.dirname(__file__), "..", "downloads", "jp", "resources.assets")
+remote_res = "/opt/blue-archive-hh/shared/downloads/jp/resources.assets"
+if os.path.exists(local_res):
+    put_with_progress(local_res, remote_res, "resources.assets")
+
 sftp.close()
 
 def run_cmd(cmd):
@@ -162,7 +167,12 @@ print("Current server disk status:")
 run_cmd("df -h /")
 
 print("Checking remote HTTP response...")
-http_check = run_cmd("curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4173/")
+http_check = "000"
+for i in range(5):
+    time.sleep(2)
+    http_check = run_cmd("curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4173/")
+    if http_check == "200":
+        break
 print(f"Local HTTP Status: {http_check}")
 
 client.close()
