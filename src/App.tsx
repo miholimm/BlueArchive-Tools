@@ -33,6 +33,7 @@ const Glossary = lazy(() => import("./pages/Glossary"));
 const QA = lazy(() => import("./pages/QA"));
 const ApiDocs = lazy(() => import("./pages/ApiDocs"));
 const StoryPlayer = lazy(() => import("./pages/StoryPlayer"));
+const StoryViewer = lazy(() => import("./pages/StoryViewer"));
 
 const accentTokens = {
   cyan: { color: "#00a3ff", rgb: "0, 163, 255" },
@@ -103,6 +104,7 @@ function SiteFrame() {
           <Route path="/faq" element={<ModuleGate module="faq"><FAQ /></ModuleGate>} />
           <Route path="/story" element={<ModuleGate module="story"><Story /></ModuleGate>} />
           <Route path="/story-player" element={<StoryPlayer />} />
+          <Route path="/story/view/:type/*" element={<StoryViewer />} />
           <Route path="/story/:volume/:chapter" element={<ModuleGate module="story"><StoryReader /></ModuleGate>} />
           <Route path="/archive" element={<ModuleGate module="archive"><Archive /></ModuleGate>} />
           <Route path="/feedback" element={<ModuleGate module="feedback"><Feedback /></ModuleGate>} />

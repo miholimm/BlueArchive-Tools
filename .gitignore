@@ -42,3 +42,22 @@ portable-file-storage/.env
 !server/data/
 !server/data/student-names.json
 !server/data/glossary.json
+
+# Screenshots & Local downloads & caches
+*.png
+*.jpg
+*.jpeg
+downloads/
+public/downloads/
+public/images/story/
+__pycache__/
+scripts/__pycache__/
+temp/
+tools/
+check_patch.py
+check_urls.py
+decrypt_173.py
+deploy_patch_v173.py
+test_build_db.py
+test_decrypt.py
+verify_db.py
